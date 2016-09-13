@@ -11,7 +11,6 @@ public:
     bool initialized;
     Eigen::VectorXd mu;
 
-    Eigen::MatrixXd A;
     Eigen::MatrixXd B;
     Eigen::MatrixXd R;
 
@@ -26,8 +25,13 @@ public:
     Eigen::MatrixXd S_p;
 
     KalmanFilter(void);
-    int setup(Eigen::VectorXd mu);
-    int estimate(Eigen::VectorXd y, float dt);
+    int init(
+		Eigen::VectorXd mu,
+		Eigen::MatrixXd R,
+		Eigen::MatrixXd C,
+		Eigen::MatrixXd Q
+	);
+    int estimate(Eigen::MatrixXd A, Eigen::VectorXd y);
 };
 
 #endif

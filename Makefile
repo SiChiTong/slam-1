@@ -1,14 +1,15 @@
 include config.mk
 PREFIX="/usr/local"
-PROJECT="slam-cpp"
 
-default: libslam-cpp tests done
+default: libslam tests utils done
 
 mkdirs:
 	@mkdir -p $(LIB_DIR)
 	@mkdir -p $(LIB_BUILD_DIR)
 	@mkdir -p $(TESTS_BUILD_DIR)
 	@mkdir -p $(TESTS_BIN_DIR)
+	@mkdir -p $(UTILS_BUILD_DIR)
+	@mkdir -p $(UTILS_BIN_DIR)
 
 rmdirs:
 	@rm -rf $(BUILD_DIR)
@@ -16,17 +17,20 @@ rmdirs:
 deps:
 	@sh scripts/dependencies.sh
 
-libslam-cpp: mkdirs
+libslam: mkdirs
 	@make -s -C src
 
 tests: mkdirs
 	@make -s -C tests
 
+utils: mkdirs
+	@make -s -C utils
+
 debug: mkdirs
 	@make -C src
 	@make -C tests
 
-run_tests: libsr tests
+run_tests: libslam tests
 	@sh scripts/test_runner.sh
 
 install:

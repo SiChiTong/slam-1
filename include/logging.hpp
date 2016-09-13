@@ -1,5 +1,5 @@
-#ifndef __SLAM_UTIL_HPP__
-#define __SLAM_UTIL_HPP__
+#ifndef __SLAM_LOGGING_HPP__
+#define __SLAM_LOGGING_HPP__
 
 #include <stdio.h>
 #include <iostream>

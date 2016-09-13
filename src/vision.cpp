@@ -41,18 +41,21 @@ int Vision::initCamera(void)
 int Vision::initFeatureDetector(std::string type)
 {
 	this->fdetector = cv::FeatureDetector::create(type);
+    LOG_INFO("feature detector initialized!");
 	return 0;
 }
 
 int Vision::initFeatureExtractor(std::string type)
 {
 	this->fextractor = cv::DescriptorExtractor::create(type);
+    LOG_INFO("feature extractor initialized!");
 	return 0;
 }
 
 int Vision::initFeatureMatcher(std::string type)
 {
 	this->fmatcher = cv::DescriptorMatcher::create(type);
+    LOG_INFO("feature matcher initialized!");
 	return 0;
 }
 
@@ -138,101 +141,3 @@ int Vision::matchFeaturesFlann(cv::Mat d1, cv::Mat d2)
 
 	return 0;
 }
-
-// bool match_sort(const std::vector<cv::DMatch> &m1_vec, const std::vector<cv::DMatch> &m2_vec)
-// {
-//     for (size_t i = 0; i < m1_vec.size() && i < m2_vec.size(); i++) {
-//         if (m1_vec[i].distance > m2_vec[i].distance) {
-//             return false;
-//         } else if (m1_vec[i].distance < m2_vec[i].distance) {
-//             return true;
-//         }
-//     }
-//
-//     return false;
-// }
-
-// static void feature_matching_prototype(cv::Mat &image)
-// {
-//     // setup
-//     // cv::Mat tag_image = cv::imread("tests/data/tags/tag.jpg");
-//     // pyrDown(tag_image, tag_image, cv::Size(tag_image.cols / 2, tag_image.rows / 2));
-//     // pyrDown(tag_image, tag_image, cv::Size(tag_image.cols / 2, tag_image.rows / 2));
-//     // pyrDown(tag_image, tag_image, cv::Size(tag_image.cols / 2, tag_image.rows / 2));
-//
-//
-//     // detect keypoints
-//     std::vector<cv::KeyPoint> keypoints_1;
-//     std::vector<cv::KeyPoint> keypoints_2;
-//
-//     // cv::Ptr<cv::FeatureDetector> feature_detector;
-//     // feature_detector = cv::FeatureDetector::create("ORB");
-//     // feature_detector->detect(tag_image, keypoints_1);
-//     // feature_detector->detect(image, keypoints_2);
-//
-//     cv::SurfFeatureDetector feature_detector(200);
-//     feature_detector.detect(tag_image, keypoints_1);
-//     feature_detector.detect(image, keypoints_2);
-//
-//
-//     // extract descriptors
-//     // cv::Mat descriptors_1;
-//     // cv::Mat descriptors_2;
-//
-//     // cv::Ptr<cv::DescriptorExtractor> feature_extractor;
-//     // feature_extractor = cv::DescriptorExtractor::create("ORB");
-//
-//     // cv::Ptr<cv::DescriptorExtractor> feature_extractor;
-//     // feature_extractor = cv::DescriptorExtractor::create("SURF");
-//
-//     // feature_extractor->compute(tag_image, keypoints_1, descriptors_1);
-//     // feature_extractor->compute(image, keypoints_2, descriptors_2);
-//
-//
-//     // match features
-//     // if (!descriptors_1.empty() && !descriptors_2.empty()) {
-//     //     std::vector< std::vector<cv::DMatch> > matches;
-//     //
-//     //     cv::BFMatcher feature_matcher;
-//     //     feature_matcher.knnMatch(descriptors_1, descriptors_2, matches, 2);
-//     //
-//     //     // ratio test as in Lowe's paper; can be tuned
-//     //     float ratio = 0.8;
-//     //     std::vector<cv::DMatch> good_matches;
-//     //     for (size_t i = 0; i < matches.size(); i++) {
-//     //         if (matches[i][0].distance < ratio * matches[i][1].distance) {
-//     //             good_matches.push_back(matches[i][0]);
-//     //             // printf("%f %f\n", matches[i][0].distance, matches[i][1].distance);
-//     //         }
-//     //
-//     //         if (good_matches.size() > 10) {
-//     //             break;
-//     //         }
-//     //     }
-//     //
-//     //
-//     //     // draw matches
-//     //     if (matches.size() < 1) {
-//     //         std::cout << "No matches!" << std::endl;
-//     //     } else {
-//     //         cv::Mat m;
-//     //         cv::drawMatches(
-//     //             tag_image,
-//     //             keypoints_1,
-//     //             image,
-//     //             keypoints_2,
-//     //             good_matches,
-//     //             m,
-//     //             cv::Scalar::all(-1),
-//     //             cv::Scalar::all(-1),
-//     //             std::vector<char>(),
-//     //             cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS
-//     //
-//     //         );
-//     //         cv::imshow("test", m);
-//     //         // cv::waitKey(100000);
-//     //         cv::waitKey(1000);
-//     //     }
-//     // }
-//
-// }
