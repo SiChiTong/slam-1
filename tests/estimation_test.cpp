@@ -3,6 +3,7 @@
 
 #include "munit.hpp"
 #include "estimation.hpp"
+#include "model.hpp"
 
 #define TEST_OUTPUT_FILE "/tmp/estimation_test.output"
 
@@ -17,7 +18,39 @@ void recordTimeStep(
 );
 int testKalmanFilterInit(void);
 int testKalmanFilterEstimate(void);
+int testExtendedKalmanFilterInit(void);
 
+
+class MockRobot
+{
+public:
+
+    VecXd gFunc(VecXd, VecXd, float)
+    {
+        std::cout << "gFunc" << std::endl;
+        Eigen::VectorXd x;
+        return x;
+    }
+
+    MatXd GFunc(VecXd, VecXd, float)
+    {
+        std::cout << "GFunc" << std::endl;
+        return Eigen::MatrixXd::Identity(3, 3);
+    }
+
+    VecXd hFunc(VecXd)
+    {
+        Eigen::VectorXd x;
+        std::cout << "hFunc" << std::endl;
+        return x;
+    }
+
+    MatXd HFunc(VecXd)
+    {
+        std::cout << "HFunc" << std::endl;
+        return Eigen::MatrixXd::Identity(3, 3);
+    }
+};
 
 int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 {
@@ -59,12 +92,12 @@ int testKalmanFilterInit(void)
 {
     KalmanFilter estimator;
     Eigen::VectorXd mu(9);
-	Eigen::MatrixXd R(9, 9);
+    Eigen::MatrixXd R(9, 9);
     Eigen::MatrixXd C(3, 9);
     Eigen::MatrixXd Q(3, 3);
 
     mu << 0, 0, 0, 0, 0, 0, 0, 0, 0;
-	R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
+    R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0.5, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0.5, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 1.0, 0, 0, 0, 0, 0,
@@ -73,10 +106,10 @@ int testKalmanFilterInit(void)
          0, 0, 0, 0, 0, 0, 1.0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 1.0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-	C << 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    C << 1, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 1, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 1, 0, 0, 0, 0, 0, 0;
-	Q << 20, 0, 0,
+    Q << 20, 0, 0,
          0, 20, 0,
          0, 0, 20;
     estimator.init(mu, R, C, Q);
@@ -94,8 +127,8 @@ int testKalmanFilterEstimate(void)
     Eigen::Vector3d acc;
     Eigen::VectorXd state(9);
     Eigen::VectorXd mu(9);
-	Eigen::MatrixXd A(9, 9);
-	Eigen::MatrixXd R(9, 9);
+    Eigen::MatrixXd A(9, 9);
+    Eigen::MatrixXd R(9, 9);
     Eigen::MatrixXd C(3, 9);
     Eigen::MatrixXd Q(3, 3);
     Eigen::VectorXd y(3);
@@ -116,7 +149,7 @@ int testKalmanFilterEstimate(void)
     mu << 0.0, 0.0, 0.0,    // x, y, z
           9.0, 30.0, 0.0,   // x_dot, y_dot, z_dot
           0.0, -10.0, 0.0;  // x_ddot, y_ddot, z_ddot
-	R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
+    R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0.5, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0.5, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 1.0, 0, 0, 0, 0, 0,
@@ -125,14 +158,14 @@ int testKalmanFilterEstimate(void)
          0, 0, 0, 0, 0, 0, 1.0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 1.0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-	C << 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    C << 1, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 1, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 1, 0, 0, 0, 0, 0, 0;
-	Q << 20, 0, 0,
+    Q << 20, 0, 0,
          0, 20, 0,
          0, 0, 20;
-	estimator.init(mu, R, C, Q);
-	prepareOutputFile(output_file, TEST_OUTPUT_FILE);
+    estimator.init(mu, R, C, Q);
+    prepareOutputFile(output_file, TEST_OUTPUT_FILE);
 
     // estimate
     for (int i = 0; i < 20; i++) {
@@ -150,7 +183,7 @@ int testKalmanFilterEstimate(void)
         y = estimator.C * state + motion_noise;
 
         // estimate
-		A <<
+        A <<
             1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0, 0,
             0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0,
             0, 0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0,
@@ -160,14 +193,40 @@ int testKalmanFilterEstimate(void)
             0, 0, 0, 0, 0, 0, 1.0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 1.0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-		estimator.estimate(A, y);
+        estimator.estimate(A, y);
 
-		// record
-		mea << pos(0), pos(1), pos(2);
-		est << estimator.mu(0), estimator.mu(1), estimator.mu(2);
-		recordTimeStep(output_file, i, mea, est);
+        // record
+        mea << pos(0), pos(1), pos(2);
+        est << estimator.mu(0), estimator.mu(1), estimator.mu(2);
+        recordTimeStep(output_file, i, mea, est);
     }
     output_file.close();
+
+    return 0;
+}
+
+int testExtendedKalmanFilterInit(void)
+{
+    Eigen::VectorXd mu(9);
+    Eigen::MatrixXd R(9, 9);
+    Eigen::MatrixXd Q(3, 3);
+    TwoWheelRobot robot;
+    ExtendedKalmanFilter estimator;
+
+    mu << 0, 0, 0, 0, 0, 0, 0, 0, 0;
+    R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0.5, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0.5, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 1.0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 1.0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 1.0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 1.0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 1.0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 1.0;
+    Q << 20, 0, 0,
+         0, 20, 0,
+         0, 0, 20;
+    estimator.init(mu, R, Q);
 
     return 0;
 }
@@ -176,6 +235,7 @@ void test_suite(void)
 {
     mu_add_test(testKalmanFilterInit);
     mu_add_test(testKalmanFilterEstimate);
+    mu_add_test(testExtendedKalmanFilterInit);
 }
 
 mu_run_tests(test_suite)

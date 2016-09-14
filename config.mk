@@ -15,7 +15,7 @@ UTILS_BUILD_DIR = $(BUILD_DIR)/util
 
 
 # C COMPILER
-CXX = g++ -std=c++0x
+CXX = g++ -std=c++0x -g
 WARN_FLAGS = -Wall -Wextra -Wno-variadic-macros
 OPENCV_CFLAGS=`pkg-config --cflags opencv`
 OPENCV_LIBS=`pkg-config --libs opencv`
