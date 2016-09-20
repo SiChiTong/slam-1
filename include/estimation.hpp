@@ -9,12 +9,12 @@
 
 #ifndef __EIGEN_TYPEDEF__
 #define __EIGEN_TYPEDEF__
-  typedef Eigen::Vector2d Vec2d;
-  typedef Eigen::Vector3d Vec3d;
-  typedef Eigen::VectorXd VecXd;
+  typedef Eigen::Vector2f Vec2f;
+  typedef Eigen::Vector3f Vec3f;
+  typedef Eigen::VectorXf VecXf;
 
-  typedef Eigen::Matrix3d Mat3d;
-  typedef Eigen::MatrixXd MatXd;
+  typedef Eigen::Matrix3f Mat3f;
+  typedef Eigen::MatrixXf MatXf;
 #endif
 
 
@@ -23,29 +23,29 @@ class KalmanFilter
 {
 public:
     bool initialized;
-    VecXd mu;
+    VecXf mu;
 
-    MatXd B;
-    MatXd R;
+    MatXf B;
+    MatXf R;
 
-    MatXd C;
-    MatXd Q;
+    MatXf C;
+    MatXf Q;
 
-    MatXd S;
-    MatXd I;
-    MatXd K;
+    MatXf S;
+    MatXf I;
+    MatXf K;
 
-    VecXd mu_p;
-    MatXd S_p;
+    VecXf mu_p;
+    MatXf S_p;
 
     KalmanFilter(void);
     int init(
-        VecXd mu,
-        MatXd R,
-        MatXd C,
-        MatXd Q
+        VecXf mu,
+        MatXf R,
+        MatXf C,
+        MatXf Q
     );
-    int estimate(MatXd A, VecXd y);
+    int estimate(MatXf A, VecXf y);
 };
 
 
@@ -54,23 +54,22 @@ class ExtendedKalmanFilter
 {
 public:
     bool initialized;
-    VecXd mu;
+    VecXf mu;
 
-    MatXd R;
-    MatXd Q;
+    MatXf R;
+    MatXf Q;
 
-    MatXd S;
-    MatXd I;
-    MatXd K;
+    MatXf S;
+    MatXf I;
+    MatXf K;
 
-    VecXd mu_p;
-    MatXd S_p;
-
+    VecXf mu_p;
+    MatXf S_p;
 
     ExtendedKalmanFilter(void);
-    int init(VecXd mu, MatXd R, MatXd Q);
-    int predictionUpdate(VecXd, g, MatXd G, VecXd u, float dt);
-    int measurementUpdate(VecXd, h, MatXd H, VecXd y);
+    int init(VecXf mu, MatXf R, MatXf Q);
+    int predictionUpdate(VecXf g, MatXf G);
+    int measurementUpdate(VecXf h, MatXf H, VecXf y);
 };
 
 
@@ -79,22 +78,20 @@ class ParticleFilter
 {
 public:
     bool initialized;
-    VecXd mu;
-
-    MatXd R;
-    MatXd Q;
+    VecXf mu;
 
     int M;
-    MatXd X_p;
-    MatXd w;
-    MatXd S;
 
-    VecXd mu_p;
-    MatXd S_p;
-
+    // VecXf mu_p;
+    // MatXf S_p;
 
     ParticleFilter(void);
-    int init(int M, VecXd mu, MatXd R, MatXd Q);
+    int init(int M, VecXf mu);
+    int estimate(
+        std::vector<VecXf> X_p,
+        std::vector<VecXf> hX_p,
+        VecXf y
+    );
 };
 
 #endif

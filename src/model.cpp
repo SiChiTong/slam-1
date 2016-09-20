@@ -6,10 +6,9 @@ TwoWheelRobot::TwoWheelRobot(void)
     this->initialized = false;
 }
 
-
-VecXd TwoWheelRobot::gFunc(VecXd x, VecXd u, float dt)
+VecXf TwoWheelRobot::gFunc(VecXf x, VecXf u, float dt)
 {
-    VecXd g;
+    VecXf g;
 
     g << x(1) + u(1) * cos(x(3)) * dt,
          x(2) + u(1) * sin(x(3)) * dt,
@@ -18,9 +17,9 @@ VecXd TwoWheelRobot::gFunc(VecXd x, VecXd u, float dt)
     return g;
 }
 
-MatXd TwoWheelRobot::GFunc(VecXd x, VecXd u, float dt)
+MatXf TwoWheelRobot::GFunc(VecXf x, VecXf u, float dt)
 {
-    MatXd G;
+    MatXf G;
 
     G << 1.0, 0.0, (-u(1) * sin(x(3)) * dt),
          0.0, 1.0, (u(1) * cos(x(3)) * dt),
@@ -29,22 +28,22 @@ MatXd TwoWheelRobot::GFunc(VecXd x, VecXd u, float dt)
     return G;
 }
 
-VecXd TwoWheelRobot::hFunc(VecXd x)
+VecXf TwoWheelRobot::hFunc(VecXf x)
 {
-    VecXd h;
-    MatXd H;
+    VecXf h;
+    MatXf H;
 
-    H = Eigen::MatrixXd::Identity(3, 3);
+    H = Eigen::MatrixXf::Identity(3, 3);
     h = H * x;
 
     return h;
 }
 
-MatXd TwoWheelRobot::HFunc(VecXd y)
+MatXf TwoWheelRobot::HFunc(VecXf y)
 {
-    MatXd H;
+    MatXf H;
 
-    H = Eigen::MatrixXd::Identity(3, 3);
+    H = Eigen::MatrixXf::Identity(3, 3);
 
     return H;
 }

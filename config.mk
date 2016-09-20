@@ -31,7 +31,8 @@ LIBS = \
 	-l$(PROJECT_NAME) \
 	-lpthread \
 	-ldl \
-	$(OPENCV_LIBS)
+	$(OPENCV_LIBS) \
+	-lginac
 CFLAGS = $(WARN_FLAGS) $(INCLUDES) $(OPENCV_CFLAGS)
 
 

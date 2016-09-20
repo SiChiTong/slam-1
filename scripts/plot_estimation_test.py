@@ -3,6 +3,10 @@ import csv
 
 import matplotlib.pylab as plt
 
+# GLOBAL VARIABLES
+KF_OUTPUT_FILE = "/tmp/estimation_kf_test.output"
+EKF_OUTPUT_FILE = "/tmp/estimation_ekf_test.output"
+
 
 def load_file(fp, skip_header=True):
     csv_file = open(fp, 'r')
@@ -27,10 +31,24 @@ def load_file(fp, skip_header=True):
     return data
 
 
-if __name__ == "__main__":
-    data = load_file("/tmp/estimation_test.output")
-
+def plot_kf_results():
+    data = load_file(KF_OUTPUT_FILE)
     plt.plot(data["x"], data["y"], label="Ground State")
     plt.plot(data["bx"], data["by"], marker="o", label="Belief State")
+    plt.title("KF - Test")
     plt.legend()
     plt.show()
+
+
+def plot_ekf_results():
+    data = load_file(EKF_OUTPUT_FILE)
+    plt.plot(data["x"], data["y"], label="Ground State")
+    plt.plot(data["bx"], data["by"], marker="o", label="Belief State")
+    plt.title("EKF - Test")
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    plot_kf_results()
+    plot_ekf_results()

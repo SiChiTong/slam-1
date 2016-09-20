@@ -6,12 +6,12 @@
 
 #ifndef __EIGEN_TYPEDEF__
 #define __EIGEN_TYPEDEF__
-  typedef Eigen::Vector2d Vec2d;
-  typedef Eigen::Vector3d Vec3d;
-  typedef Eigen::VectorXd VecXd;
+  typedef Eigen::Vector2f Vec2f;
+  typedef Eigen::Vector3f Vec3f;
+  typedef Eigen::VectorXf VecXf;
 
-  typedef Eigen::Matrix3d Mat3d;
-  typedef Eigen::MatrixXd MatXd;
+  typedef Eigen::Matrix3f Mat3f;
+  typedef Eigen::MatrixXf MatXf;
 #endif
 
 
@@ -21,10 +21,10 @@ public:
     bool initialized;
 
     TwoWheelRobot(void);
-    VecXd gFunc(VecXd x, VecXd u, float dt);
-    MatXd GFunc(VecXd x, VecXd u, float dt);
-    VecXd hFunc(VecXd x);
-    MatXd HFunc(VecXd y);
+    VecXf gFunc(VecXf x, VecXf u, float dt);
+    MatXf GFunc(VecXf x, VecXf u, float dt);
+    VecXf hFunc(VecXf x);
+    MatXf HFunc(VecXf y);
 };
 
 #endif

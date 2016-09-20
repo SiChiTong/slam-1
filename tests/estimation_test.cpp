@@ -2,10 +2,13 @@
 #include <random>
 
 #include "munit.hpp"
-#include "estimation.hpp"
 #include "model.hpp"
+#include "util.hpp"
+#include "estimation.hpp"
 
-#define TEST_OUTPUT_FILE "/tmp/estimation_test.output"
+#define TEST_KF_OUTPUT_FILE "/tmp/estimation_kf_test.output"
+#define TEST_EKF_OUTPUT_FILE "/tmp/estimation_ekf_test.output"
+#define TEST_PF_OUTPUT_FILE "/tmp/estimation_pf_test.output"
 
 
 // TESTS
@@ -13,44 +16,13 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path);
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Eigen::Vector3d mea,
-    Eigen::Vector3d est
+    Vec3f mea,
+    Vec3f est
 );
-int testKalmanFilterInit(void);
-int testKalmanFilterEstimate(void);
-int testExtendedKalmanFilterInit(void);
+int testKalmanFilter(void);
+int testExtendedKalmanFilter(void);
+int testParticleFilter(void);
 
-
-class MockRobot
-{
-public:
-
-    VecXd gFunc(VecXd, VecXd, float)
-    {
-        std::cout << "gFunc" << std::endl;
-        Eigen::VectorXd x;
-        return x;
-    }
-
-    MatXd GFunc(VecXd, VecXd, float)
-    {
-        std::cout << "GFunc" << std::endl;
-        return Eigen::MatrixXd::Identity(3, 3);
-    }
-
-    VecXd hFunc(VecXd)
-    {
-        Eigen::VectorXd x;
-        std::cout << "hFunc" << std::endl;
-        return x;
-    }
-
-    MatXd HFunc(VecXd)
-    {
-        std::cout << "HFunc" << std::endl;
-        return Eigen::MatrixXd::Identity(3, 3);
-    }
-};
 
 int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 {
@@ -72,8 +44,8 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Eigen::Vector3d mea,
-    Eigen::Vector3d est
+    Vec3f mea,
+    Vec3f est
 )
 {
     // record true state x, y, z
@@ -88,58 +60,29 @@ void recordTimeStep(
     output_file << est(2) << std::endl;
 }
 
-int testKalmanFilterInit(void)
-{
-    KalmanFilter estimator;
-    Eigen::VectorXd mu(9);
-    Eigen::MatrixXd R(9, 9);
-    Eigen::MatrixXd C(3, 9);
-    Eigen::MatrixXd Q(3, 3);
-
-    mu << 0, 0, 0, 0, 0, 0, 0, 0, 0;
-    R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0.5, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0.5, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 1.0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 1.0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 1.0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 1.0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 1.0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-    C << 1, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 1, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 1, 0, 0, 0, 0, 0, 0;
-    Q << 20, 0, 0,
-         0, 20, 0,
-         0, 0, 20;
-    estimator.init(mu, R, C, Q);
-
-    return 0;
-}
-
-int testKalmanFilterEstimate(void)
+int testKalmanFilter(void)
 {
     float dt;
 
-    KalmanFilter estimator;
-    Eigen::Vector3d pos;
-    Eigen::Vector3d vel;
-    Eigen::Vector3d acc;
-    Eigen::VectorXd state(9);
-    Eigen::VectorXd mu(9);
-    Eigen::MatrixXd A(9, 9);
-    Eigen::MatrixXd R(9, 9);
-    Eigen::MatrixXd C(3, 9);
-    Eigen::MatrixXd Q(3, 3);
-    Eigen::VectorXd y(3);
-    Eigen::VectorXd motion_noise(3);
-    Eigen::Vector3d mea;
-    Eigen::Vector3d est;
+    KalmanFilter kf;
+    Vec3f pos;
+    Vec3f vel;
+    Vec3f acc;
+    VecXf state(9);
+    VecXf mu(9);
+    MatXf A(9, 9);
+    MatXf R(9, 9);
+    MatXf C(3, 9);
+    MatXf Q(3, 3);
+    VecXf y(3);
+    VecXf motion_noise(3);
+    Vec3f mea;
+    Vec3f est;
     std::ofstream output_file;
-    std::default_random_engine generator;
-    std::normal_distribution<float> norm_dist_x(0, 0.5);
-    std::normal_distribution<float> norm_dist_y(0, 0.5);
-    std::normal_distribution<float> norm_dist_z(0, 0.5);
+    std::default_random_engine rgen;
+    std::normal_distribution<float> norm_x(0, 0.5);
+    std::normal_distribution<float> norm_y(0, 0.5);
+    std::normal_distribution<float> norm_z(0, 0.5);
 
     // setup
     dt = 0.1;
@@ -164,8 +107,8 @@ int testKalmanFilterEstimate(void)
     Q << 20, 0, 0,
          0, 20, 0,
          0, 0, 20;
-    estimator.init(mu, R, C, Q);
-    prepareOutputFile(output_file, TEST_OUTPUT_FILE);
+    kf.init(mu, R, C, Q);
+    prepareOutputFile(output_file, TEST_KF_OUTPUT_FILE);
 
     // estimate
     for (int i = 0; i < 20; i++) {
@@ -177,27 +120,24 @@ int testKalmanFilterEstimate(void)
                  acc(0), acc(1), acc(2);
 
         // perform measurement
-        motion_noise << norm_dist_x(generator),
-                        norm_dist_y(generator),
-                        norm_dist_z(generator);
-        y = estimator.C * state + motion_noise;
+        motion_noise << norm_x(rgen), norm_y(rgen), norm_z(rgen);
+        y = kf.C * state + motion_noise;
 
         // estimate
-        A <<
-            1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0, 0,
-            0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0,
-            0, 0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0,
-            0, 0, 0, 1.0, 0, 0, dt, 0, 0,
-            0, 0, 0, 0, 1.0, 0, 0, dt, 0,
-            0, 0, 0, 0, 0, 1.0, 0, 0, dt,
-            0, 0, 0, 0, 0, 0, 1.0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 1.0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-        estimator.estimate(A, y);
+        A << 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0, 0,
+             0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0, 0,
+             0, 0, 1.0, 0, 0, dt, 0, 0, pow(dt, 2) / 2.0,
+             0, 0, 0, 1.0, 0, 0, dt, 0, 0,
+             0, 0, 0, 0, 1.0, 0, 0, dt, 0,
+             0, 0, 0, 0, 0, 1.0, 0, 0, dt,
+             0, 0, 0, 0, 0, 0, 1.0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 1.0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 1.0;
+        kf.estimate(A, y);
 
         // record
         mea << pos(0), pos(1), pos(2);
-        est << estimator.mu(0), estimator.mu(1), estimator.mu(2);
+        est << kf.mu(0), kf.mu(1), kf.mu(2);
         recordTimeStep(output_file, i, mea, est);
     }
     output_file.close();
@@ -205,37 +145,134 @@ int testKalmanFilterEstimate(void)
     return 0;
 }
 
-int testExtendedKalmanFilterInit(void)
+int testExtendedKalmanFilter(void)
 {
-    Eigen::VectorXd mu(9);
-    Eigen::MatrixXd R(9, 9);
-    Eigen::MatrixXd Q(3, 3);
-    TwoWheelRobot robot;
-    ExtendedKalmanFilter estimator;
+    float dt;
+    VecXf x(3);
+    VecXf y(3);
+    VecXf gaussian_noise(3);
+    VecXf mu(3);
+    VecXf u(3);
+    MatXf R(3, 3);
+    MatXf Q(3, 3);
+    VecXf g(3);
+    MatXf G(3, 3);
+    VecXf h(3);
+    MatXf H(3, 3);
+    ExtendedKalmanFilter ekf;
+    std::ofstream output_file;
+    std::default_random_engine rgen;
+    std::normal_distribution<float> norm_x(0, pow(0.5, 2));
+    std::normal_distribution<float> norm_y(0, pow(0.5, 2));
+    std::normal_distribution<float> norm_theta(0, pow(deg2rad(0.5), 2));
 
-    mu << 0, 0, 0, 0, 0, 0, 0, 0, 0;
-    R << 0.5, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0.5, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0.5, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 1.0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 1.0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 1.0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 1.0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 1.0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 1.0;
-    Q << 20, 0, 0,
-         0, 20, 0,
-         0, 0, 20;
-    estimator.init(mu, R, Q);
+    // setup
+    dt = 0.01;
+    x << 0, 0, 0;
+    mu << 0, 0, 0;
+    R << pow(0.05, 2), 0, 0,
+         0, pow(0.05, 2), 0,
+         0, 0, pow(deg2rad(0.5), 2);
+    Q << pow(0.5, 2), 0, 0,
+         0, pow(0.5, 2), 0,
+         0, 0, pow(deg2rad(10), 2);
+    u << -15.5, -10.5, 1.5;
+    ekf.init(mu, R, Q);
+    prepareOutputFile(output_file, TEST_EKF_OUTPUT_FILE);
+
+    // loop
+    for (int i = 0; i < 100; i++) {
+        // update true state
+        x << x(0) + u(0) * cos(x(2)) * dt,
+             x(1) + u(0) * sin(x(2)) * dt,
+             x(2) + u(1) * dt;
+
+        // take measurement
+        gaussian_noise << norm_x(rgen), norm_y(rgen), norm_theta(rgen);
+        y = x + gaussian_noise;
+
+        // propagate motion model
+        g << ekf.mu(0) + u(0) * cos(ekf.mu(2)) * dt,
+            ekf.mu(1) + u(0) * sin(ekf.mu(2)) * dt,
+            ekf.mu(2) + u(1) * dt;
+        G << 1, 0, (-u(0) * sin(ekf.mu(2)) * dt),
+            0, 1, (u(0) * cos(ekf.mu(2)) * dt),
+            0, 0, 1;
+        ekf.predictionUpdate(g, G);
+
+        // propagate measurement
+        H = Eigen::MatrixXf::Identity(3, 3);
+        h = H * ekf.mu;
+        ekf.measurementUpdate(h, H, y);
+
+        // record
+        recordTimeStep(output_file, i, x, ekf.mu);
+    }
+    output_file.close();
+
+    return 0;
+}
+
+static VecXf update_state(VecXf x, VecXf u, MatXf R, float dt)
+{
+    VecXf x_p;
+    VecXf gaussian_noise(3);
+    std::default_random_engine rgen;
+    std::normal_distribution<float> norm_x(0, pow(R(0, 0), 2));
+    std::normal_distribution<float> norm_y(0, pow(R(1, 1), 2));
+    std::normal_distribution<float> norm_theta(0, pow(R(2, 2), 2));
+
+    gaussian_noise << norm_x(rgen), norm_y(rgen), norm_theta(rgen);
+    x_p << x(0) + u(0) * cos(x(2)) * dt,
+           x(1) + u(0) * sin(x(2)) * dt,
+           x(2) + u(1) * dt;
+    x_p += gaussian_noise;
+
+    return x_p;
+}
+
+static VecXf create_hypothesis(VecXf x_p)
+{
+    MatXf I;
+    VecXf hx_p;
+
+    I = Eigen::MatrixXf::Identity(3, 3);
+    hx_p = I * x_p;
+
+    return hx_p;
+}
+
+int testParticleFilterUpdate(void)
+{
+    float dt;
+    VecXf x(3);
+    VecXf mu(3);
+    ParticleFilter pf;
+    std::ofstream output_file;
+
+    // setup
+    dt = 0.01;
+    x << 0, 0, 0;
+    mu << 0, 0, 0;
+    pf.init(100, mu);
+    prepareOutputFile(output_file, TEST_PF_OUTPUT_FILE);
+
+    // loop
+    for (int i = 0; i < 100; i++) {
+
+
+
+    }
+    output_file.close();
 
     return 0;
 }
 
 void test_suite(void)
 {
-    mu_add_test(testKalmanFilterInit);
-    mu_add_test(testKalmanFilterEstimate);
-    mu_add_test(testExtendedKalmanFilterInit);
+    mu_add_test(testKalmanFilter);
+    mu_add_test(testExtendedKalmanFilter);
+    mu_add_test(testParticleFilterUpdate);
 }
 
 mu_run_tests(test_suite)
