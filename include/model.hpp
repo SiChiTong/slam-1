@@ -2,6 +2,10 @@
 #define __SLAM_MODEL_HPP__
 
 #include <Eigen/Geometry>
+#include <ginac/ginac.h>
+
+#include "util.hpp"
+#include "symmath.hpp"
 
 
 #ifndef __EIGEN_TYPEDEF__
@@ -15,12 +19,40 @@
 #endif
 
 
-class TwoWheelRobot
+class TwoWheelRobotModel
 {
 public:
     bool initialized;
 
-    TwoWheelRobot(void);
+    TwoWheelRobotModel(void);
+    VecXf gFunc(VecXf x, VecXf u, float dt);
+    MatXf GFunc(VecXf x, VecXf u, float dt);
+    VecXf hFunc(VecXf x);
+    MatXf HFunc(VecXf y);
+};
+
+class QuadrotorModel
+{
+public:
+    bool initialized;
+
+    float Ix;
+    float Iy;
+    float Iz;
+
+    float ktau;
+    float kt;
+
+    float tauf;
+    float taup;
+    float tauq;
+    float taur;
+
+    float m;
+    float g;
+
+    QuadrotorModel(void);
+    void generateMotionModelJacobian(void);
     VecXf gFunc(VecXf x, VecXf u, float dt);
     MatXf GFunc(VecXf x, VecXf u, float dt);
     VecXf hFunc(VecXf x);

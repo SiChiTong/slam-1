@@ -1,7 +1,6 @@
-#include <ginac/ginac.h>
-
-
 #include "munit.hpp"
+#include "model.hpp"
+#include "symmath.hpp"
 
 
 // TESTS
@@ -16,7 +15,11 @@ int testSymbolicDifferentiation(void)
 
     P = pow(x, 5) + pow(x, 2) + y;
 
-    std::cout << P.diff(x) << std::endl;  // double diff P wrt x
+    // std::cout << P.diff(x) << std::endl;  // diff P wrt x
+
+    QuadrotorModel quad;
+
+    quad.generateMotionModelJacobian();
 
     return 0;
 }

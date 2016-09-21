@@ -38,3 +38,18 @@ float toc(struct timespec *tic)
 
     return time_elasped;
 }
+
+double C(double x)
+{
+    return cos(x);
+}
+
+double S(double x)
+{
+    return sin(x);
+}
+
+double T(double x)
+{
+    return tan(x);
+}

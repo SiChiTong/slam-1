@@ -6,11 +6,18 @@
 #include <time.h>
 
 
+// MACROS
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
+
 // FUNCTIONS
 float deg2rad(float d);
 float rad2deg(float r);
-int dblcmp(float f1, float f2);
+int fltcmp(float f1, float f2);
 void tic(struct timespec *tic);
 float toc(struct timespec *tic);
+double C(double x);
+double S(double x);
+double T(double x);
 
 #endif
