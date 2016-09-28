@@ -33,5 +33,6 @@ float toc(struct timespec *tic);
 double C(double x);
 double S(double x);
 double T(double x);
+void rmtrailslash(std::string &path);
 
 #endif

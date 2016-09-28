@@ -1,22 +1,24 @@
-#include "vision.hpp"
+#include "camera.hpp"
 
 
 int main(void)
 {
-    Vision vision;
+    Camera camera;
     cv::Mat image;
 
     int fps;
     int fourcc;
+    int retval;
     std::string file_name;
     cv::Size video_resolution;
     cv::VideoWriter video_writer;
 
     // setup camera
-    vision.capture_index = 0;
-    vision.image_width = 320;
-    vision.image_height = 280;
-    vision.initCamera();
+    retval = camera.configure(0, 320, 240);
+    if (retval != 0) {
+        LOG_ERROR("failed to configure camera!");
+        return -1;
+    }
 
     // setup video writer
     fps = 10;
@@ -36,7 +38,7 @@ int main(void)
 
     // loop
     while (true) {
-        vision.capture->read(image);
+        camera.capture->read(image);
         cv::imshow("Video Capture", image);
         video_writer.write(image);
 

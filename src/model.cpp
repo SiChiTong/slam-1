@@ -106,6 +106,9 @@ MatX QuadrotorModel::GFunc(VecX x, VecX u, float dt)
     float tauf, taup, tauq, taur;
     float m, g;
 
+    // setup
+    UNUSED(u);
+
     // states
     ph = x(0);
     th = x(1);

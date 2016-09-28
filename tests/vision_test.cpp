@@ -1,42 +1,40 @@
 #include "munit.hpp"
-#include "vision.hpp"
+#include "camera.hpp"
 
 
 // TESTS
-int testVision(void);
-int testVisionInitCamera(void);
-int testVisionInitFeatureDetector(void);
-int testVisionInitFeatureExtractor(void);
-int testVisionInitFeatureMatcher(void);
+int testCamera(void);
+int testCameraInitCamera(void);
+int testCameraInitFeatureDetector(void);
+int testCameraInitFeatureExtractor(void);
+int testCameraInitFeatureMatcher(void);
 void testSuite(void);
 
 
-int testVision(void)
+int testCamera(void)
 {
-    Vision vision;
+    Camera camera;
 
-    mu_check(vision.capture_index == 0);
-    mu_check(vision.image_width == 0);
-    mu_check(vision.image_height == 0);
-    mu_check(vision.capture == NULL);
+    mu_check(camera.configured == false);
+    mu_check(camera.capture == NULL);
+    mu_check(camera.capture_index == 0);
+    mu_check(camera.image_width == 0);
+    mu_check(camera.image_height == 0);
 
     return 0;
 }
 
-int testVisionInitCamera(void)
+int testCameraInitCamera(void)
 {
-    Vision vision;
+    Camera camera;
     cv::Mat image;
 
     // init
-    vision.capture_index = 0;
-    vision.image_width = 320;
-    vision.image_height = 280;
-    vision.initCamera();
+    camera.configure(0, 320, 240);
 
     // loop
     for (int i = 0; i < 10; i++) {
-        vision.capture->read(image);
+        camera.capture->read(image);
         cv::imshow("test", image);
         cv::waitKey(1);
     }
@@ -44,36 +42,36 @@ int testVisionInitCamera(void)
     return 0;
 }
 
-int testVisionInitFeatureDetector(void)
+int testCameraInitFeatureDetector(void)
 {
-    Vision vision;
+    Camera camera;
 
     // // feature detectors
-    // vision.initFeatureDetector("FAST");
-    // vision.initFeatureDetector("STAR");
-    // vision.initFeatureDetector("ORB");
-    // vision.initFeatureDetector("BRISK");
-    // vision.initFeatureDetector("MSER");
-    // vision.initFeatureDetector("GFTT");
-    // vision.initFeatureDetector("HARRIS");
-    // vision.initFeatureDetector("DENSE");
-    // vision.initFeatureDetector("SimpleBlob");
+    // camera.initFeatureDetector("FAST");
+    // camera.initFeatureDetector("STAR");
+    // camera.initFeatureDetector("ORB");
+    // camera.initFeatureDetector("BRISK");
+    // camera.initFeatureDetector("MSER");
+    // camera.initFeatureDetector("GFTT");
+    // camera.initFeatureDetector("HARRIS");
+    // camera.initFeatureDetector("DENSE");
+    // camera.initFeatureDetector("SimpleBlob");
     //
     // // nonfree feature detectors
-    // vision.initFeatureDetector("SURF");
-    // vision.initFeatureDetector("SIFT");
-    // vision.initFeatureDetector("SURF");
+    // camera.initFeatureDetector("SURF");
+    // camera.initFeatureDetector("SIFT");
+    // camera.initFeatureDetector("SURF");
 
     return 0;
 }
 
-int testVisionInitFeatureExtractor(void)
+int testCameraInitFeatureExtractor(void)
 {
 
     return 0;
 }
 
-int testVisionInitFeatureMatcher(void)
+int testCameraInitFeatureMatcher(void)
 {
 
     return 0;
@@ -129,21 +127,21 @@ void featureTracking(
 
 // int testSandbox(void)
 // {
-//     Vision vision;
+//     Camera camera;
 //     cv::Mat image;
 //     std::vector<cv::KeyPoint> key_pts;
 //     std::vector<cv::Point2f> points;
 //
 //     // init
-//     vision.capture_index = 0;
-//     vision.image_width = 640;
-//     vision.image_height = 480;
-//     vision.initCamera();
+//     camera.capture_index = 0;
+//     camera.image_width = 640;
+//     camera.image_height = 480;
+//     camera.initCamera();
 //
-//     vision.initFeatureDetector("FAST");
-//     vision.initFeatureExtractor("ORB");
-//     // vision.fdetector->set("threshold", 100);
-//     // vision.fdetector->set("nonmaxSuppression", false);
+//     camera.initFeatureDetector("FAST");
+//     camera.initFeatureExtractor("ORB");
+//     // camera.fdetector->set("threshold", 100);
+//     // camera.fdetector->set("nonmaxSuppression", false);
 //
 //     cv::Mat image1;
 //     cv::Mat image2;
@@ -158,21 +156,21 @@ void featureTracking(
 //     cv::Mat t;
 //
 //     // get frame
-//     vision.capture->read(image);
+//     camera.capture->read(image);
 //     image1 = image;
 //
 //     // feature detection
-//     vision.detectFeatures(image, key_pts);
+//     camera.detectFeatures(image, key_pts);
 //     cv::KeyPoint::convert(key_pts, points1, std::vector<int>());
 //
 //     // loop
 //     while (true) {
 //         // get frame
-//         vision.capture->read(image);
+//         camera.capture->read(image);
 //         image2 = image;
 //
 //         // feature detection
-//         vision.detectFeatures(image, key_pts);
+//         camera.detectFeatures(image, key_pts);
 //         cv::KeyPoint::convert(key_pts, points2, std::vector<int>());
 //
 //         // feature tracking
@@ -218,11 +216,11 @@ void featureTracking(
 
 void testSuite(void)
 {
-    mu_add_test(testVision);
-    // mu_add_test(testVisionInitCamera);
-    // mu_add_test(testVisionInitFeatureDetector);
-    // mu_add_test(testVisionInitFeatureExtractor);
-    // mu_add_test(testVisionInitFeatureMatcher);
+    mu_add_test(testCamera);
+    // mu_add_test(testCameraInitCamera);
+    // mu_add_test(testCameraInitFeatureDetector);
+    // mu_add_test(testCameraInitFeatureExtractor);
+    // mu_add_test(testCameraInitFeatureMatcher);
     // mu_add_test(testSandbox);
 }
 

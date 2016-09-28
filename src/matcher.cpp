@@ -1,41 +1,5 @@
-#include "vision.hpp"
+#include "matcher.hpp"
 
-
-Vision::Vision(void)
-{
-    // cv::initModule_nonfree();
-
-    this->initialized = false;
-
-    this->capture_index = 0;
-    this->image_width = 0;
-    this->image_height = 0;
-    this->capture = NULL;
-}
-
-int Vision::init(void)
-{
-
-    return 0;
-}
-
-int Vision::initCamera(void)
-{
-    // setup
-    this->capture = new cv::VideoCapture(this->capture_index);
-
-    // open camera
-    if (this->capture->isOpened() == 0) {
-        LOG_ERROR("failed to open webcam!");
-        return -1;
-    }
-
-    // configure image resolution
-    this->capture->set(cv::CAP_PROP_FRAME_WIDTH, image_width);
-    this->capture->set(cv::CAP_PROP_FRAME_HEIGHT, image_height);
-
-    return 0;
-}
 
 //     cv::drawKeypoints(
 //         image,
@@ -45,7 +9,7 @@ int Vision::initCamera(void)
 //         cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS
 //     );
 
-// int Vision::matchFeaturesBF(cv::Mat d1, cv::Mat d2)
+// int Camera::matchFeaturesBF(cv::Mat d1, cv::Mat d2)
 // {
 //     float ratio;
 //     std::vector<cv::DMatch> good_matches;
@@ -71,7 +35,7 @@ int Vision::initCamera(void)
 //     return 0;
 // }
 //
-// int Vision::matchFeaturesFlann(cv::Mat d1, cv::Mat d2)
+// int Camera::matchFeaturesFlann(cv::Mat d1, cv::Mat d2)
 // {
 //     double dist;
 //     double max_dist;
