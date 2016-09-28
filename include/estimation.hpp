@@ -4,18 +4,7 @@
 #include <iostream>
 #include <functional>
 
-#include <Eigen/Geometry>
-
-
-#ifndef __EIGEN_TYPEDEF__
-#define __EIGEN_TYPEDEF__
-  typedef Eigen::Vector2f Vec2f;
-  typedef Eigen::Vector3f Vec3f;
-  typedef Eigen::VectorXf VecXf;
-
-  typedef Eigen::Matrix3f Mat3f;
-  typedef Eigen::MatrixXf MatXf;
-#endif
+#include "util.hpp"
 
 
 
@@ -23,74 +12,72 @@ class KalmanFilter
 {
 public:
     bool initialized;
-    VecXf mu;
+    VecX mu;
 
-    MatXf B;
-    MatXf R;
+    MatX B;
+    MatX R;
 
-    MatXf C;
-    MatXf Q;
+    MatX C;
+    MatX Q;
 
-    MatXf S;
-    MatXf I;
-    MatXf K;
+    MatX S;
+    MatX I;
+    MatX K;
 
-    VecXf mu_p;
-    MatXf S_p;
+    VecX mu_p;
+    MatX S_p;
 
     KalmanFilter(void);
     int init(
-        VecXf mu,
-        MatXf R,
-        MatXf C,
-        MatXf Q
+        VecX mu,
+        MatX R,
+        MatX C,
+        MatX Q
     );
-    int estimate(MatXf A, VecXf y);
+    int estimate(MatX A, VecX y);
 };
-
 
 
 class ExtendedKalmanFilter
 {
 public:
     bool initialized;
-    VecXf mu;
+    VecX mu;
 
-    MatXf R;
-    MatXf Q;
+    MatX R;
+    MatX Q;
 
-    MatXf S;
-    MatXf I;
-    MatXf K;
+    MatX S;
+    MatX I;
+    MatX K;
 
-    VecXf mu_p;
-    MatXf S_p;
+    VecX mu_p;
+    MatX S_p;
 
     ExtendedKalmanFilter(void);
-    int init(VecXf mu, MatXf R, MatXf Q);
-    int predictionUpdate(VecXf g, MatXf G);
-    int measurementUpdate(VecXf h, MatXf H, VecXf y);
+    int init(VecX mu, MatX R, MatX Q);
+    int predictionUpdate(VecX g, MatX G);
+    int measurementUpdate(VecX h, MatX H, VecX y);
 };
-
 
 
 class ParticleFilter
 {
 public:
     bool initialized;
-    VecXf mu;
+    VecX mu;
 
     int M;
 
-    // VecXf mu_p;
-    // MatXf S_p;
+    // VecX mu_p;
+    // MatX S_p;
 
     ParticleFilter(void);
-    int init(int M, VecXf mu);
+    int init(int M, VecX mu);
     int estimate(
-        std::vector<VecXf> X_p,
-        std::vector<VecXf> hX_p,
-        VecXf y
+        std::vector<VecX> X_p,
+        std::vector<VecX> hX_p,
+        VecX y
     );
 };
 

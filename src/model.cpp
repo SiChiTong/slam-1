@@ -7,9 +7,9 @@ TwoWheelRobotModel::TwoWheelRobotModel(void)
     this->initialized = false;
 }
 
-VecXf TwoWheelRobotModel::gFunc(VecXf x, VecXf u, float dt)
+VecX TwoWheelRobotModel::gFunc(VecX x, VecX u, float dt)
 {
-    VecXf g;
+    VecX g;
 
     g << x(1) + u(1) * cos(x(3)) * dt,
          x(2) + u(1) * sin(x(3)) * dt,
@@ -18,9 +18,9 @@ VecXf TwoWheelRobotModel::gFunc(VecXf x, VecXf u, float dt)
     return g;
 }
 
-MatXf TwoWheelRobotModel::GFunc(VecXf x, VecXf u, float dt)
+MatX TwoWheelRobotModel::GFunc(VecX x, VecX u, float dt)
 {
-    MatXf G;
+    MatX G;
 
     G << 1.0, 0.0, (-u(1) * sin(x(3)) * dt),
          0.0, 1.0, (u(1) * cos(x(3)) * dt),
@@ -29,10 +29,10 @@ MatXf TwoWheelRobotModel::GFunc(VecXf x, VecXf u, float dt)
     return G;
 }
 
-VecXf TwoWheelRobotModel::hFunc(VecXf x)
+VecX TwoWheelRobotModel::hFunc(VecX x)
 {
-    VecXf h;
-    MatXf H;
+    VecX h;
+    MatX H;
 
     H = Eigen::MatrixXf::Identity(3, 3);
     h = H * x;
@@ -40,9 +40,9 @@ VecXf TwoWheelRobotModel::hFunc(VecXf x)
     return h;
 }
 
-MatXf TwoWheelRobotModel::HFunc(VecXf y)
+MatX TwoWheelRobotModel::HFunc(VecX y)
 {
-    MatXf H;
+    MatX H;
     UNUSED(y);
 
     H = Eigen::MatrixXf::Identity(3, 3);
@@ -97,9 +97,9 @@ void QuadrotorModel::generateMotionModelJacobian(void)
     SymMath::outputMotionModelJacobian("/tmp/test.dat", model, states);
 }
 
-MatXf QuadrotorModel::GFunc(VecXf x, VecXf u, float dt)
+MatX QuadrotorModel::GFunc(VecX x, VecX u, float dt)
 {
-    MatXf G(12, 12);
+    MatX G(12, 12);
     float ph, th, ps, p, q, r, px, py, pz, vx, vy, vz;  // states
     float Ix, Iy, Iz;
     float ktau, kt;

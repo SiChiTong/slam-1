@@ -16,8 +16,8 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path);
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Vec3f mea,
-    Vec3f est
+    Vec3 mea,
+    Vec3 est
 );
 int testKalmanFilter(void);
 int testExtendedKalmanFilter(void);
@@ -44,8 +44,8 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Vec3f mea,
-    Vec3f est
+    Vec3 mea,
+    Vec3 est
 )
 {
     // record true state x, y, z
@@ -65,19 +65,19 @@ int testKalmanFilter(void)
     float dt;
 
     KalmanFilter kf;
-    Vec3f pos;
-    Vec3f vel;
-    Vec3f acc;
-    VecXf state(9);
-    VecXf mu(9);
-    MatXf A(9, 9);
-    MatXf R(9, 9);
-    MatXf C(3, 9);
-    MatXf Q(3, 3);
-    VecXf y(3);
-    VecXf motion_noise(3);
-    Vec3f mea;
-    Vec3f est;
+    Vec3 pos;
+    Vec3 vel;
+    Vec3 acc;
+    VecX state(9);
+    VecX mu(9);
+    MatX A(9, 9);
+    MatX R(9, 9);
+    MatX C(3, 9);
+    MatX Q(3, 3);
+    VecX y(3);
+    VecX motion_noise(3);
+    Vec3 mea;
+    Vec3 est;
     std::ofstream output_file;
     std::default_random_engine rgen;
     std::normal_distribution<float> norm_x(0, 0.5);
@@ -148,17 +148,17 @@ int testKalmanFilter(void)
 int testExtendedKalmanFilter(void)
 {
     float dt;
-    VecXf x(3);
-    VecXf y(3);
-    VecXf gaussian_noise(3);
-    VecXf mu(3);
-    VecXf u(3);
-    MatXf R(3, 3);
-    MatXf Q(3, 3);
-    VecXf g(3);
-    MatXf G(3, 3);
-    VecXf h(3);
-    MatXf H(3, 3);
+    VecX x(3);
+    VecX y(3);
+    VecX gaussian_noise(3);
+    VecX mu(3);
+    VecX u(3);
+    MatX R(3, 3);
+    MatX Q(3, 3);
+    VecX g(3);
+    MatX G(3, 3);
+    VecX h(3);
+    MatX H(3, 3);
     ExtendedKalmanFilter ekf;
     std::ofstream output_file;
     std::default_random_engine rgen;
@@ -213,66 +213,66 @@ int testExtendedKalmanFilter(void)
     return 0;
 }
 
-static VecXf update_state(VecXf x, VecXf u, MatXf R, float dt)
-{
-    VecXf x_p;
-    VecXf gaussian_noise(3);
-    std::default_random_engine rgen;
-    std::normal_distribution<float> norm_x(0, pow(R(0, 0), 2));
-    std::normal_distribution<float> norm_y(0, pow(R(1, 1), 2));
-    std::normal_distribution<float> norm_theta(0, pow(R(2, 2), 2));
+// static VecX update_state(VecX x, VecX u, MatX R, float dt)
+// {
+//     VecX x_p;
+//     VecX gaussian_noise(3);
+//     std::default_random_engine rgen;
+//     std::normal_distribution<float> norm_x(0, pow(R(0, 0), 2));
+//     std::normal_distribution<float> norm_y(0, pow(R(1, 1), 2));
+//     std::normal_distribution<float> norm_theta(0, pow(R(2, 2), 2));
+//
+//     gaussian_noise << norm_x(rgen), norm_y(rgen), norm_theta(rgen);
+//     x_p << x(0) + u(0) * cos(x(2)) * dt,
+//            x(1) + u(0) * sin(x(2)) * dt,
+//            x(2) + u(1) * dt;
+//     x_p += gaussian_noise;
+//
+//     return x_p;
+// }
+//
+// static VecX create_hypothesis(VecX x_p)
+// {
+//     MatX I;
+//     VecX hx_p;
+//
+//     I = Eigen::MatrixXf::Identity(3, 3);
+//     hx_p = I * x_p;
+//
+//     return hx_p;
+// }
 
-    gaussian_noise << norm_x(rgen), norm_y(rgen), norm_theta(rgen);
-    x_p << x(0) + u(0) * cos(x(2)) * dt,
-           x(1) + u(0) * sin(x(2)) * dt,
-           x(2) + u(1) * dt;
-    x_p += gaussian_noise;
-
-    return x_p;
-}
-
-static VecXf create_hypothesis(VecXf x_p)
-{
-    MatXf I;
-    VecXf hx_p;
-
-    I = Eigen::MatrixXf::Identity(3, 3);
-    hx_p = I * x_p;
-
-    return hx_p;
-}
-
-int testParticleFilterUpdate(void)
-{
-    float dt;
-    VecXf x(3);
-    VecXf mu(3);
-    ParticleFilter pf;
-    std::ofstream output_file;
-
-    // setup
-    dt = 0.01;
-    x << 0, 0, 0;
-    mu << 0, 0, 0;
-    pf.init(100, mu);
-    prepareOutputFile(output_file, TEST_PF_OUTPUT_FILE);
-
-    // loop
-    for (int i = 0; i < 100; i++) {
-
-
-
-    }
-    output_file.close();
-
-    return 0;
-}
+// int testParticleFilterUpdate(void)
+// {
+//     float dt;
+//     VecX x(3);
+//     VecX mu(3);
+//     ParticleFilter pf;
+//     std::ofstream output_file;
+//
+//     // setup
+//     dt = 0.01;
+//     x << 0, 0, 0;
+//     mu << 0, 0, 0;
+//     pf.init(100, mu);
+//     prepareOutputFile(output_file, TEST_PF_OUTPUT_FILE);
+//
+//     // loop
+//     for (int i = 0; i < 100; i++) {
+//
+//
+//
+//     }
+//     output_file.close();
+//
+//     return 0;
+// }
 
 void test_suite(void)
 {
     mu_add_test(testKalmanFilter);
     mu_add_test(testExtendedKalmanFilter);
-    mu_add_test(testParticleFilterUpdate);
+    // mu_add_test(testParticleFilterUpdate);
 }
 
 mu_run_tests(test_suite)

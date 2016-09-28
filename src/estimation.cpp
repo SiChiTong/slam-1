@@ -7,7 +7,7 @@ KalmanFilter::KalmanFilter(void)
     this->initialized = false;
 }
 
-int KalmanFilter::init(VecXf mu, MatXf R, MatXf C, MatXf Q)
+int KalmanFilter::init(VecX mu, MatX R, MatX C, MatX Q)
 {
     int nb_states;
 
@@ -15,23 +15,23 @@ int KalmanFilter::init(VecXf mu, MatXf R, MatXf C, MatXf Q)
     this->initialized = true;
     this->mu = mu;
 
-    this->B = MatXf::Zero(nb_states, nb_states);
+    this->B = MatX::Zero(nb_states, nb_states);
     this->R = R;
 
     this->C = C;
     this->Q = Q;
 
-    this->S = MatXf::Identity(nb_states, nb_states);
-    this->I = MatXf::Identity(nb_states, nb_states);
-    this->K = MatXf::Zero(nb_states, nb_states);
+    this->S = MatX::Identity(nb_states, nb_states);
+    this->I = MatX::Identity(nb_states, nb_states);
+    this->K = MatX::Zero(nb_states, nb_states);
 
-    this->mu_p = VecXf::Zero(nb_states);
-    this->S_p = MatXf::Zero(nb_states, nb_states);
+    this->mu_p = VecX::Zero(nb_states);
+    this->S_p = MatX::Zero(nb_states, nb_states);
 
     return 0;
 }
 
-int KalmanFilter::estimate(MatXf A, VecXf y)
+int KalmanFilter::estimate(MatX A, VecX y)
 {
     // prediction update
     mu_p = A * mu;
@@ -53,7 +53,7 @@ ExtendedKalmanFilter::ExtendedKalmanFilter(void)
     this->initialized = false;
 }
 
-int ExtendedKalmanFilter::init(VecXf mu, MatXf R, MatXf Q)
+int ExtendedKalmanFilter::init(VecX mu, MatX R, MatX Q)
 {
     int nb_states;
 
@@ -64,17 +64,17 @@ int ExtendedKalmanFilter::init(VecXf mu, MatXf R, MatXf Q)
     this->R = R;
     this->Q = Q;
 
-    this->S = MatXf::Identity(nb_states, nb_states);
-    this->I = MatXf::Identity(nb_states, nb_states);
-    this->K = MatXf::Zero(nb_states, nb_states);
+    this->S = MatX::Identity(nb_states, nb_states);
+    this->I = MatX::Identity(nb_states, nb_states);
+    this->K = MatX::Zero(nb_states, nb_states);
 
-    this->mu_p = VecXf::Zero(nb_states);
-    this->S_p = MatXf::Zero(nb_states, nb_states);
+    this->mu_p = VecX::Zero(nb_states);
+    this->S_p = MatX::Zero(nb_states, nb_states);
 
     return 0;
 }
 
-int ExtendedKalmanFilter::predictionUpdate(VecXf g, MatXf G)
+int ExtendedKalmanFilter::predictionUpdate(VecX g, MatX G)
 {
     mu_p = g;
     S_p = G * S * G.transpose() + R;
@@ -82,7 +82,7 @@ int ExtendedKalmanFilter::predictionUpdate(VecXf g, MatXf G)
     return 0;
 }
 
-int ExtendedKalmanFilter::measurementUpdate(VecXf h, MatXf H, VecXf y)
+int ExtendedKalmanFilter::measurementUpdate(VecX h, MatX H, VecX y)
 {
     K = S_p * H.transpose() * (H * S_p * H.transpose() + Q).inverse();
     mu = mu_p + K * (y - h);
@@ -99,7 +99,7 @@ ParticleFilter::ParticleFilter(void)
     this->initialized = false;
 }
 
-int ParticleFilter::init(int M, VecXf mu)
+int ParticleFilter::init(int M, VecX mu)
 {
     int nb_states;
 
@@ -108,16 +108,16 @@ int ParticleFilter::init(int M, VecXf mu)
     this->M = M;
     this->mu = mu;
 
-    // this->mu_p = VecXf::Zero(nb_states);
-    // this->S_p = MatXf::Zero(nb_states, nb_states);
+    // this->mu_p = VecX::Zero(nb_states);
+    // this->S_p = MatX::Zero(nb_states, nb_states);
 
     return 0;
 }
 
 int ParticleFilter::estimate(
-    std::vector<VecXf> X_p,
-    std::vector<VecXf> hX_p,
-    VecXf y
+    std::vector<VecX> X_p,
+    std::vector<VecX> hX_p,
+    VecX y
 )
 {
 //     // % sampling
@@ -144,8 +144,8 @@ int ParticleFilter::estimate(
 //
 //     }
 
-    VecXf x_p;
-    VecXf hx_p;
+    VecX x_p;
+    VecX hx_p;
 
     for (int i = 0; i < this->M; i++) {
         x_p = X_p[i];

@@ -12,7 +12,7 @@ void SymMath::outputMotionModelJacobian(
     // setup
     output_file.open(file_path);
     output_file << GiNaC::csrc;  // make GiNaC output C for expressions
-    output_file << "MatXf G";
+    output_file << "MatX G";
     output_file << "(" << states.size();
     output_file << ", " << states.size();
     output_file << ");" << std::endl;
