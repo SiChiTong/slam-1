@@ -21,7 +21,7 @@ int Chessboard::configure(int nb_corners_rows, int nb_corners_columns)
     this->nb_corners_total = nb_corners_rows * nb_corners_columns;
     this->board_size = cv::Size(nb_corners_rows, nb_corners_columns);
 
-	return 0;
+    return 0;
 }
 
 
@@ -31,6 +31,9 @@ Calibration::Calibration(void)
 {
     this->configured = false;
     this->nb_samples = 0;
+    this->nb_max_samples = 10;
+    this->calibration_path = "./";
+    this->image_points.clear();
 }
 
 int Calibration::configure(
@@ -40,10 +43,8 @@ int Calibration::configure(
 )
 {
     int retval;
-    int total_corners;
 
     // setup
-    total_corners = nb_samples * chessboard.nb_corners_total;
     rmtrailslash(calibration_path);
 
     // mkdir calibration directory
@@ -52,16 +53,16 @@ int Calibration::configure(
         switch (errno) {
         case EACCES:
             LOG_ERROR(ECALIBDIRPERM, calibration_path.c_str());
-			break;
+            break;
         case ENOTDIR:
             LOG_ERROR(ECALIBNOTDIR, calibration_path.c_str());
-			break;
+            break;
         case EEXIST:
             LOG_ERROR(ECALIBDIREXIST, calibration_path.c_str());
-			break;
-		default:
+            break;
+        default:
             LOG_ERROR(ECALIBDIR, calibration_path.c_str());
-			break;
+            break;
         }
         return -1;
     }
@@ -71,31 +72,14 @@ int Calibration::configure(
     this->nb_samples = 0;
     this->nb_max_samples = nb_max_samples;
     this->calibration_path = calibration_path;
-
-    this->image_points = cv::Mat(total_corners, 2, CV_32FC1);
-    this->object_points = cv::Mat(total_corners, 3, CV_32FC1);
-    this->point_counts = cv::Mat(nb_samples, 1, CV_32SC1);
-    this->intrinsic_matrix = cv::Mat(3, 3, CV_32FC1);
-    this->distortion_coeffs = cv::Mat(5, 1, CV_32FC1);
-
-	return 0;
-}
-
-int Calibration::saveImage(cv::Mat &image)
-{
-    std::string image_path;
-
-    image_path = this->calibration_path + "/";
-    image_path += "calib_" + std::to_string(this->nb_samples) + ".jpg";
-    cv::imwrite(image_path, image);
-    this->nb_samples++;
+    this->image_points.clear();
 
     return 0;
 }
 
 bool Calibration::findChessboardCorners(
     cv::Mat &image,
-    std::vector<cv::Point2f> &detected_corners
+    std::vector<cv::Point2f> &image_points
 )
 {
     int flags;
@@ -103,7 +87,7 @@ bool Calibration::findChessboardCorners(
     cv::Mat image_gray;
 
     // setup
-    detected_corners.clear();
+    image_points.clear();
 
     // detect chessboard corners
     flags = cv::CALIB_CB_ADAPTIVE_THRESH;
@@ -112,7 +96,7 @@ bool Calibration::findChessboardCorners(
     corners_found = cv::findChessboardCorners(
         image,
         this->chessboard.board_size,
-        detected_corners,
+        image_points,
         flags
     );
 
@@ -120,11 +104,37 @@ bool Calibration::findChessboardCorners(
     cv::drawChessboardCorners(
         image,
         this->chessboard.board_size,
-        detected_corners,
+        image_points,
         corners_found
     );
 
     return corners_found;
+}
+
+int Calibration::saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points)
+{
+    std::string image_path;
+
+    // pre-check
+    if ((int) image_points.size() != this->chessboard.nb_corners_total) {
+        LOG_WARN("failed to detect complete chessboard!");
+        return -1;
+    } else if (nb_samples >= nb_max_samples) {
+        LOG_ERROR("max calibration samples captured!");
+        return -2;
+    }
+
+    // save image
+    LOG_INFO("captured image [%d]", this->nb_samples);
+    image_path = this->calibration_path + "/";
+    image_path += "sample_" + std::to_string(this->nb_samples) + ".jpg";
+    cv::imwrite(image_path, image);
+
+    // record image points
+    this->image_points.push_back(image_points);
+    this->nb_samples++;
+
+    return 0;
 }
 
 // void Calibration::calibrate(

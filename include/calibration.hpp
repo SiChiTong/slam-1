@@ -42,13 +42,7 @@ public:
     int nb_samples;
     int nb_max_samples;
     std::string calibration_path;
-
-    cv::Mat image_points;
-    cv::Mat object_points;
-    cv::Mat point_counts;
-
-    cv::Mat intrinsic_matrix;
-    cv::Mat distortion_coeffs;
+	std::vector<std::vector<cv::Point2f>> image_points;
 
     Calibration(void);
     int configure(
@@ -56,18 +50,16 @@ public:
         Chessboard &chessboard,
         int nb_max_samples
     );
-    int saveImage(cv::Mat &image);
     bool findChessboardCorners(
         cv::Mat &image,
-        std::vector<cv::Point2f> &detected_corners
-    );
+        std::vector<cv::Point2f> &image_points
+	);
+    int saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points);
     void calibrate(
         std::vector<std::vector<cv::Point3f>> object_points,
         std::vector<std::vector<cv::Point2f>> image_points,
         cv::Size image_size
     );
-
-
 };
 
 

@@ -32,3 +32,9 @@ int Camera::configure(int capture_index, int image_width, int image_height)
 
     return 0;
 }
+
+int Camera::getFrame(cv::Mat &image)
+{
+	this->capture->read(image);
+	return 0;
+}
