@@ -29,6 +29,7 @@ ADD_LIBRARY(
     slam
     src/calibration.cpp
     src/camera.cpp
+    src/detector.cpp
     src/estimation.cpp
     src/matcher.cpp
     src/model.cpp
@@ -71,6 +72,9 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/utils)
 
 ADD_EXECUTABLE(calibration utils/calibration.cpp)
 TARGET_LINK_LIBRARIES(calibration ${DEPS})
+
+ADD_EXECUTABLE(optical_flow utils/optical_flow.cpp)
+TARGET_LINK_LIBRARIES(optical_flow ${DEPS})
 
 ADD_EXECUTABLE(video_capture utils/video_capture.cpp)
 TARGET_LINK_LIBRARIES(video_capture ${DEPS})

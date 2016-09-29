@@ -15,17 +15,17 @@
 class CameraConfig
 {
 public:
-	int camera_index;
-	int image_width;
-	int image_height;
+    int camera_index;
+    int image_width;
+    int image_height;
 
-	float exposure;
-	float gain;
+    float exposure;
+    float gain;
 
-	cv::Mat camera_matrix;
-	cv::Mat rectification_matrix;
-	cv::Mat distortion_coefficients;
-	cv::Mat projection_matrix;
+    cv::Mat camera_matrix;
+    cv::Mat rectification_matrix;
+    cv::Mat distortion_coefficients;
+    cv::Mat projection_matrix;
 };
 
 
@@ -41,7 +41,7 @@ public:
 
     Camera(void);
     int configure(int capture_index, int image_width, int image_height);
-	int getFrame(cv::Mat &image);
+    int getFrame(cv::Mat &image);
 };
 
 

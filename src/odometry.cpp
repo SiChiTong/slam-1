@@ -11,12 +11,12 @@ int VisualOdometry::configure(void)
     this->configured = true;
 
     this->focal_length = 1.0;
-    this->principle_point = cv::Point2f(0, 0);
+    this->principle_point = cv::Point2f(0.0, 0.0);
 
     return 0;
 }
 
-void VisualOdometry::featureTracking(
+int VisualOdometry::featureTracking(
     cv::Mat img_1,
     cv::Mat img_2,
     std::vector<cv::Point2f> &pts_1,
@@ -24,21 +24,26 @@ void VisualOdometry::featureTracking(
     std::vector<uchar> &status
 )
 {
+    int correlation_index;
     std::vector<float> err;
+    cv::Point2f pt;
     cv::Size win_size;
     cv::TermCriteria term_crit;
 
     // pre-check
     if (this->configured == false) {
-        LOG_ERROR("VisualOdometry is not configured!\n");
+        return -1;
+    } else if (pts_1.size() == 0 || pts_2.size() == 0) {
+        return -2;
     }
 
     // setup
+    correlation_index = 0;
     win_size = cv::Size(21, 21);
     term_crit = cv::TermCriteria(
         cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
-        30,
-        0.01
+        20,
+        0.3
     );
 
     // optical flow
@@ -58,12 +63,11 @@ void VisualOdometry::featureTracking(
 
     // get rid of points for which the KLT tracking failed or those who
     // have gone outside the frame
-    int correlation_index = 0;
-    for (int i=0; i < (int) status.size(); i++) {
-        cv::Point2f pt = pts_2.at(i - correlation_index);
+    for (int i = 0; i < (int) status.size(); i++) {
+        pt = pts_2.at(i - correlation_index);
 
-        if ((status.at(i) == 0)||(pt.x<0)||(pt.y<0)) {
-            if((pt.x<0)||(pt.y<0))    {
+        if ((status.at(i) == 0) || (pt.x < 0) || (pt.y < 0)) {
+            if ((pt.x < 0) || (pt.y < 0)) {
                 status.at(i) = 0;
             }
             pts_1.erase(pts_1.begin() + i - correlation_index);
@@ -71,101 +75,77 @@ void VisualOdometry::featureTracking(
             correlation_index++;
         }
     }
+
 }
 
-// void VisualOdometry::measure(void)
-// {
-//     cv::findEssentialMat(
-//         pts_2,
-//         pts_1,
-//         this->focal_length,
-//         this->principle_point,
-//         cv::RANSAC,  // outlier rejection method
-//         0.999,  // threshold
-//         1.0,  // confidence level
-//         mask  // output array of N elements
-//     );
-//     cv::recoverPose(
-//         this->E,
-//         pts_2,
-//         pts_1,
-//         this->R,
-//         this->t,
-//         this->focal_length,
-//         this->principle_point,
-//         mask
-//     );
-//
-//
-//     // cv::Mat image;
-//     // std::vector<cv::KeyPoint> key_pts;
-//     // std::vector<cv::Point2f> points;
-//
-//     // setup camera
-//     // camera.initFeatureDetector("FAST");
-//     // camera.initFeatureExtractor("ORB");
-//     // camera.fdetector->set("threshold", 100);
-//     // camera.fdetector->set("nonmaxSuppression", false);
-//
-//     // cv::Mat image1;
-//     // cv::Mat image2;
-//     // std::vector<cv::Point2f> pts_1;
-//     // std::vector<cv::Point2f> pts_2;
-//     // std::vector<uchar> status;
-//     //
-//     // // get frame
-//     // camera.getFrame(image);
-//     // image1 = image;
-//     //
-//     // // feature detection
-//     // camera.detectFeatures(image, key_pts);
-//     // cv::KeyPoint::convert(key_pts, pts_1, std::vector<int>());
-//     //
-//     // // loop
-//     // while (true) {
-//     //     // get frame
-//     //     camera.capture->read(image);
-//     //     image2 = image;
-//     //
-//     //     // feature detection
-//     //     camera.detectFeatures(image, key_pts);
-//     //     cv::KeyPoint::convert(key_pts, pts_2, std::vector<int>());
-//     //
-//     //     // feature tracking
-//     //     featureTracking(
-//     //         image1,
-//     //         image2,
-//     //         pts_1,
-//     //         pts_2,
-//     //         status
-//     //     );
-//     //     cv::findEssentialMat(
-//     //         pts_2,
-//     //         pts_1,
-//     //         focal,  // focal length
-//     //         pp,  // principle point of camera
-//     //         cv::RANSAC,  // method
-//     //         0.999,  // threshold
-//     //         1.0,  // confidence level
-//     //         mask  // output array of N elements
-//     //     );
-//     //     cv::recoverPose(
-//     //         E,
-//     //         pts_2,
-//     //         pts_1,
-//     //         R,
-//     //         t,
-//     //         focal,
-//     //         pp,
-//     //         mask
-//     //     );
-//     //
-//     //
-//     //     // update
-//     //     image1 = image;
-//     //     pts_1 = pts_2;
-//     //
-//     //     cv::imshow("test", image);
-//     //     cv::waitKey(1);
-//     // }
-// }
+int VisualOdometry::measure(
+    std::vector<cv::Point2f> &pts_1,
+    std::vector<cv::Point2f> &pts_2
+)
+{
+    // pre-check
+    if (this->configured == false) {
+        return -1;
+    } else if (pts_1.size() == 0 || pts_2.size() == 0) {
+        return -2;
+    }
+
+    // essential matrix
+    this->E = cv::findEssentialMat(
+        pts_2,
+        pts_1,
+        this->focal_length,
+        this->principle_point,
+        cv::RANSAC,  // outlier rejection method
+        0.999,  // threshold
+        1.0,  // confidence level
+        this->mask  // output array of N elements
+    );
+    if (this->E.rows != 3 || this->E.cols != 3) {
+        return -3;
+    }
+
+    // recover pose
+    cv::recoverPose(
+        this->E,
+        pts_2,
+        pts_1,
+        this->R,
+        this->t,
+        this->focal_length,
+        this->principle_point,
+        this->mask
+    );
+
+    return 0;
+}
+
+int VisualOdometry::displayOpticalFlow(
+    cv::Mat &image,
+    std::vector<cv::Point2f> &pts_1,
+    std::vector<cv::Point2f> &pts_2
+)
+{
+    cv::Point2f p;
+    cv::Point2f q;
+
+    // pre-check
+    if (this->configured == false) {
+        return -1;
+    }
+
+    // draw flow lines
+    for (int i = 0; i < pts_1.size(); i++) {
+        p.x = pts_1[i].x;
+        p.y = pts_1[i].y;
+
+        q.x = pts_2[i].x;
+        q.y = pts_2[i].y;
+
+        cv::line(image, p, q, cv::Scalar(0, 0, 255), 1);
+    }
+
+    // display
+    cv::imshow("Optical Flow", image);
+    cv::waitKey(1);
+}

@@ -11,6 +11,7 @@ public:
 
     double focal_length;
     cv::Point2f principle_point;
+
     cv::Mat mask;
     cv::Mat E;
     cv::Mat R;
@@ -18,14 +19,22 @@ public:
 
     VisualOdometry(void);
     int configure(void);
-    void featureTracking(
+    int featureTracking(
         cv::Mat img_1,
         cv::Mat img_2,
-        std::vector<cv::Point2f> &points1,
-        std::vector<cv::Point2f> &points2,
+        std::vector<cv::Point2f> &pts_1,
+        std::vector<cv::Point2f> &pts_2,
         std::vector<uchar> &status
     );
-    void measure(void);
+    int measure(
+        std::vector<cv::Point2f> &pts_1,
+        std::vector<cv::Point2f> &pts_2
+    );
+    int displayOpticalFlow(
+        cv::Mat &image,
+        std::vector<cv::Point2f> &pts_1,
+        std::vector<cv::Point2f> &pts_2
+    );
 };
 
 
