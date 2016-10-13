@@ -47,11 +47,12 @@ int testVisualOdometryFeatureTracking(void)
     fast.configure(20, true);
     vo.configure();
 
-    img_1 = cv::imread(TEST_IMAGE_1, CV_LOAD_IMAGE_ANYDEPTH);
-    img_2 = cv::imread(TEST_IMAGE_2, CV_LOAD_IMAGE_ANYDEPTH);
+    img_1 = cv::imread(TEST_IMAGE_1);
+    img_2 = cv::imread(TEST_IMAGE_2);
 
     fast.detect(img_1, pts_1);
     fast.detect(img_2, pts_2);
+
     vo.featureTracking(img_1, img_2, pts_1, pts_2, status);
     vo.displayOpticalFlow(img_2, pts_1, pts_2);
     cv::waitKey(2000);

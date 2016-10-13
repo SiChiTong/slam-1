@@ -92,8 +92,8 @@ int VisualOdometry::measure(
 
     // essential matrix
     this->E = cv::findEssentialMat(
-        pts_2,
         pts_1,
+        pts_2,
         this->focal_length,
         this->principle_point,
         cv::RANSAC,  // outlier rejection method
@@ -108,8 +108,8 @@ int VisualOdometry::measure(
     // recover pose
     cv::recoverPose(
         this->E,
-        pts_2,
         pts_1,
+        pts_2,
         this->R,
         this->t,
         this->focal_length,

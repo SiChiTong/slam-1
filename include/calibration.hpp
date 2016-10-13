@@ -17,6 +17,11 @@
 #define ECALIBDIREXIST "[%s] already exists!"
 #define ECALIBDIR "failed to create [%s]!"
 
+// CALIBRATION STATES
+#define IDEL 0
+#define CAPTURING 1
+#define READY_TO_CALIBRATE 2
+
 
 class Chessboard
 {
@@ -37,12 +42,17 @@ class Calibration
 {
 public:
     bool configured;
+    int state;
 
     Chessboard chessboard;
     int nb_samples;
     int nb_max_samples;
     std::string calibration_path;
-	std::vector<std::vector<cv::Point2f>> image_points;
+
+    cv::Mat camera_matrix;
+    cv::Mat distortion_coefficients;
+    std::vector<cv::Mat> rotation_vectors;
+    std::vector<cv::Mat> translation_vectors;
 
     Calibration(void);
     int configure(
@@ -52,15 +62,13 @@ public:
     );
     bool findChessboardCorners(
         cv::Mat &image,
-        std::vector<cv::Point2f> &image_points
-	);
-    int saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points);
-    void calibrate(
-        std::vector<std::vector<cv::Point3f>> object_points,
+        std::vector<cv::Point2f> &corners
+    );
+    int saveImage(cv::Mat &image, std::vector<cv::Point2f> corners);
+    int calibrate(
         std::vector<std::vector<cv::Point2f>> image_points,
         cv::Size image_size
     );
 };
-
 
 #endif

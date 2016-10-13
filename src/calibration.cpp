@@ -6,6 +6,7 @@
 Chessboard::Chessboard(void)
 {
     this->configured = false;
+
     this->nb_corners_rows = 0;
     this->nb_corners_columns = 0;
     this->nb_corners_total = 0;
@@ -30,10 +31,11 @@ int Chessboard::configure(int nb_corners_rows, int nb_corners_columns)
 Calibration::Calibration(void)
 {
     this->configured = false;
+    this->state = IDEL;
+
     this->nb_samples = 0;
     this->nb_max_samples = 10;
     this->calibration_path = "./";
-    this->image_points.clear();
 }
 
 int Calibration::configure(
@@ -72,14 +74,13 @@ int Calibration::configure(
     this->nb_samples = 0;
     this->nb_max_samples = nb_max_samples;
     this->calibration_path = calibration_path;
-    this->image_points.clear();
 
     return 0;
 }
 
 bool Calibration::findChessboardCorners(
     cv::Mat &image,
-    std::vector<cv::Point2f> &image_points
+    std::vector<cv::Point2f> &corners
 )
 {
     int flags;
@@ -87,7 +88,8 @@ bool Calibration::findChessboardCorners(
     cv::Mat image_gray;
 
     // setup
-    image_points.clear();
+    this->state = CAPTURING;
+    corners.clear();
 
     // detect chessboard corners
     flags = cv::CALIB_CB_ADAPTIVE_THRESH;
@@ -96,7 +98,7 @@ bool Calibration::findChessboardCorners(
     corners_found = cv::findChessboardCorners(
         image,
         this->chessboard.board_size,
-        image_points,
+        corners,
         flags
     );
 
@@ -104,7 +106,7 @@ bool Calibration::findChessboardCorners(
     cv::drawChessboardCorners(
         image,
         this->chessboard.board_size,
-        image_points,
+        corners,
         corners_found
     );
 
@@ -117,10 +119,11 @@ int Calibration::saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points
 
     // pre-check
     if ((int) image_points.size() != this->chessboard.nb_corners_total) {
-        LOG_WARN("failed to detect complete chessboard!");
+        LOG_INFO("failed to detect complete chessboard!");
         return -1;
     } else if (nb_samples >= nb_max_samples) {
-        LOG_ERROR("max calibration samples captured!");
+        this->state = READY_TO_CALIBRATE;
+        LOG_INFO("max calibration samples captured!");
         return -2;
     }
 
@@ -131,18 +134,49 @@ int Calibration::saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points
     cv::imwrite(image_path, image);
 
     // record image points
-    this->image_points.push_back(image_points);
     this->nb_samples++;
 
     return 0;
 }
 
-// void Calibration::calibrate(
-//     std::vector<std::vector<cv::Point3f>> object_points,
-//     std::vector<std::vector<cv::Point2f>> image_points,
-//     cv::Size image_size
-// )
-// {
-//     // cv::calibrateCamera(object_points,
-//
-// }
+int Calibration::calibrate(
+    std::vector<std::vector<cv::Point2f>> image_points,
+    cv::Size image_size
+)
+{
+    double rms;
+    bool camera_matrix_ok;
+    bool distortion_coefficients_ok;
+    std::vector<std::vector<cv::Point3f>> object_points(1);
+
+    // hard-coding the object points - assuming chessboard is origin by setting
+    // chessboard in the x-y plane (where z = 0).
+    for (int i = 0; i < chessboard.nb_corners_rows; i++) {
+        for (int j = 0; j < chessboard.nb_corners_columns; j++) {
+            object_points[0].push_back(cv::Point3f(i, j, 0.0f));
+        }
+    }
+    object_points.resize(image_points.size(), object_points[0]);
+
+    // calibrate camera
+    rms = cv::calibrateCamera(
+        object_points,
+        image_points,
+        image_size,
+        this->camera_matrix,
+        this->distortion_coefficients,
+        this->rotation_vectors,
+        this->translation_vectors
+    );
+
+    camera_matrix_ok = cv::checkRange(this->camera_matrix);
+    distortion_coefficients_ok = cv::checkRange(this->distortion_coefficients);
+    if (camera_matrix_ok && distortion_coefficients_ok) {
+        std::cout << this->camera_matrix << std::endl;
+        std::cout << std::endl;
+        std::cout << this->distortion_coefficients << std::endl;
+        return 0;
+    } else {
+        return -1;
+    }
+}

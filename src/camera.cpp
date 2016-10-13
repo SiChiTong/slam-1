@@ -14,7 +14,7 @@ Camera::Camera(void)
 int Camera::configure(int capture_index, int image_width, int image_height)
 {
     // setup
-	this->configured = true;
+    this->configured = true;
     this->capture = new cv::VideoCapture(capture_index);
     this->capture_index = capture_index;
     this->image_width = image_width;
@@ -35,6 +35,6 @@ int Camera::configure(int capture_index, int image_width, int image_height)
 
 int Camera::getFrame(cv::Mat &image)
 {
-	this->capture->read(image);
-	return 0;
+    this->capture->read(image);
+    return 0;
 }
