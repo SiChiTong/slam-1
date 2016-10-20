@@ -1,5 +1,6 @@
 #include "util.hpp"
 
+
 namespace slam {
 
 float deg2rad(float d)

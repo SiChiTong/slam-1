@@ -1,5 +1,6 @@
 #include "symmath.hpp"
 
+
 namespace slam {
 
 void SymMath::outputMotionModelJacobian(

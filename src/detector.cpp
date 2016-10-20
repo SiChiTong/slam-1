@@ -1,5 +1,6 @@
 #include "detector.hpp"
 
+
 namespace slam {
 
 // GOOD DETECTOR

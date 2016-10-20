@@ -1,5 +1,6 @@
 #include "calibration.hpp"
 
+
 namespace slam {
 
 // CHESSBOARD

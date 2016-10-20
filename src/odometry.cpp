@@ -1,5 +1,6 @@
 #include "odometry.hpp"
 
+
 namespace slam {
 
 VisualOdometry::VisualOdometry(void)
