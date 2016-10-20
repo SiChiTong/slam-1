@@ -6,6 +6,8 @@
 #include <cstdarg>
 
 
+namespace slam {
+
 /* LOG */
 #define ERROR_FORMAT "[ERROR] (%s:%d) "
 #define WARN_FORMAT "[WARN] (%s:%d) "
@@ -18,4 +20,5 @@
 #define LOG_INFO(M, ... ) \
     fprintf(stderr, INFO_FORMAT M "\n", ##__VA_ARGS__ )
 
+} // end of slam namespace
 #endif

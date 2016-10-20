@@ -1,6 +1,6 @@
 #include "calibration.hpp"
 
-
+namespace slam {
 
 // CHESSBOARD
 Chessboard::Chessboard(void)
@@ -149,6 +149,12 @@ int Calibration::calibrate(
     bool distortion_coefficients_ok;
     std::vector<std::vector<cv::Point3f>> object_points(1);
 
+    // pre-check
+    if (this->state != READY_TO_CALIBRATE) {
+        LOG_INFO("calibrator is not ready to calibrate!");
+        return -2;
+    }
+
     // hard-coding the object points - assuming chessboard is origin by setting
     // chessboard in the x-y plane (where z = 0).
     for (int i = 0; i < chessboard.nb_corners_rows; i++) {
@@ -180,3 +186,5 @@ int Calibration::calibrate(
         return -1;
     }
 }
+
+} // end of slam namespace

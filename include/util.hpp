@@ -8,10 +8,13 @@
 #include <Eigen/Geometry>
 
 
+namespace slam {
+
 // MACROS
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
 
+// TYPEDEFS
 #ifndef __EIGEN_TYPEDEF__
 #define __EIGEN_TYPEDEF__
   typedef Eigen::Vector2f Vec2;
@@ -35,4 +38,5 @@ double S(double x);
 double T(double x);
 void rmtrailslash(std::string &path);
 
+} // end of slam namespace
 #endif

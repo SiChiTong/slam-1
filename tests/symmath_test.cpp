@@ -17,7 +17,7 @@ int testSymbolicDifferentiation(void)
 
     // std::cout << P.diff(x) << std::endl;  // diff P wrt x
 
-    QuadrotorModel quad;
+    slam::QuadrotorModel quad;
 
     quad.generateMotionModelJacobian();
 

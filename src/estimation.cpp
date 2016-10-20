@@ -1,5 +1,6 @@
 #include "estimation.hpp"
 
+namespace slam {
 
 // KALMAN FILTER
 KalmanFilter::KalmanFilter(void)
@@ -156,3 +157,5 @@ int ExtendedKalmanFilter::measurementUpdate(VecX h, MatX H, VecX y)
 //
 //     return 0;
 // }
+
+} // end of slam namespace

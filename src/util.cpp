@@ -1,5 +1,6 @@
 #include "util.hpp"
 
+namespace slam {
 
 float deg2rad(float d)
 {
@@ -64,3 +65,5 @@ void rmtrailslash(std::string &path)
         }
     }
 }
+
+} // end of slam namespace

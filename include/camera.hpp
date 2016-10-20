@@ -12,6 +12,8 @@
 #include "logging.hpp"
 
 
+namespace slam {
+
 class CameraConfig
 {
 public:
@@ -44,5 +46,5 @@ public:
     int getFrame(cv::Mat &image);
 };
 
-
+} // end of slam namespace
 #endif

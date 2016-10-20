@@ -9,9 +9,9 @@ int main(void)
     int retval;
     char key_pressed;
     cv::Mat image;
-    Camera camera;
-    Chessboard chessboard;
-    Calibration calibration;
+    slam::Camera camera;
+    slam::Chessboard chessboard;
+    slam::Calibration calibration;
     std::vector<cv::Point2f> corners;
     std::vector<std::vector<cv::Point2f>> image_points;
 

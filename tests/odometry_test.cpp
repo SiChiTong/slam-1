@@ -13,7 +13,7 @@ int testVisualOdometryConfigure(void);
 
 int testVisualOdometry(void)
 {
-    VisualOdometry vo;
+    slam::VisualOdometry vo;
 
     mu_check(vo.configured == false);
 
@@ -22,8 +22,8 @@ int testVisualOdometry(void)
 
 int testVisualOdometryConfigure(void)
 {
-    Camera camera;
-    VisualOdometry vo;
+    slam::Camera camera;
+    slam::VisualOdometry vo;
 
     vo.configure();
     mu_check(vo.configured == true);
@@ -37,8 +37,8 @@ int testVisualOdometryFeatureTracking(void)
     cv::Mat frame;
     cv::Mat img_1;
     cv::Mat img_2;
-    FastDetector fast;
-    VisualOdometry vo;
+    slam::FastDetector fast;
+    slam::VisualOdometry vo;
     std::vector<cv::Point2f> pts_1;
     std::vector<cv::Point2f> pts_2;
     std::vector<uchar> status;

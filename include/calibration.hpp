@@ -11,6 +11,8 @@
 #include "logging.hpp"
 
 
+namespace slam {
+
 // ERROR MESSAGES
 #define ECALIBDIRPERM "permission denied! while creating [%s]!"
 #define ECALIBNOTDIR "[%s] is not a dir!"
@@ -71,4 +73,5 @@ public:
     );
 };
 
+} // end of slam namespace
 #endif

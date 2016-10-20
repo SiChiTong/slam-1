@@ -7,6 +7,8 @@
 #include "symmath.hpp"
 
 
+namespace slam {
+
 class TwoWheelRobotModel
 {
 public:
@@ -47,4 +49,5 @@ public:
     MatX HFunc(VecX y);
 };
 
+} // end of slam namespace
 #endif

@@ -1,5 +1,6 @@
 #include "detector.hpp"
 
+namespace slam {
 
 // GOOD DETECTOR
 GoodDetector::GoodDetector(void)
@@ -65,3 +66,5 @@ int FastDetector::detect(cv::Mat &image, std::vector<cv::Point2f> &points)
 
     return 0;
 }
+
+} // end of slam namespace

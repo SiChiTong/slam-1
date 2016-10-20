@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    Camera camera;
+    slam::Camera camera;
     cv::Mat image;
 
     int fps;

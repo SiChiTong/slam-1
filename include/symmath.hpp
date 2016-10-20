@@ -8,6 +8,8 @@
 #include <ginac/ginac.h>
 
 
+namespace slam {
+
 class SymMath
 {
 public:
@@ -18,4 +20,5 @@ public:
     );
 };
 
+} // end of slam namespace
 #endif

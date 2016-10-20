@@ -1,6 +1,8 @@
 #include "camera.hpp"
 
 
+namespace slam {
+
 Camera::Camera(void)
 {
     this->configured = false;
@@ -38,3 +40,5 @@ int Camera::getFrame(cv::Mat &image)
     this->capture->read(image);
     return 0;
 }
+
+} // end of slam namespace

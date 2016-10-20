@@ -8,6 +8,8 @@
 #include <opencv2/features2d/features2d.hpp>
 
 
+namespace slam {
+
 class GoodDetector
 {
 public:
@@ -42,4 +44,5 @@ public:
     int detect(cv::Mat &image, std::vector<cv::Point2f> &points);
 };
 
+} // end of slam namespace
 #endif

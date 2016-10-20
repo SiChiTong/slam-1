@@ -4,6 +4,8 @@
 #include "camera.hpp"
 
 
+namespace slam {
+
 class VisualOdometry
 {
 public:
@@ -37,5 +39,5 @@ public:
     );
 };
 
-
+} // end of slam namespace
 #endif

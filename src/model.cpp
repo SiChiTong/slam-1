@@ -1,5 +1,6 @@
 #include "model.hpp"
 
+namespace slam {
 
 // TWO WHEEL ROBOT
 TwoWheelRobotModel::TwoWheelRobotModel(void)
@@ -324,3 +325,5 @@ MatX QuadrotorModel::GFunc(VecX x, VecX u, float dt)
 
     return G;
 }
+
+} // end of slam namespace

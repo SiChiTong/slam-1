@@ -1,5 +1,6 @@
 #include "symmath.hpp"
 
+namespace slam {
 
 void SymMath::outputMotionModelJacobian(
     std::string file_path,
@@ -33,3 +34,5 @@ void SymMath::outputMotionModelJacobian(
     std::cout << GiNaC::dflt;  // revert GiNaC output to default
     output_file.close();
 }
+
+} // end of slam namespace

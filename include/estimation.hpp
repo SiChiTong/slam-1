@@ -7,6 +7,7 @@
 #include "util.hpp"
 
 
+namespace slam {
 
 class KalmanFilter
 {
@@ -81,4 +82,5 @@ public:
     );
 };
 
+} // end of slam namespace
 #endif

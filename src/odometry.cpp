@@ -1,5 +1,6 @@
 #include "odometry.hpp"
 
+namespace slam {
 
 VisualOdometry::VisualOdometry(void)
 {
@@ -149,3 +150,5 @@ int VisualOdometry::displayOpticalFlow(
     cv::imshow("Optical Flow", image);
     cv::waitKey(1);
 }
+
+} // end of slam namespace

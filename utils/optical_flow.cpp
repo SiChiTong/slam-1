@@ -11,9 +11,9 @@ int main(void)
     std::vector<cv::Point2f> pts_2;
     std::vector<uchar> status;
 
-    Camera camera;
-    VisualOdometry vo;
-    FastDetector fast;
+    slam::Camera camera;
+    slam::VisualOdometry vo;
+    slam::FastDetector fast;
 
     // setup
     vo.configure();

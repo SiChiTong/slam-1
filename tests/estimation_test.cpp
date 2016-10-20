@@ -16,8 +16,8 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path);
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Vec3 mea,
-    Vec3 est
+    slam::Vec3 mea,
+    slam::Vec3 est
 );
 int testKalmanFilter(void);
 int testExtendedKalmanFilter(void);
@@ -44,8 +44,8 @@ int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 void recordTimeStep(
     std::ofstream &output_file,
     int i,
-    Vec3 mea,
-    Vec3 est
+    slam::Vec3 mea,
+    slam::Vec3 est
 )
 {
     // record true state x, y, z
@@ -64,20 +64,20 @@ int testKalmanFilter(void)
 {
     float dt;
 
-    KalmanFilter kf;
-    Vec3 pos;
-    Vec3 vel;
-    Vec3 acc;
-    VecX state(9);
-    VecX mu(9);
-    MatX A(9, 9);
-    MatX R(9, 9);
-    MatX C(3, 9);
-    MatX Q(3, 3);
-    VecX y(3);
-    VecX motion_noise(3);
-    Vec3 mea;
-    Vec3 est;
+    slam::KalmanFilter kf;
+    slam::Vec3 pos;
+    slam::Vec3 vel;
+    slam::Vec3 acc;
+    slam::VecX state(9);
+    slam::VecX mu(9);
+    slam::MatX A(9, 9);
+    slam::MatX R(9, 9);
+    slam::MatX C(3, 9);
+    slam::MatX Q(3, 3);
+    slam::VecX y(3);
+    slam::VecX motion_noise(3);
+    slam::Vec3 mea;
+    slam::Vec3 est;
     std::ofstream output_file;
     std::default_random_engine rgen;
     std::normal_distribution<float> norm_x(0, 0.5);
@@ -148,23 +148,23 @@ int testKalmanFilter(void)
 int testExtendedKalmanFilter(void)
 {
     float dt;
-    VecX x(3);
-    VecX y(3);
-    VecX gaussian_noise(3);
-    VecX mu(3);
-    VecX u(3);
-    MatX R(3, 3);
-    MatX Q(3, 3);
-    VecX g(3);
-    MatX G(3, 3);
-    VecX h(3);
-    MatX H(3, 3);
-    ExtendedKalmanFilter ekf;
+    slam::VecX x(3);
+    slam::VecX y(3);
+    slam::VecX gaussian_noise(3);
+    slam::VecX mu(3);
+    slam::VecX u(3);
+    slam::MatX R(3, 3);
+    slam::MatX Q(3, 3);
+    slam::VecX g(3);
+    slam::MatX G(3, 3);
+    slam::VecX h(3);
+    slam::MatX H(3, 3);
+    slam::ExtendedKalmanFilter ekf;
     std::ofstream output_file;
     std::default_random_engine rgen;
     std::normal_distribution<float> norm_x(0, pow(0.5, 2));
     std::normal_distribution<float> norm_y(0, pow(0.5, 2));
-    std::normal_distribution<float> norm_theta(0, pow(deg2rad(0.5), 2));
+    std::normal_distribution<float> norm_theta(0, pow(slam::deg2rad(0.5), 2));
 
     // setup
     dt = 0.01;
@@ -172,10 +172,10 @@ int testExtendedKalmanFilter(void)
     mu << 0, 0, 0;
     R << pow(0.05, 2), 0, 0,
          0, pow(0.05, 2), 0,
-         0, 0, pow(deg2rad(0.5), 2);
+         0, 0, pow(slam::deg2rad(0.5), 2);
     Q << pow(0.5, 2), 0, 0,
          0, pow(0.5, 2), 0,
-         0, 0, pow(deg2rad(10), 2);
+         0, 0, pow(slam::deg2rad(10), 2);
     u << -15.5, -10.5, 1.5;
     ekf.init(mu, R, Q);
     prepareOutputFile(output_file, TEST_EKF_OUTPUT_FILE);

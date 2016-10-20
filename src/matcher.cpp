@@ -1,5 +1,6 @@
 #include "matcher.hpp"
 
+namespace slam {
 
 //     cv::drawKeypoints(
 //         image,
@@ -67,3 +68,4 @@
 //
 //     return 0;
 // }
+} // end of slam namespace
