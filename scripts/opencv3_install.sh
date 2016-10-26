@@ -43,7 +43,7 @@ install_dependencies()
 
 download_opencv()
 {
-    mkdir /usr/local/src/opencv
+    mkdir -p /usr/local/src/opencv
     cd /usr/local/src/opencv
     wget $OPENCV_URL -O opencv-3.0.0-alpha.zip
     unzip opencv-3.0.0-alpha.zip
@@ -55,7 +55,7 @@ install_opencv()
     # compile and install opencv
     cd /usr/local/src/opencv
     cd opencv-3.0.0-alpha
-    mkdir build
+    mkdir -p build
     cd build
     cmake \
         -D CMAKE_BUILD_TYPE=RELEASE \
@@ -66,12 +66,12 @@ install_opencv()
         -D WITH_OPENGL=ON ..
     make -j 4
 
-    sudo make install
+    # sudo make install
 }
 
 
 
 # MAIN
 install_dependencies
-download_opencv
+#download_opencv
 install_opencv

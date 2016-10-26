@@ -40,8 +40,35 @@ public:
 
     FastDetector(void);
     int configure(int threshold, bool nonmax_suppression);
-    int detect(cv::Mat &image, std::vector<cv::KeyPoint> &key_points);
+    int detect(cv::Mat &image, std::vector<cv::KeyPoint> &keypoints);
     int detect(cv::Mat &image, std::vector<cv::Point2f> &points);
+};
+
+
+class ORB
+{
+public:
+    bool configured;
+
+    int nb_features;
+    float scale_factor;
+    int nb_levels;
+    int edge_threshold;
+    int first_level;
+    int wta_k;
+    int score_type;
+    int patch_size;
+
+    cv::ORB detector;
+
+    ORB(void);
+    int configure(void);
+    int detect(cv::Mat &image, std::vector<cv::KeyPoint> &keypoints);
+    int compute(
+        cv::Mat &image,
+        std::vector<cv::KeyPoint> &keypoints,
+        cv::Mat &descriptors
+    );
 };
 
 } // end of slam namespace

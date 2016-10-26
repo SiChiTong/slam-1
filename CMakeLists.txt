@@ -5,22 +5,42 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
     ADD_DEFINITIONS(-std=gnu++0x)
 ENDIF()
 
-
-# PREREQUISITS
-FIND_PACKAGE(OpenCV 3.0.0 REQUIRED)
-
+# OPENCV3
+SET(OPENCV3_PATH /usr/local/opencv3)
+SET(
+    OPENCV3_LIBS
+    ${OPENCV3_PATH}/lib/libopencv_calib3d.so
+    ${OPENCV3_PATH}/lib/libopencv_core.so
+    ${OPENCV3_PATH}/lib/libopencv_features2d.so
+    ${OPENCV3_PATH}/lib/libopencv_flann.so
+    ${OPENCV3_PATH}/lib/libopencv_highgui.so
+    ${OPENCV3_PATH}/lib/libopencv_imgcodecs.so
+    ${OPENCV3_PATH}/lib/libopencv_imgproc.so
+    ${OPENCV3_PATH}/lib/libopencv_ml.so
+    ${OPENCV3_PATH}/lib/libopencv_objdetect.so
+    ${OPENCV3_PATH}/lib/libopencv_photo.so
+    ${OPENCV3_PATH}/lib/libopencv_shape.so
+    ${OPENCV3_PATH}/lib/libopencv_stitching.so
+    ${OPENCV3_PATH}/lib/libopencv_superres.so
+    ${OPENCV3_PATH}/lib/libopencv_ts.a
+    ${OPENCV3_PATH}/lib/libopencv_video.so
+    ${OPENCV3_PATH}/lib/libopencv_videoio.so
+    ${OPENCV3_PATH}/lib/libopencv_videostab.so
+    ${OPENCV3_PATH}/lib/libopencv_viz.so
+)
 
 # LIBS
 LINK_DIRECTORIES(
-    /usr/local/lib
     /usr/lib
+    /usr/local/lib
+    /usr/local/opencv3/lib
 )
 
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/local/include
+    /usr/local/opencv3/include
     /usr/include/eigen3
-    ${OpenCV_INCLUDE_DIRS}
     ./include
 )
 
@@ -29,7 +49,7 @@ ADD_LIBRARY(
     slam
     src/calibration.cpp
     src/camera.cpp
-    src/detector.cpp
+    src/feature.cpp
     src/estimation.cpp
     src/matcher.cpp
     src/model.cpp
@@ -40,8 +60,8 @@ ADD_LIBRARY(
 SET(
     DEPS
     slam
-    ${OpenCV_LIBS}
     ginac
+    ${OPENCV3_LIBS}
 )
 
 
@@ -72,6 +92,9 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/utils)
 
 ADD_EXECUTABLE(calibration utils/calibration.cpp)
 TARGET_LINK_LIBRARIES(calibration ${DEPS})
+
+ADD_EXECUTABLE(feature_demo utils/feature_demo.cpp)
+TARGET_LINK_LIBRARIES(feature_demo ${DEPS})
 
 ADD_EXECUTABLE(optical_flow utils/optical_flow.cpp)
 TARGET_LINK_LIBRARIES(optical_flow ${DEPS})

@@ -1,6 +1,6 @@
 #include "munit.hpp"
 #include "odometry.hpp"
-#include "detector.hpp"
+#include "feature.hpp"
 
 #define TEST_IMAGE_1 "tests/test_data/sample_0.jpg"
 #define TEST_IMAGE_2 "tests/test_data/sample_1.jpg"
