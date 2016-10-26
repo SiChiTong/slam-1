@@ -61,6 +61,7 @@ SET(
     DEPS
     slam
     ginac
+    yaml-cpp
     ${OPENCV3_LIBS}
 )
 
@@ -73,6 +74,9 @@ SET(TEST_DEST ${CMAKE_BINARY_DIR}/tests)
 # UNIT TESTS
 FILE(COPY tests/test_data DESTINATION ${TEST_DEST})
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
+
+ADD_EXECUTABLE(calibration_test tests/calibration_test.cpp)
+TARGET_LINK_LIBRARIES(calibration_test ${DEPS})
 
 ADD_EXECUTABLE(camera_test tests/camera_test.cpp)
 TARGET_LINK_LIBRARIES(camera_test ${DEPS})
