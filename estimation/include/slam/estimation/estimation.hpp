@@ -4,7 +4,7 @@
 #include <iostream>
 #include <functional>
 
-#include "util.hpp"
+#include "slam/utils/utils.hpp"
 
 
 namespace slam {

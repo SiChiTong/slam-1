@@ -19,5 +19,8 @@ ADD_SUBDIRECTORY(odometry)
 INCLUDE_DIRECTORIES(kinematics/include)
 ADD_SUBDIRECTORY(kinematics)
 
+INCLUDE_DIRECTORIES(estimation/include)
+ADD_SUBDIRECTORY(estimation)
+
 INCLUDE_DIRECTORIES(symmath/include)
 ADD_SUBDIRECTORY(symmath)

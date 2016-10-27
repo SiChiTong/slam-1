@@ -27,10 +27,18 @@ ADD_LIBRARY(
     STATIC
     src/estimation.cpp
 )
+SET(
+    DEPS
+    slam_estimation
+    slam_kinematics
+    slam_utils
+    ginac
+    ${OPENCV3_LIBS}
+)
 
 
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 
-ADD_EXECUTABLE(esitmation_test tests/esitmation_test.cpp)
-TARGET_LINK_LIBRARIES(esitmation_test ${DEPS})
+ADD_EXECUTABLE(estimation_test tests/estimation_test.cpp)
+TARGET_LINK_LIBRARIES(estimation_test ${DEPS})
