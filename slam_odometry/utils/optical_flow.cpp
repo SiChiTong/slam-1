@@ -1,5 +1,5 @@
 #include "slam/odometry/odometry.hpp"
-#include "slam/feature/feature.hpp"
+#include "slam/feature/fast.hpp"
 
 
 int main(void)

@@ -2,7 +2,6 @@
 #include "slam/camera/camera.hpp"
 
 
-
 // TESTS
 int testCamera(void);
 int testCameraConfigure(void);
@@ -40,17 +39,10 @@ int testCameraConfigure(void)
     return 0;
 }
 
-int testSandBox(void)
-{
-
-    return 0;
-}
-
 void testSuite(void)
 {
-    // mu_add_test(testCamera);
+    mu_add_test(testCamera);
     // mu_add_test(testCameraConfigure);
-    mu_add_test(testSandBox);
 }
 
 mu_run_tests(testSuite)

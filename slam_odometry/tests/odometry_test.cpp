@@ -1,5 +1,5 @@
 #include "slam/utils/munit.hpp"
-#include "slam/feature/feature.hpp"
+#include "slam/feature/fast.hpp"
 #include "slam/odometry/odometry.hpp"
 
 #define TEST_IMAGE_1 "tests/data/sample_0.jpg"

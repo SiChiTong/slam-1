@@ -52,7 +52,9 @@ SET(
 ADD_LIBRARY(
     slam_feature
     STATIC
-    src/feature.cpp
+    src/fast.cpp
+    src/orb.cpp
+    src/good.cpp
 )
 SET(
     DEPS

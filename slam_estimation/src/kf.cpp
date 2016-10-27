@@ -3,7 +3,6 @@
 
 namespace slam {
 
-// KALMAN FILTER
 KalmanFilter::KalmanFilter(void)
 {
     this->initialized = false;

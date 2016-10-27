@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "slam/camera/camera.hpp"
-#include "slam/feature/feature.hpp"
+#include "slam/feature/orb.hpp"
 
 
 int main(void)
