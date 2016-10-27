@@ -10,6 +10,7 @@ ENDIF()
 INCLUDE_DIRECTORIES(
     /usr/include/
     /usr/local/include
+    include
 )
 
 

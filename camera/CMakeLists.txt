@@ -10,6 +10,7 @@ ENDIF()
 INCLUDE_DIRECTORIES(
     /usr/local/include
     /usr/local/opencv3/include
+    include
 )
 
 

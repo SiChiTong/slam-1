@@ -6,17 +6,19 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 
-# LIBS
-LINK_DIRECTORIES(
-    /usr/lib
-    /usr/local/lib
-)
-
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/include
     /usr/include/eigen3
     /usr/local/include
+    include
+)
+
+
+# LIBS
+LINK_DIRECTORIES(
+    /usr/lib
+    /usr/local/lib
 )
 
 

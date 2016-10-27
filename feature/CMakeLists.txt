@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
     /usr/include/
     /usr/local/include
     /usr/local/opencv3/include
+    include
 )
 
 

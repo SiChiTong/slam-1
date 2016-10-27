@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
     /usr/include/
     /usr/include/eigen3
     /usr/local/include
+    include
 )
 
 
