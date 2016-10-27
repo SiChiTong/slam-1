@@ -51,9 +51,9 @@ int main(void)
 
         // handle events
         key_pressed = cv::waitKey(1);
-        if (key_pressed == 27) {  // press ESC to stop
+        if (key_pressed == 27) {  // press 'ESC' to stop
             return 0;
-        } else if (key_pressed == 99) {  // capture image
+        } else if (key_pressed == 99) {  // press 'c' to capture image
             calibration.saveImage(image, corners);
         }
     }
