@@ -25,7 +25,9 @@ LINK_DIRECTORIES(
 ADD_LIBRARY(
     slam_estimation
     STATIC
-    src/estimation.cpp
+    src/kf.cpp
+    src/ekf.cpp
+    src/pf.cpp
 )
 SET(
     DEPS
@@ -40,5 +42,8 @@ SET(
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 
-ADD_EXECUTABLE(estimation_test tests/estimation_test.cpp)
-TARGET_LINK_LIBRARIES(estimation_test ${DEPS})
+ADD_EXECUTABLE(kf_test tests/kf_test.cpp)
+TARGET_LINK_LIBRARIES(kf_test ${DEPS})
+
+ADD_EXECUTABLE(ekf_test tests/ekf_test.cpp)
+TARGET_LINK_LIBRARIES(ekf_test ${DEPS})

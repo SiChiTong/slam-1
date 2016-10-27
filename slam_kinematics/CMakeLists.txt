@@ -25,7 +25,8 @@ LINK_DIRECTORIES(
 ADD_LIBRARY(
     slam_kinematics
     STATIC
-    src/model.cpp
+    src/quadrotor.cpp
+    src/twowheel.cpp
 )
 
 

@@ -1,25 +1,10 @@
-#ifndef __SLAM_MODEL_HPP__
-#define __SLAM_MODEL_HPP__
-
-#include <ginac/ginac.h>
+#ifndef __SLAM_QUADROTOR_HPP__
+#define __SLAM_QUADROTOR_HPP__
 
 #include "slam/utils/utils.hpp"
-// #include "slam/symmath.hpp"
 
 
 namespace slam {
-
-class TwoWheelRobotModel
-{
-public:
-    bool initialized;
-
-    TwoWheelRobotModel(void);
-    VecX gFunc(VecX x, VecX u, float dt);
-    MatX GFunc(VecX x, VecX u, float dt);
-    VecX hFunc(VecX x);
-    MatX HFunc(VecX y);
-};
 
 class QuadrotorModel
 {
@@ -42,7 +27,6 @@ public:
     float g;
 
     QuadrotorModel(void);
-    void generateMotionModelJacobian(void);
     VecX gFunc(VecX x, VecX u, float dt);
     MatX GFunc(VecX x, VecX u, float dt);
     VecX hFunc(VecX x);
