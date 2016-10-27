@@ -1,26 +1,67 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 PROJECT(slam)
 
-INCLUDE_DIRECTORIES(utils/include)
-ADD_SUBDIRECTORY(utils)
 
-INCLUDE_DIRECTORIES(camera/include)
-ADD_SUBDIRECTORY(camera)
+# libslam_utils.a
+INCLUDE_DIRECTORIES(slam_utils/include)
+ADD_SUBDIRECTORY(slam_utils)
 
-INCLUDE_DIRECTORIES(calibration/include)
-ADD_SUBDIRECTORY(calibration)
+# libslam_camera.a
+INCLUDE_DIRECTORIES(slam_camera/include)
+ADD_SUBDIRECTORY(slam_camera)
+ADD_DEPENDENCIES(slam_camera slam_utils)
 
-INCLUDE_DIRECTORIES(feature/include)
-ADD_SUBDIRECTORY(feature)
+# libslam_calibration.a
+INCLUDE_DIRECTORIES(slam_calibration/include)
+ADD_SUBDIRECTORY(slam_calibration)
+ADD_DEPENDENCIES(slam_calibration slam_utils slam_camera)
 
-INCLUDE_DIRECTORIES(odometry/include)
-ADD_SUBDIRECTORY(odometry)
+# libslam_feature.a
+INCLUDE_DIRECTORIES(slam_feature/include)
+ADD_SUBDIRECTORY(slam_feature)
+ADD_DEPENDENCIES(slam_feature slam_utils slam_camera)
 
-INCLUDE_DIRECTORIES(kinematics/include)
-ADD_SUBDIRECTORY(kinematics)
+# libslam_odometry.a
+INCLUDE_DIRECTORIES(slam_odometry/include)
+ADD_SUBDIRECTORY(slam_odometry)
+ADD_DEPENDENCIES(slam_odometry slam_utils slam_camera slam_feature)
 
-INCLUDE_DIRECTORIES(estimation/include)
-ADD_SUBDIRECTORY(estimation)
+# libslam_kinematics.a
+INCLUDE_DIRECTORIES(slam_kinematics/include)
+ADD_SUBDIRECTORY(slam_kinematics)
+ADD_DEPENDENCIES(slam_kinematics slam_utils)
 
-INCLUDE_DIRECTORIES(symmath/include)
-ADD_SUBDIRECTORY(symmath)
+# libslam_estimation.a
+INCLUDE_DIRECTORIES(slam_estimation/include)
+ADD_SUBDIRECTORY(slam_estimation)
+ADD_DEPENDENCIES(slam_estimation slam_utils slam_kinematics)
+
+# libslam_symath.a
+INCLUDE_DIRECTORIES(slam_symmath/include)
+ADD_SUBDIRECTORY(slam_symmath)
+ADD_DEPENDENCIES(slam_symmath slam_utils)
+
+
+# libslam.a
+ADD_CUSTOM_TARGET(
+    libslam ALL
+    COMMAND
+        ${CMAKE_AR} rc libslam.a
+            ${CMAKE_BINARY_DIR}/utils/libslam_utils.a
+            ${CMAKE_BINARY_DIR}/camera/libslam_camera.a
+            ${CMAKE_BINARY_DIR}/calibration/libslam_calibration.a
+            ${CMAKE_BINARY_DIR}/feature/libslam_feature.a
+            ${CMAKE_BINARY_DIR}/odometry/libslam_odometry.a
+            ${CMAKE_BINARY_DIR}/kinematics/libslam_kinematics.a
+            ${CMAKE_BINARY_DIR}/estimation/libslam_estimation.a
+            ${CMAKE_BINARY_DIR}/symmath/libslam_symmath.a
+    DEPENDS
+        slam_utils
+        slam_camera
+        slam_calibration
+        slam_feature
+        slam_odometry
+        slam_kinematics
+        slam_estimation
+        slam_symmath
+)
