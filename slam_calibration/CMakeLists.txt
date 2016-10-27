@@ -54,21 +54,27 @@ ADD_LIBRARY(
     slam_calibration
     STATIC
     src/calibration.cpp
+    src/chessboard.cpp
 )
 SET(
     DEPS
     slam_calibration
     slam_camera
     slam_utils
+    yaml-cpp
     ${OPENCV3_LIBS}
 )
 
 
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+FILE(COPY tests/data DESTINATION ${PROJECT_BINARY_DIR}/tests)
 
 ADD_EXECUTABLE(calibration_test tests/calibration_test.cpp)
 TARGET_LINK_LIBRARIES(calibration_test ${DEPS})
+
+ADD_EXECUTABLE(chessboard_test tests/chessboard_test.cpp)
+TARGET_LINK_LIBRARIES(chessboard_test ${DEPS})
 
 
 # UTILS

@@ -5,10 +5,17 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <iostream>
+#include <fstream>
+
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <yaml-cpp/yaml.h>
 
 #include "slam/utils/utils.hpp"
 #include "slam/utils/logging.hpp"
+#include "slam/calibration/chessboard.hpp"
 
 
 namespace slam {
@@ -24,20 +31,8 @@ namespace slam {
 #define CAPTURING 1
 #define READY_TO_CALIBRATE 2
 
-
-class Chessboard
-{
-public:
-    bool configured;
-
-    int nb_corners_rows;
-    int nb_corners_columns;
-    int nb_corners_total;
-    cv::Size board_size;
-
-    Chessboard(void);
-    int configure(int nb_corners_rows, int nb_corners_columns);
-};
+// MACROS
+#define CALIBRATION_FILENAME "calibration.yaml"
 
 
 class Calibration
@@ -49,8 +44,10 @@ public:
     Chessboard chessboard;
     int nb_samples;
     int nb_max_samples;
-    std::string calibration_path;
+    std::string save_path;
+    YAML::Emitter yaml_config;
 
+    cv::Size image_size;
     cv::Mat camera_matrix;
     cv::Mat distortion_coefficients;
     std::vector<cv::Mat> rotation_vectors;
@@ -60,6 +57,7 @@ public:
     int configure(
         std::string calibration_path,
         Chessboard &chessboard,
+        cv::Size image_size,
         int nb_max_samples
     );
     bool findChessboardCorners(
@@ -71,6 +69,7 @@ public:
         std::vector<std::vector<cv::Point2f>> image_points,
         cv::Size image_size
     );
+    int saveCalibrationOutputs(void);
 };
 
 } // end of slam namespace

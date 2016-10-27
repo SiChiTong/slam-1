@@ -2,8 +2,8 @@
 #include "slam/feature/feature.hpp"
 #include "slam/odometry/odometry.hpp"
 
-#define TEST_IMAGE_1 "tests/test_data/sample_0.jpg"
-#define TEST_IMAGE_2 "tests/test_data/sample_1.jpg"
+#define TEST_IMAGE_1 "tests/data/sample_0.jpg"
+#define TEST_IMAGE_2 "tests/data/sample_1.jpg"
 
 
 // TESTS

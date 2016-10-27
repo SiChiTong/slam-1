@@ -88,7 +88,7 @@ int VisualOdometry::measure(
     // pre-check
     if (this->configured == false) {
         return -1;
-    } else if (pts_1.size() == 0 || pts_2.size() == 0) {
+    } else if (pts_1.size() < 10 || pts_2.size() < 10) {
         return -2;
     }
 

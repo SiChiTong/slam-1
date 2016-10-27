@@ -22,7 +22,12 @@ int main(void)
         return -1;
     }
 
-    retval = calibration.configure("/tmp/calibration", chessboard, 10);
+    retval = calibration.configure(
+        "/tmp/calibration",
+        chessboard,
+        cv::Size(320, 240),
+        10
+    );
     if (retval != 0) {
         LOG_ERROR("failed to configure calibration!");
         return -1;

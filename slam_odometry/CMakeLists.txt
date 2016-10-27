@@ -67,6 +67,7 @@ SET(
 
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+FILE(COPY tests/data DESTINATION ${PROJECT_BINARY_DIR}/tests)
 
 ADD_EXECUTABLE(odometry_test tests/odometry_test.cpp)
 TARGET_LINK_LIBRARIES(odometry_test ${DEPS})

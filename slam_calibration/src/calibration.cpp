@@ -3,32 +3,6 @@
 
 namespace slam {
 
-// CHESSBOARD
-Chessboard::Chessboard(void)
-{
-    this->configured = false;
-
-    this->nb_corners_rows = 0;
-    this->nb_corners_columns = 0;
-    this->nb_corners_total = 0;
-    this->board_size = cv::Size(0, 0);
-}
-
-int Chessboard::configure(int nb_corners_rows, int nb_corners_columns)
-{
-    this->configured = true;
-
-    this->nb_corners_rows = nb_corners_rows;
-    this->nb_corners_columns = nb_corners_columns;
-    this->nb_corners_total = nb_corners_rows * nb_corners_columns;
-    this->board_size = cv::Size(nb_corners_rows, nb_corners_columns);
-
-    return 0;
-}
-
-
-
-// CALIBRATION
 Calibration::Calibration(void)
 {
     this->configured = false;
@@ -36,45 +10,47 @@ Calibration::Calibration(void)
 
     this->nb_samples = 0;
     this->nb_max_samples = 10;
-    this->calibration_path = "./";
+    this->save_path = "./";
 }
 
 int Calibration::configure(
-    std::string calibration_path,
+    std::string save_path,
     Chessboard &chessboard,
+    cv::Size image_size,
     int nb_max_samples
 )
 {
     int retval;
 
     // setup
-    rmtrailslash(calibration_path);
+    rmtrailslash(save_path);
 
     // mkdir calibration directory
-    retval = mkdir(calibration_path.c_str(), ACCESSPERMS);
+    retval = mkdir(save_path.c_str(), ACCESSPERMS);
     if (retval != 0) {
         switch (errno) {
         case EACCES:
-            LOG_ERROR(ECALIBDIRPERM, calibration_path.c_str());
+            LOG_ERROR(ECALIBDIRPERM, save_path.c_str());
             break;
         case ENOTDIR:
-            LOG_ERROR(ECALIBNOTDIR, calibration_path.c_str());
+            LOG_ERROR(ECALIBNOTDIR, save_path.c_str());
             break;
         case EEXIST:
-            LOG_ERROR(ECALIBDIREXIST, calibration_path.c_str());
+            LOG_ERROR(ECALIBDIREXIST, save_path.c_str());
             break;
         default:
-            LOG_ERROR(ECALIBDIR, calibration_path.c_str());
+            LOG_ERROR(ECALIBDIR, save_path.c_str());
             break;
         }
         return -1;
     }
 
     // initialize variables
+    this->image_size = image_size;
     this->chessboard = chessboard;
     this->nb_samples = 0;
     this->nb_max_samples = nb_max_samples;
-    this->calibration_path = calibration_path;
+    this->save_path = save_path;
 
     return 0;
 }
@@ -90,7 +66,9 @@ bool Calibration::findChessboardCorners(
 
     // setup
     this->state = CAPTURING;
-    corners.clear();
+    if (corners.size()) {
+        corners.clear();
+    }
 
     // detect chessboard corners
     flags = cv::CALIB_CB_ADAPTIVE_THRESH;
@@ -130,7 +108,7 @@ int Calibration::saveImage(cv::Mat &image, std::vector<cv::Point2f> image_points
 
     // save image
     LOG_INFO("captured image [%d]", this->nb_samples);
-    image_path = this->calibration_path + "/";
+    image_path = this->save_path + "/";
     image_path += "sample_" + std::to_string(this->nb_samples) + ".jpg";
     cv::imwrite(image_path, image);
 
@@ -186,6 +164,72 @@ int Calibration::calibrate(
     } else {
         return -1;
     }
+}
+
+static void recordMatrix(YAML::Emitter &out, cv::Mat &mat)
+{
+    // begin
+    out << YAML::BeginMap;
+
+    // rows
+    out << YAML::Key << "rows";
+    out << YAML::Value << mat.rows;
+
+    // cols
+    out << YAML::Key << "cols";
+    out << YAML::Value << mat.cols;
+
+    // data
+    out << YAML::Key << "data";
+    out << YAML::Flow << YAML::BeginSeq;
+    for (int i = 0; i < mat.rows; i++) {
+        for (int j = 0; j < mat.cols; j++) {
+            out << mat.at<float>(i, j);
+        }
+    }
+    out << YAML::EndSeq;
+
+    // end
+    out << YAML::EndMap;
+}
+
+int Calibration::saveCalibrationOutputs(void)
+{
+    std::ofstream yaml_file;
+
+    // setup
+    yaml_file.open(this->save_path + "/" + CALIBRATION_FILENAME);
+    if (yaml_file.bad()) {
+        return -1;
+    }
+
+    // begin
+    this->yaml_config << YAML::BeginMap;
+
+    // image width
+    this->yaml_config << YAML::Key << "image_width";
+    this->yaml_config << YAML::Value << this->image_size.width;
+
+    // image height
+    this->yaml_config << YAML::Key << "image_height";
+    this->yaml_config << YAML::Value << this->image_size.height;
+
+    // camera matrix
+    this->yaml_config << YAML::Key << "camera_matrix";
+    recordMatrix(this->yaml_config, this->camera_matrix);
+
+    // distortion coefficent
+    this->yaml_config << YAML::Key << "distortion_coefficient";
+    recordMatrix(this->yaml_config, this->distortion_coefficients);
+
+    // end
+    this->yaml_config << YAML::EndMap;
+
+    // output yaml to file
+    yaml_file << this->yaml_config.c_str();
+    yaml_file.close();
+
+    return 0;
 }
 
 } // end of slam namespace

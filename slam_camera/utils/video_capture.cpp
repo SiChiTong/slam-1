@@ -14,7 +14,7 @@ int main(void)
     cv::VideoWriter video_writer;
 
     // setup camera
-    retval = camera.configure(1, 640, 480);
+    retval = camera.configure(0, 640, 480);
     if (retval != 0) {
         LOG_ERROR("failed to configure camera!");
         return -1;

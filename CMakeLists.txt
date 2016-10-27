@@ -47,14 +47,14 @@ ADD_CUSTOM_TARGET(
     libslam ALL
     COMMAND
         ${CMAKE_AR} rc libslam.a
-            ${CMAKE_BINARY_DIR}/utils/libslam_utils.a
-            ${CMAKE_BINARY_DIR}/camera/libslam_camera.a
-            ${CMAKE_BINARY_DIR}/calibration/libslam_calibration.a
-            ${CMAKE_BINARY_DIR}/feature/libslam_feature.a
-            ${CMAKE_BINARY_DIR}/odometry/libslam_odometry.a
-            ${CMAKE_BINARY_DIR}/kinematics/libslam_kinematics.a
-            ${CMAKE_BINARY_DIR}/estimation/libslam_estimation.a
-            ${CMAKE_BINARY_DIR}/symmath/libslam_symmath.a
+            ${CMAKE_BINARY_DIR}/slam_utils/libslam_utils.a
+            ${CMAKE_BINARY_DIR}/slam_camera/libslam_camera.a
+            ${CMAKE_BINARY_DIR}/slam_calibration/libslam_calibration.a
+            ${CMAKE_BINARY_DIR}/slam_feature/libslam_feature.a
+            ${CMAKE_BINARY_DIR}/slam_odometry/libslam_odometry.a
+            ${CMAKE_BINARY_DIR}/slam_kinematics/libslam_kinematics.a
+            ${CMAKE_BINARY_DIR}/slam_estimation/libslam_estimation.a
+            ${CMAKE_BINARY_DIR}/slam_symmath/libslam_symmath.a
     DEPENDS
         slam_utils
         slam_camera
