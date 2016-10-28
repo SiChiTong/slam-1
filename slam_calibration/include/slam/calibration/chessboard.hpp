@@ -24,7 +24,7 @@ public:
     cv::Size board_size;
 
     Chessboard(void);
-    int configure(int nb_corners_rows, int nb_corners_columns);
+    int configure(int nb_corners_columns, int nb_corners_rows);
 };
 
 } // end of slam namespace

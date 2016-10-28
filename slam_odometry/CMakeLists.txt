@@ -61,6 +61,7 @@ SET(
     slam_feature
     slam_camera
     slam_utils
+    yaml-cpp
     ${OPENCV3_LIBS}
 )
 

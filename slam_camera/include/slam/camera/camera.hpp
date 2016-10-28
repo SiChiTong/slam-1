@@ -9,6 +9,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
+#include <yaml-cpp/yaml.h>
+
 #include "slam/utils/logging.hpp"
 
 
@@ -24,10 +26,10 @@ public:
     float exposure;
     float gain;
 
-    cv::Mat camera_matrix;
-    cv::Mat rectification_matrix;
-    cv::Mat distortion_coefficients;
-    cv::Mat projection_matrix;
+    cv::Mat camera_mat;
+    cv::Mat rectification_mat;
+    cv::Mat distortion_coef;
+    cv::Mat projection_mat;
 };
 
 
@@ -40,10 +42,16 @@ public:
     int capture_index;
     int image_width;
     int image_height;
+    cv::Mat camera_mat;
+    cv::Mat distortion_coef;
 
     Camera(void);
+    ~Camera(void);
     int configure(int capture_index, int image_width, int image_height);
+    int configure(int capture_index, std::string calibration_file);
     int getFrame(cv::Mat &image);
+    int getUndistortFrame(cv::Mat &image);
+    void close(void);
 };
 
 } // end of slam namespace

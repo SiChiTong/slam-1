@@ -138,7 +138,7 @@ int Calibration::calibrate(
     // chessboard in the x-y plane (where z = 0).
     for (int i = 0; i < chessboard.nb_corners_rows; i++) {
         for (int j = 0; j < chessboard.nb_corners_columns; j++) {
-            object_points[0].push_back(cv::Point3f(i, j, 0.0f));
+            object_points[0].push_back(cv::Point3f(j, i, 0.0f));
         }
     }
     object_points.resize(image_points.size(), object_points[0]);
@@ -157,6 +157,8 @@ int Calibration::calibrate(
     camera_matrix_ok = cv::checkRange(this->camera_matrix);
     distortion_coefficients_ok = cv::checkRange(this->distortion_coefficients);
     if (camera_matrix_ok && distortion_coefficients_ok) {
+        std::cout << "RMS: " << rms << std::endl;
+        std::cout << std::endl;
         std::cout << this->camera_matrix << std::endl;
         std::cout << std::endl;
         std::cout << this->distortion_coefficients << std::endl;
@@ -184,7 +186,7 @@ static void recordMatrix(YAML::Emitter &out, cv::Mat &mat)
     out << YAML::Flow << YAML::BeginSeq;
     for (int i = 0; i < mat.rows; i++) {
         for (int j = 0; j < mat.cols; j++) {
-            out << mat.at<float>(i, j);
+            out << mat.at<double>(i, j);
         }
     }
     out << YAML::EndSeq;
@@ -219,7 +221,7 @@ int Calibration::saveCalibrationOutputs(void)
     recordMatrix(this->yaml_config, this->camera_matrix);
 
     // distortion coefficent
-    this->yaml_config << YAML::Key << "distortion_coefficient";
+    this->yaml_config << YAML::Key << "distortion_coefficients";
     recordMatrix(this->yaml_config, this->distortion_coefficients);
 
     // end

@@ -8,6 +8,8 @@ ENDIF()
 
 # INCLUDES
 INCLUDE_DIRECTORIES(
+    /usr/include
+    /usr/include/eigen3
     /usr/local/include
     /usr/local/opencv3/include
     include
@@ -56,12 +58,14 @@ ADD_LIBRARY(
 SET(
     DEPS
     slam_camera
+    yaml-cpp
     ${OPENCV3_LIBS}
 )
 
 
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+FILE(COPY tests/data DESTINATION ${PROJECT_BINARY_DIR}/tests)
 
 ADD_EXECUTABLE(camera_test tests/camera_test.cpp)
 TARGET_LINK_LIBRARIES(camera_test ${DEPS})

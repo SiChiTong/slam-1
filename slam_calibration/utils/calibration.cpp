@@ -59,7 +59,23 @@ int main(void)
     }
 
     // calibrate
+    LOG_INFO("calibrating... (this may take some time)");
     calibration.calibrate(image_points, image.size());
+
+    LOG_INFO("saving calibration!");
+    calibration.saveCalibrationOutputs();
+
+    // while (true) {
+    //     camera.getFrame(image);
+    //     cv::undistort(
+    //         image,
+    //         image,
+    //         calibration.camera_matrix,
+    //         calibration.distortion_coefficients
+    //     );
+    //     cv::imshow("camera", image);
+    //     cv::waitKey(1);
+    // }
 
     return 0;
 }

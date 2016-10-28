@@ -9,6 +9,9 @@
 // TESTS
 int testVisualOdometry(void);
 int testVisualOdometryConfigure(void);
+int testVisualOdometryFeatureTracking(void);
+int testVisualOdometryMeasure(void);
+void testSuite(void);
 
 
 int testVisualOdometry(void)
@@ -44,7 +47,7 @@ int testVisualOdometryFeatureTracking(void)
     std::vector<uchar> status;
 
     // setup
-    fast.configure(20, true);
+    fast.configure(0, true);
     vo.configure();
 
     img_1 = cv::imread(TEST_IMAGE_1);
@@ -53,8 +56,45 @@ int testVisualOdometryFeatureTracking(void)
     fast.detect(img_1, pts_1);
     fast.detect(img_2, pts_2);
 
+    // test and assert
     vo.featureTracking(img_1, img_2, pts_1, pts_2, status);
     vo.displayOpticalFlow(img_2, pts_1, pts_2);
+    cv::waitKey(2000);
+
+    mu_check(pts_1.size() > 0);
+    mu_check(pts_2.size() > 0);
+
+    return 0;
+}
+
+int testVisualOdometryMeasure(void)
+{
+    cv::Mat mask;
+    cv::Mat frame;
+    cv::Mat img_1;
+    cv::Mat img_2;
+    slam::FastDetector fast;
+    slam::VisualOdometry vo;
+    std::vector<cv::Point2f> pts_1;
+    std::vector<cv::Point2f> pts_2;
+    std::vector<uchar> status;
+
+    // setup
+    fast.configure(0, true);
+    vo.configure();
+
+    img_1 = cv::imread(TEST_IMAGE_1);
+    img_2 = cv::imread(TEST_IMAGE_2);
+
+    fast.detect(img_1, pts_1);
+    fast.detect(img_2, pts_2);
+
+    // test and assert
+    vo.featureTracking(img_1, img_2, pts_1, pts_2, status);
+    vo.displayOpticalFlow(img_2, pts_1, pts_2);
+    vo.measure(pts_1, pts_2);
+    std::cout << vo.R << std::endl;
+    std::cout << vo.t << std::endl;
     cv::waitKey(2000);
 
     mu_check(pts_1.size() > 0);
@@ -68,6 +108,7 @@ void testSuite(void)
     mu_add_test(testVisualOdometry);
     mu_add_test(testVisualOdometryConfigure);
     mu_add_test(testVisualOdometryFeatureTracking);
+    mu_add_test(testVisualOdometryMeasure);
 }
 
 mu_run_tests(testSuite)
