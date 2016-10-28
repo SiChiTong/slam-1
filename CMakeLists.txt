@@ -41,6 +41,11 @@ INCLUDE_DIRECTORIES(slam_symmath/include)
 ADD_SUBDIRECTORY(slam_symmath)
 ADD_DEPENDENCIES(slam_symmath slam_utils)
 
+# libslam_gimbal.a
+INCLUDE_DIRECTORIES(slam_gimbal/include)
+ADD_SUBDIRECTORY(slam_gimbal)
+ADD_DEPENDENCIES(slam_gimbal slam_utils)
+
 
 # libslam.a
 ADD_CUSTOM_TARGET(
