@@ -52,6 +52,7 @@ public:
     cv::Mat distortion_coefficients;
     std::vector<cv::Mat> rotation_vectors;
     std::vector<cv::Mat> translation_vectors;
+    double reprojection_error;
 
     Calibration(void);
     int configure(

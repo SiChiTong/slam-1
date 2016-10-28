@@ -123,7 +123,6 @@ int Calibration::calibrate(
     cv::Size image_size
 )
 {
-    double rms;
     bool camera_matrix_ok;
     bool distortion_coefficients_ok;
     std::vector<std::vector<cv::Point3f>> object_points(1);
@@ -144,7 +143,7 @@ int Calibration::calibrate(
     object_points.resize(image_points.size(), object_points[0]);
 
     // calibrate camera
-    rms = cv::calibrateCamera(
+    this->reprojection_error = cv::calibrateCamera(
         object_points,
         image_points,
         image_size,
@@ -154,14 +153,10 @@ int Calibration::calibrate(
         this->translation_vectors
     );
 
+    // check results
     camera_matrix_ok = cv::checkRange(this->camera_matrix);
     distortion_coefficients_ok = cv::checkRange(this->distortion_coefficients);
     if (camera_matrix_ok && distortion_coefficients_ok) {
-        std::cout << "RMS: " << rms << std::endl;
-        std::cout << std::endl;
-        std::cout << this->camera_matrix << std::endl;
-        std::cout << std::endl;
-        std::cout << this->distortion_coefficients << std::endl;
         return 0;
     } else {
         return -1;
@@ -223,6 +218,10 @@ int Calibration::saveCalibrationOutputs(void)
     // distortion coefficent
     this->yaml_config << YAML::Key << "distortion_coefficients";
     recordMatrix(this->yaml_config, this->distortion_coefficients);
+
+    // distortion coefficent
+    this->yaml_config << YAML::Key << "reprojection_error";
+    this->yaml_config << YAML::Value << this->reprojection_error;
 
     // end
     this->yaml_config << YAML::EndMap;
