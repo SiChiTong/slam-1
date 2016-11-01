@@ -63,21 +63,21 @@ int VisualOdometry::featureTracking(
         0.001
     );
 
-    // get rid of points for which the KLT tracking failed or those who
-    // have gone outside the frame
-    correlation_index = 0;
-    for (int i = 0; i < (int) status.size(); i++) {
-        pt = pts_2.at(i - correlation_index);
-
-        if ((status.at(i) == 0) || (pt.x < 0) || (pt.y < 0)) {
-            if ((pt.x < 0) || (pt.y < 0)) {
-                status.at(i) = 0;
-            }
-            pts_1.erase(pts_1.begin() + i - correlation_index);
-            pts_2.erase(pts_2.begin() + i - correlation_index);
-            correlation_index++;
-        }
-    }
+    // // get rid of points for which the KLT tracking failed or those who
+    // // have gone outside the frame
+    // correlation_index = 0;
+    // for (int i = 0; i < (int) status.size(); i++) {
+    //     pt = pts_2.at(i - correlation_index);
+    //
+    //     if ((status.at(i) == 0) || (pt.x < 0) || (pt.y < 0)) {
+    //         if ((pt.x < 0) || (pt.y < 0)) {
+    //             status.at(i) = 0;
+    //         }
+    //         pts_1.erase(pts_1.begin() + i - correlation_index);
+    //         pts_2.erase(pts_2.begin() + i - correlation_index);
+    //         correlation_index++;
+    //     }
+    // }
 
     return 0;
 }
@@ -103,12 +103,14 @@ int VisualOdometry::measure(
         this->focal_length,
         this->principle_point,
         cv::RANSAC,  // outlier rejection method
+        // cv::LMEDS,  // outlier rejection method
         0.999,  // threshold
         1.0  // confidence level
     );
     if (this->E.rows != 3 || this->E.cols != 3) {
-        return -3;
+        return -4;
     }
+    std::cout << this->E << std::endl;
 
     // recover pose
     cv::recoverPose(

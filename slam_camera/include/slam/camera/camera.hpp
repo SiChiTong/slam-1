@@ -49,8 +49,9 @@ public:
     ~Camera(void);
     int configure(int capture_index, int image_width, int image_height);
     int configure(int capture_index, std::string calibration_file);
-    int getFrame(cv::Mat &image);
-    int getUndistortFrame(cv::Mat &image);
+    int getFrame(cv::Mat &frame);
+    int getUndistortFrame(cv::Mat &frame);
+    int saveFrame(cv::Mat &frame, std::string save_path);
     void close(void);
 };
 

@@ -100,11 +100,11 @@ int Camera::configure(int capture_index, std::string calibration_file)
     return 0;
 }
 
-int Camera::getFrame(cv::Mat &image)
+int Camera::getFrame(cv::Mat &frame)
 {
     bool retval;
 
-    retval = this->capture->read(image);
+    retval = this->capture->read(frame);
     if (retval == false) {
         return -1;
     }
@@ -112,16 +112,28 @@ int Camera::getFrame(cv::Mat &image)
     return 0;
 }
 
-int Camera::getUndistortFrame(cv::Mat &image)
+int Camera::getUndistortFrame(cv::Mat &frame)
 {
     bool retval;
 
-    retval = this->capture->read(image);
+    retval = this->capture->read(frame);
     if (retval == false) {
         return -1;
     }
 
-    cv::undistort(image, image, this->camera_mat, this->distortion_coef);
+    cv::undistort(frame, frame, this->camera_mat, this->distortion_coef);
+
+    return 0;
+}
+
+int Camera::saveFrame(cv::Mat &frame, std::string save_path)
+{
+    bool retval;
+
+    retval = cv::imwrite(save_path, frame);
+    if (retval == false) {
+        return -1;
+    }
 
     return 0;
 }
