@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 import csv
-
 import matplotlib.pylab as plt
 
 # GLOBAL VARIABLES

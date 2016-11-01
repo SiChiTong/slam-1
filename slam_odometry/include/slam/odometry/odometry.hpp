@@ -26,6 +26,7 @@ public:
         cv::Mat img_2,
         std::vector<cv::Point2f> &pts_1,
         std::vector<cv::Point2f> &pts_2,
+        std::vector<float> &errors,
         std::vector<uchar> &status
     );
     int measure(
