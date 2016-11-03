@@ -103,7 +103,6 @@ int VisualOdometry::measure(
         this->focal_length,
         this->principle_point,
         cv::RANSAC,  // outlier rejection method
-        // cv::LMEDS,  // outlier rejection method
         0.999,  // threshold
         1.0  // confidence level
     );

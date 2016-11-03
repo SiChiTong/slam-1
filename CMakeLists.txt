@@ -46,6 +46,11 @@ INCLUDE_DIRECTORIES(slam_gimbal/include)
 ADD_SUBDIRECTORY(slam_gimbal)
 ADD_DEPENDENCIES(slam_gimbal slam_utils)
 
+# libslam_optimization.a
+INCLUDE_DIRECTORIES(slam_optimization/include)
+ADD_SUBDIRECTORY(slam_optimization)
+ADD_DEPENDENCIES(slam_optimization slam_utils)
+
 
 # libslam.a
 ADD_CUSTOM_TARGET(

@@ -168,10 +168,10 @@ int main(void)
 
         // measure and record pose estimation
         if (vo.measure(pts_1, pts_2) == 0) {
-            x += vo.t.at<double>(0);
-            y += vo.t.at<double>(1);
-            z += vo.t.at<double>(2);
-            yaw += atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
+            x = vo.t.at<double>(0);
+            y = vo.t.at<double>(1);
+            z = vo.t.at<double>(2);
+            yaw = atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
 
             output_file << i << ", ";
             output_file << x << ", ";

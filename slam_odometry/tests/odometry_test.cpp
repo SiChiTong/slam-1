@@ -119,10 +119,8 @@ int testVisualOdometryMeasure(void)
 
     // for (int i = 0; i < 40; i++) {
     //     pts_1.push_back(cv::Point2f(5.0, (float) i));
-    //     pts_2.push_back(cv::Point2f(7.0, (float) i + 1));
+    //     pts_2.push_back(cv::Point2f(5.0, (float) i + 10));
     // }
-    //
-    // std::cout << pts_1 << std::endl;
 
     pts_1.push_back(cv::Point2f(245.77, 169.57));
     pts_1.push_back(cv::Point2f(248.66, 105.82));
@@ -156,55 +154,72 @@ int testVisualOdometryMeasure(void)
     pts_2.push_back(cv::Point2f(250.93, 114.50));
     pts_2.push_back(cv::Point2f(287.09, 155.89));
 
-    cv::Mat E = cv::findEssentialMat(
-        pts_1,
-        pts_2,
-        1.0,
-        cv::Point2f(0.0, 0.0),
-        cv::RANSAC,  // outlier rejection method
-        0.999,       // threshold
-        1.0          // confidence level
-    );
-    std::cout << E << std::endl;
+    cv::Mat K(3, 3, CV_64F, double(0));
+    K.at<double>(0, 0) = 1.0;  // fx
+    K.at<double>(1, 1) = 1.0;  // fy
+    K.at<double>(0, 2) = 0.0;  // cx
+    K.at<double>(1, 0) = 0.0;  // cy
+    K.at<double>(2, 2) = 1.0;  // 1
+    std::cout << K << std::endl;
 
-    cv::Mat Fun = cv::findFundamentalMat(
-        pts_1,
-        pts_2,
-        cv::FM_RANSAC
-    );
+    cv::Mat dis_coef;
 
-    Eigen::Matrix3d K;
-    K << 1.0, 0.0, 0.0,
-         0.0, 1.0, 0.0,
-         0.0, 0.0, 1.0;
+    std::cout << pts_1 << std::endl;
 
-    Eigen::Matrix3d F;
-    F << Fun.at<double>(0, 0), Fun.at<double>(0, 1), Fun.at<double>(0, 2),
-         Fun.at<double>(1, 0), Fun.at<double>(1, 1), Fun.at<double>(1, 2),
-         Fun.at<double>(2, 0), Fun.at<double>(2, 1), Fun.at<double>(2, 2);
-    Eigen::Matrix3d result = (K.transpose() * F * K);
+    cv::undistortPoints(pts_1, pts_1, K, dis_coef);
+    cv::undistortPoints(pts_2, pts_2, K, dis_coef);
 
-    std::cout << std::endl;
-    std::cout << result << std::endl;
+    std::cout << pts_1 << std::endl;
 
-    // draw flow lines
-    cv::Mat image = cv::Mat(300, 300, CV_8UC3, double(0));
-    cv::Point2f p;
-    cv::Point2f q;
+    // cv::Mat E = cv::findEssentialMat(
+    //     pts_1,
+    //     pts_2,
+    //     1.0,
+    //     cv::Point2f(0.0, 0.0),
+    //     cv::RANSAC,  // outlier rejection method
+    //     0.999,       // threshold
+    //     1.0          // confidence level
+    // );
+    // std::cout << E << std::endl;
 
-    for (int i = 0; i < std::min(pts_1.size(), pts_2.size()); i++) {
-        std::cout << i << std::endl;
-        p.x = pts_1[i].x;
-        p.y = pts_1[i].y;
+    // cv::Mat Fun = cv::findFundamentalMat(
+    //     pts_1,
+    //     pts_2,
+    //     cv::FM_8POINT
+    // );
+    //
+    // Eigen::Matrix3d K;
+    // K << 1.0, 0.0, 0.0,
+    //      0.0, 1.0, 0.0,
+    //      0.0, 0.0, 1.0;
+    //
+    // Eigen::Matrix3d F;
+    // F << Fun.at<double>(0, 0), Fun.at<double>(0, 1), Fun.at<double>(0, 2),
+    //      Fun.at<double>(1, 0), Fun.at<double>(1, 1), Fun.at<double>(1, 2),
+    //      Fun.at<double>(2, 0), Fun.at<double>(2, 1), Fun.at<double>(2, 2);
+    // Eigen::Matrix3d result = (K.transpose() * F * K);
+    //
+    // std::cout << std::endl;
+    // std::cout << result << std::endl;
 
-        q.x = pts_2[i].x;
-        q.y = pts_2[i].y;
-
-        cv::arrowedLine(image, p, q, cv::Scalar(0, 0, 255), 1);
-    }
-
-    cv::imshow("image", image);
-    cv::waitKey(0);
+    // // draw flow lines
+    // cv::Mat image = cv::Mat(300, 300, CV_8UC3, double(0));
+    // cv::Point2f p;
+    // cv::Point2f q;
+    //
+    // for (int i = 0; i < std::min(pts_1.size(), pts_2.size()); i++) {
+    //     std::cout << i << std::endl;
+    //     p.x = pts_1[i].x;
+    //     p.y = pts_1[i].y;
+    //
+    //     q.x = pts_2[i].x;
+    //     q.y = pts_2[i].y;
+    //
+    //     cv::arrowedLine(image, p, q, cv::Scalar(0, 0, 255), 1);
+    // }
+    //
+    // cv::imshow("image", image);
+    // cv::waitKey(0);
 
     // cv::Mat R;
     // cv::Mat t;
