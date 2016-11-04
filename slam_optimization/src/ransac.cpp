@@ -34,7 +34,7 @@ int RANSAC::configure(int max_iter, double thresh_ratio, double thresh_dist)
     return 0;
 }
 
-int RANSAC::randomSample(Eigen::MatrixXd &data, Eigen::Vector2d &sample)
+int RANSAC::randomSample(MatX &data, Vec2 &sample)
 {
     int rand_index;
 
@@ -55,16 +55,16 @@ int RANSAC::randomSample(Eigen::MatrixXd &data, Eigen::Vector2d &sample)
 }
 
 int RANSAC::computeDistances(
-    Eigen::MatrixXd &data,
-    Eigen::Vector2d &p1,
-    Eigen::Vector2d &p2,
-    Eigen::VectorXd &dists
+    MatX &data,
+    Vec2 &p1,
+    Vec2 &p2,
+    VecX &dists
 )
 {
     int indicies[2];
     double dx, dy, dist, pdiff_norm;
-    Eigen::Vector2d pdiff, pdiff_unit, norm;
-    Eigen::MatrixXd repmat(2, 1);
+    Vec2 pdiff, pdiff_unit, norm;
+    MatX repmat(2, 1);
 
     // pre-check
     if (this->configured == false) {
@@ -86,7 +86,7 @@ int RANSAC::computeDistances(
     return 0;
 }
 
-int RANSAC::computeInliers(Eigen::VectorXd &dists)
+int RANSAC::computeInliers(VecX &dists)
 {
     // pre-check
     if (this->configured == false) {
@@ -104,7 +104,7 @@ int RANSAC::computeInliers(Eigen::VectorXd &dists)
     return 0;
 }
 
-int RANSAC::update(Eigen::Vector2d &p1, Eigen::Vector2d &p2)
+int RANSAC::update(Vec2 &p1, Vec2 &p2)
 {
     int conditions_met;
 
@@ -135,11 +135,11 @@ int RANSAC::printStats(void)
     printf("c: %f\n", this->model_params[1]);
 }
 
-int RANSAC::optimize(Eigen::MatrixXd &data)
+int RANSAC::optimize(MatX &data)
 {
-    Eigen::Vector2d p1;
-    Eigen::Vector2d p2;
-    Eigen::VectorXd dists;
+    Vec2 p1;
+    Vec2 p2;
+    VecX dists;
 
     // pre-check
     if (this->configured == false) {

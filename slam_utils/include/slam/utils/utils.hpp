@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include <Eigen/Geometry>
+#include <Eigen/SVD>
 
 
 namespace slam {

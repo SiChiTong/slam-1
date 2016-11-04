@@ -4,9 +4,10 @@
 #include <string>
 
 #include "slam/utils/munit.hpp"
+#include "slam/utils/utils.hpp"
 #include "slam/optimization/ransac.hpp"
 
-#define TEST_DATA "tests/data/ransac_sample.dat"
+#define TEST_DATA "tests/data/ransac/ransac_sample.dat"
 
 
 // TEST FUNCTIONS
@@ -19,7 +20,7 @@ int testRANSACUpdate(void);
 void testSuite(void);
 
 
-Eigen::MatrixXd load_data(void)
+slam::MatX load_data(void)
 {
     int line_no;
     int nb_lines;
@@ -28,7 +29,7 @@ Eigen::MatrixXd load_data(void)
     std::vector<double> vdata;
     std::string element;
     double value;
-    Eigen::MatrixXd data;
+    slam::MatX data;
 
     // load file
     if (infile.good() != true) {
@@ -108,8 +109,8 @@ int testRANSACConfigure(void)
 int testRANSACRandomSample(void)
 {
     int retval;
-    Eigen::Vector2d sample;
-    Eigen::MatrixXd data(2, 100);
+    slam::Vec2 sample;
+    slam::MatX data(2, 100);
     slam::optimization::RANSAC ransac;
 
     // setup
@@ -133,9 +134,10 @@ int testRANSACRandomSample(void)
 int testRANSACComputeDistances(void)
 {
     int retval;
-    Eigen::MatrixXd data(2, 100);
-    Eigen::Vector2d p1, p2;
-    Eigen::VectorXd dists;
+    slam::MatX data(2, 100);
+    slam::Vec2 p1;
+    slam::Vec2 p2;
+    slam::VecX dists;
     slam::optimization::RANSAC ransac;
 
     // setup
@@ -159,7 +161,7 @@ int testRANSACComputeInliers(void)
 {
     int retval;
     slam::optimization::RANSAC ransac;
-    Eigen::VectorXd dists(10);
+    slam::VecX dists(10);
 
     // setup
     dists << 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0;
@@ -182,7 +184,8 @@ int testRANSACUpdate(void)
 {
     int retval;
     slam::optimization::RANSAC ransac;
-    Eigen::Vector2d p1, p2;
+    slam::Vec2 p1;
+    slam::Vec2 p2;
 
     // setup
     ransac.configure(10, 0.8, 0.5);
@@ -206,7 +209,7 @@ int testRANSACUpdate(void)
 
 int testRANSACOptimize(void)
 {
-    Eigen::MatrixXd data;
+    slam::MatX data;
     slam::optimization::RANSAC ransac;
 
     // setup

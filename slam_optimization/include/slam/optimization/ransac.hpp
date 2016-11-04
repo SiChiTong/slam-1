@@ -6,23 +6,11 @@
 
 #include <Eigen/Dense>
 
+#include "slam/utils/utils.hpp"
+
 
 namespace slam {
 namespace optimization {
-
-class RANSACParams
-{
-public:
-    bool configured;
-
-    int min_pts;
-    int max_iter;
-    float thresh_dist;
-    float inlier_ratio;
-
-    RANSACParams(void);
-    int configure(void);
-};
 
 class RANSAC
 {
@@ -41,19 +29,14 @@ public:
 
     RANSAC(void);
     int configure(int max_iter, double threshold_ratio, double threshold_dist);
-    int randomSample(Eigen::MatrixXd &data, Eigen::Vector2d &sample);
-    int computeDistances(
-        Eigen::MatrixXd &data,
-        Eigen::Vector2d &p1,
-        Eigen::Vector2d &p2,
-        Eigen::VectorXd &dists
-    );
-    int computeInliers(Eigen::VectorXd &dists);
-    int update(Eigen::Vector2d &p1, Eigen::Vector2d &p2);
+    int randomSample(MatX &data, Vec2 &sample);
+    int computeDistances(MatX &data, Vec2 &p1, Vec2 &p2, VecX &dists);
+    int computeInliers(VecX &dists);
+    int update(Vec2 &p1, Vec2 &p2);
     int printStats(void);
-    int optimize(Eigen::MatrixXd &data);
+    int optimize(MatX &data);
 };
 
-}  // end of slam namespace
+}  // end of optimization namespace
 }  // end of slam namespace
 #endif
