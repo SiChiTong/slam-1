@@ -38,6 +38,7 @@ double C(double x);
 double S(double x);
 double T(double x);
 void rmtrailslash(std::string &path);
+MatX kronecker_product(MatX A, MatX B);
 
 } // end of slam namespace
 #endif

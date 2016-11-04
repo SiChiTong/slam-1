@@ -67,4 +67,23 @@ void rmtrailslash(std::string &path)
     }
 }
 
+MatX kronecker_product(MatX A, MatX B)
+{
+    MatX C;
+    double a;
+
+    // setup
+    C.resize((A.rows() * B.rows()), (A.cols() * B.cols()));
+
+    // calculate kronecker product
+    for (int i = 0; i < A.rows(); i++) {
+        for (int j = 0; j < A.cols(); j++) {
+            a = A(i, j);
+            C.block(i * B.rows(), j * B.cols(), B.rows(), B.cols()) = a * B;
+        }
+    }
+
+    return C;
+}
+
 } // end of slam namespace

@@ -12,10 +12,6 @@
 namespace slam {
 namespace optimization {
 
-// FUNCTIONS
-MatX kronecker_product(MatX A, MatX B);
-
-// CLASSES
 class EightPoint
 {
 public:
@@ -32,7 +28,7 @@ public:
     void approximateFundamentalMatrix(MatX &A, MatX &F);
     void refineFundamentalMatrix(MatX &F);
     void denormalizeFundamentalMatrix(MatX &F);
-    int estimate(MatX &pts1, MatX &pts2);
+    int estimate(MatX &pts1, MatX &pts2, MatX &F);
 };
 
 }  // end of optimization namespace

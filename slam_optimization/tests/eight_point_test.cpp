@@ -12,10 +12,12 @@
 
 
 // TEST FUNCTIONS
-int test_kronecker_product(void);
 int testEightPoint(void);
 int testEightPointNormalizePoints(void);
 int testEightPointFormMatrixA(void);
+int testEightPointApproximateFundamentalMatrix(void);
+int testEightPointRefineFundamentalMatrix(void);
+int testEightPointDenormalizeFundamentalMatrix(void);
 int testEightPointConfigure(void);
 void testSuite(void);
 
@@ -67,33 +69,6 @@ slam::MatX load_data(std::string file_path)
     }
 
     return data;
-}
-
-int test_kronecker_product(void)
-{
-    slam::MatX A(2, 2);
-    slam::MatX B(2, 2);
-    slam::MatX expected(4, 4);
-    slam::MatX product;
-
-    // setup
-    A << 1, 2,
-         3, 4;
-    B << 0, 5,
-         6, 7;
-    expected << 0, 5, 0, 10,
-              6, 7, 12, 14,
-              0, 15, 0, 20,
-              18, 21, 24, 28;
-
-    // test and assert
-    product = slam::optimization::kronecker_product(A, B);
-    std::cout << product << std::endl;
-    mu_check(product == expected);
-    mu_check(product.rows() == 4);
-    mu_check(product.cols() == 4);
-
-    return 0;
 }
 
 int testEightPoint(void)
@@ -156,20 +131,112 @@ int testEightPointFormMatrixA(void)
 {
     slam::MatX pts1;
     slam::MatX pts2;
+    slam::MatX A;
     slam::optimization::EightPoint estimator;
 
     // setup
     pts1 = load_data(TEST_1_DATA);
     pts2 = load_data(TEST_2_DATA);
     estimator.configure(800, 600);
+    estimator.normalizePoints(pts1, pts2);
+
+    // test and assert
+    estimator.formMatrixA(pts1, pts2, A);
+
+    mu_check(A.rows() == pts1.rows());
+    mu_check(A.cols() == 9);
+
+    for (int i = 0; i < pts1.rows(); i++) {
+        mu_check(fltcmp(A(i, 0), pts1(i, 0) * pts2(i, 0)) == 0);
+        mu_check(fltcmp(A(i, 1), pts1(i, 1) * pts2(i, 0)) == 0);
+        mu_check(fltcmp(A(i, 2), pts2(i, 0)) == 0);
+        mu_check(fltcmp(A(i, 3), pts1(i, 0) * pts2(i, 1)) == 0);
+        mu_check(fltcmp(A(i, 4), pts1(i, 1) * pts2(i, 1)) == 0);
+        mu_check(fltcmp(A(i, 5), pts2(i, 1)) == 0);
+        mu_check(fltcmp(A(i, 6), pts1(i, 0)) == 0);
+        mu_check(fltcmp(A(i, 7), pts1(i, 1)) == 0);
+        mu_check(fltcmp(A(i, 8), 1.0) == 0);
+    }
+
+    return 0;
+}
+
+int testEightPointApproximateFundamentalMatrix(void)
+{
+    slam::MatX pts1;
+    slam::MatX pts2;
+    slam::MatX A, F;
+    slam::optimization::EightPoint estimator;
+
+    // setup
+    pts1 = load_data(TEST_1_DATA);
+    pts2 = load_data(TEST_2_DATA);
+    estimator.configure(800, 600);
+    estimator.normalizePoints(pts1, pts2);
+    estimator.formMatrixA(pts1, pts2, A);
+
+    // test and assert
+    estimator.approximateFundamentalMatrix(A, F);
+
+    mu_check(F.rows() == 3);
+    mu_check(F.cols() == 3);
+
+    return 0;
+}
+
+int testEightPointRefineFundamentalMatrix(void)
+{
+    slam::MatX pts1;
+    slam::MatX pts2;
+    slam::MatX A, F;
+    slam::optimization::EightPoint estimator;
+
+    // setup
+    pts1 = load_data(TEST_1_DATA);
+    pts2 = load_data(TEST_2_DATA);
+    estimator.configure(800, 600);
+    estimator.normalizePoints(pts1, pts2);
+    estimator.formMatrixA(pts1, pts2, A);
+    estimator.approximateFundamentalMatrix(A, F);
+
+    // test and assert
+    estimator.refineFundamentalMatrix(F);
+
+    mu_check(F.rows() == 3);
+    mu_check(F.cols() == 3);
+
+    return 0;
+}
+
+int testEightPointDenormalizeFundamentalMatrix(void)
+{
+    slam::MatX pts1;
+    slam::MatX pts2;
+    slam::MatX A, F;
+    slam::optimization::EightPoint estimator;
+
+    // setup
+    pts1 = load_data(TEST_1_DATA);
+    pts2 = load_data(TEST_2_DATA);
+    estimator.configure(800, 600);
+    estimator.normalizePoints(pts1, pts2);
+    estimator.formMatrixA(pts1, pts2, A);
+    estimator.approximateFundamentalMatrix(A, F);
+    estimator.refineFundamentalMatrix(F);
+
+    // test and assert
+    estimator.denormalizeFundamentalMatrix(F);
 
     return 0;
 }
 
 int testEightPointEstimate(void)
 {
+    double result;
     slam::MatX pts1;
     slam::MatX pts2;
+    slam::MatX F;
+    slam::Vec3 x;
     slam::optimization::EightPoint estimator;
 
     // setup
@@ -178,18 +245,36 @@ int testEightPointEstimate(void)
     estimator.configure(800, 600);
 
     // estimate
-    estimator.estimate(pts1, pts2);
+    estimator.estimate(pts1, pts2, F);
+
+    for (int i = 0; i < pts1.rows(); i++) {
+        x = pts1.block(i, 0, 1, 3).transpose();
+        result = x.transpose() * F * x;
+        std::cout << result << std::endl;
+        mu_check(result > 0.0);
+        mu_check(result < 1.0);
+    }
+
+    for (int i = 0; i < pts2.rows(); i++) {
+        x = pts2.block(i, 0, 1, 3).transpose();
+        result = x.transpose() * F * x;
+        std::cout << result << std::endl;
+        mu_check(result > 0.0);
+        mu_check(result < 1.0);
+    }
 
     return 0;
 }
 
 void testSuite(void)
 {
-    mu_add_test(test_kronecker_product);
     mu_add_test(testEightPoint);
     mu_add_test(testEightPointConfigure);
     mu_add_test(testEightPointNormalizePoints);
     mu_add_test(testEightPointFormMatrixA);
+    mu_add_test(testEightPointApproximateFundamentalMatrix);
+    mu_add_test(testEightPointRefineFundamentalMatrix);
+    mu_add_test(testEightPointDenormalizeFundamentalMatrix);
     mu_add_test(testEightPointEstimate);
 }
 

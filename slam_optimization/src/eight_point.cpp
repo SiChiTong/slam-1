@@ -4,25 +4,6 @@
 namespace slam {
 namespace optimization {
 
-MatX kronecker_product(MatX A, MatX B)
-{
-    MatX C;
-    double a;
-
-    // setup
-    C.resize((A.rows() * B.rows()), (A.cols() * B.cols()));
-
-    // calculate kronecker product
-    for (int i = 0; i < A.rows(); i++) {
-        for (int j = 0; j < A.cols(); j++) {
-            a = A(i, j);
-            C.block(i * B.rows(), j * B.cols(), B.rows(), B.cols()) = a * B;
-        }
-    }
-
-    return C;
-}
-
 EightPoint::EightPoint(void)
 {
     this->configured = false;
@@ -84,7 +65,7 @@ void EightPoint::approximateFundamentalMatrix(MatX &A, MatX &F)
     MatX U, V;
     Eigen::JacobiSVD<MatX> svd;
 
-    // computing SVD of A
+    // compute SVD of A
     svd.compute(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
     U = svd.matrixU();
     V = svd.matrixV();
@@ -120,10 +101,10 @@ void EightPoint::denormalizeFundamentalMatrix(MatX &F)
     F = this->N.transpose() * F * this->N;
 }
 
-int EightPoint::estimate(MatX &pts1, MatX &pts2)
+int EightPoint::estimate(MatX &pts1, MatX &pts2, MatX &F)
 {
     VecX S;
-    MatX A, F;
+    MatX A;
 
     // pre-check
     if (this->configured == false) {
@@ -138,8 +119,6 @@ int EightPoint::estimate(MatX &pts1, MatX &pts2)
     this->approximateFundamentalMatrix(A, F);
     this->refineFundamentalMatrix(F);
     this->denormalizeFundamentalMatrix(F);
-
-    std::cout << F << std::endl;
 
     return 0;
 }
