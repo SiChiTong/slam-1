@@ -5,7 +5,8 @@
 
 #include "slam/utils/munit.hpp"
 #include "slam/utils/utils.hpp"
-#include "slam/optimization/eight_point.hpp"
+
+#include "slam/vision/eight_point.hpp"
 
 #define TEST_1_DATA "tests/data/eight_point/img_1.dat"
 #define TEST_2_DATA "tests/data/eight_point/img_2.dat"

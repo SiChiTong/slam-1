@@ -1,5 +1,5 @@
-#ifndef __SLAM_OPTIMIZATION_EIGHT_POINT_HPP__
-#define __SLAM_OPTIMIZATION_EIGHT_POINT_HPP__
+#ifndef __SLAM_VISION_EIGHT_POINT_HPP__
+#define __SLAM_VISION_EIGHT_POINT_HPP__
 
 
 #include <iostream>

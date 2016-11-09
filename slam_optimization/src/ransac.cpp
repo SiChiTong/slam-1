@@ -2,7 +2,6 @@
 
 
 namespace slam {
-namespace optimization {
 
 RANSAC::RANSAC(void)
 {
@@ -167,5 +166,4 @@ int RANSAC::optimize(MatX &data)
     return 0;
 }
 
-}  // end of optimization namespace
 }  // end of slam namespace

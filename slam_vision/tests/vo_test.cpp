@@ -2,7 +2,7 @@
 
 #include "slam/utils/munit.hpp"
 #include "slam/vision/fast.hpp"
-#include "slam/odometry/odometry.hpp"
+#include "slam/vision/vo.hpp"
 
 #define TEST_IMAGE_1 "tests/data/sample_0.jpg"
 #define TEST_IMAGE_2 "tests/data/sample_1.jpg"

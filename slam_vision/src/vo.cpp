@@ -1,4 +1,4 @@
-#include "slam/odometry/odometry.hpp"
+#include "slam/vision/vo.hpp"
 
 
 namespace slam {

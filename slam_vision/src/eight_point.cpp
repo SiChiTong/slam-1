@@ -1,4 +1,4 @@
-#include "slam/optimization/eight_point.hpp"
+#include "slam/vision/eight_point.hpp"
 
 
 namespace slam {

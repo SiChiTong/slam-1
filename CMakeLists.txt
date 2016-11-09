@@ -2,12 +2,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 PROJECT(slam)
 
 
-# INCLUDE
 INCLUDE_DIRECTORIES(
     slam_estimation/include
     slam_gimbal/include
     slam_kinematics/include
-    slam_odometry/include
     slam_optimization/include
     slam_symmath/include
     slam_vision/include
@@ -26,10 +24,6 @@ ADD_DEPENDENCIES(slam_gimbal slam_utils)
 # libslam_kinematics.a
 ADD_SUBDIRECTORY(slam_kinematics)
 ADD_DEPENDENCIES(slam_kinematics slam_utils)
-
-# libslam_odometry.a
-ADD_SUBDIRECTORY(slam_odometry)
-ADD_DEPENDENCIES(slam_odometry slam_utils slam_vision)
 
 # libslam_optimization.a
 ADD_SUBDIRECTORY(slam_optimization)
@@ -55,7 +49,6 @@ ADD_CUSTOM_TARGET(
             ${CMAKE_BINARY_DIR}/slam_estimation/libslam_estimation.a
             ${CMAKE_BINARY_DIR}/slam_gimbal/libslam_gimbal.a
             ${CMAKE_BINARY_DIR}/slam_kinematics/libslam_kinematics.a
-            ${CMAKE_BINARY_DIR}/slam_odometry/libslam_odometry.a
             ${CMAKE_BINARY_DIR}/slam_optimization/libslam_optimization.a
             ${CMAKE_BINARY_DIR}/slam_symmath/libslam_symmath.a
             ${CMAKE_BINARY_DIR}/slam_utils/libslam_utils.a
@@ -64,7 +57,6 @@ ADD_CUSTOM_TARGET(
         slam_estimation
         slam_gimbal
         slam_kinematics
-        slam_odometry
         slam_optimization
         slam_symmath
         slam_vision

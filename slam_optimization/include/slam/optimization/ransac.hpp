@@ -10,7 +10,6 @@
 
 
 namespace slam {
-namespace optimization {
 
 class RANSAC
 {
@@ -37,6 +36,5 @@ public:
     int optimize(MatX &data);
 };
 
-}  // end of optimization namespace
 }  // end of slam namespace
 #endif

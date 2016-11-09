@@ -70,7 +70,7 @@ slam::MatX load_data(void)
 
 int testRANSAC(void)
 {
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
 
     mu_check(ransac.configured == false);
 
@@ -88,7 +88,7 @@ int testRANSAC(void)
 
 int testRANSACConfigure(void)
 {
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
 
     ransac.configure(10, 0.8, 0.1);
 
@@ -111,7 +111,7 @@ int testRANSACRandomSample(void)
     int retval;
     slam::Vec2 sample;
     slam::MatX data(2, 100);
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
 
     // setup
     for (int i = 0; i < 100; i++) {
@@ -138,7 +138,7 @@ int testRANSACComputeDistances(void)
     slam::Vec2 p1;
     slam::Vec2 p2;
     slam::VecX dists;
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
 
     // setup
     for (int i = 0; i < 100; i++) {
@@ -160,7 +160,7 @@ int testRANSACComputeDistances(void)
 int testRANSACComputeInliers(void)
 {
     int retval;
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
     slam::VecX dists(10);
 
     // setup
@@ -183,7 +183,7 @@ int testRANSACComputeInliers(void)
 int testRANSACUpdate(void)
 {
     int retval;
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
     slam::Vec2 p1;
     slam::Vec2 p2;
 
@@ -210,7 +210,7 @@ int testRANSACUpdate(void)
 int testRANSACOptimize(void)
 {
     slam::MatX data;
-    slam::optimization::RANSAC ransac;
+    slam::RANSAC ransac;
 
     // setup
     data = load_data();
