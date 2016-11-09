@@ -1,8 +1,12 @@
 #include <iostream>
 #include <fstream>
 
-#include "slam/odometry/odometry.hpp"
+#include <Eigen/Dense>
+
 #include "slam/feature/fast.hpp"
+#include "slam/optimization/eight_point.hpp"
+
+#include "slam/odometry/odometry.hpp"
 
 #define CALIB_FILE "utils/data/calibration.yaml"
 
@@ -110,7 +114,20 @@ void feature_extraction(
     fast.detect(frame, points);
 
     // calculate the refined corner locations
-    cv::cornerSubPix(frame, points, win_size, zero_zone, criteria);
+    // cv::cornerSubPix(frame, points, win_size, zero_zone, criteria);
+}
+
+static void pts2mat(std::vector<cv::Point2f> points, slam::MatX &mat)
+{
+    cv::Point2f p;
+
+    mat.resize(points.size(), 3);
+    for (int i = 0; i < points.size(); i++) {
+        p = points[i];
+        mat(i, 0) = p.x;
+        mat(i, 1) = p.y;
+        mat(i, 2) = 1.0;
+    }
 }
 
 int main(void)
@@ -160,26 +177,61 @@ int main(void)
     cv::cvtColor(frame, img_1, cv::COLOR_BGR2GRAY);
     feature_extraction(fast, img_1, pts_1);
 
+    slam::Mat3 K, E;
+    slam::Vec3 pt1, pt2;
+    slam::MatX pose;
+    slam::MatX epts1;
+    slam::MatX epts2;
+    std::vector<slam::MatX> poses;
+    slam::optimization::EightPoint estimator;
+    estimator.configure(320, 240);
+    K << camera.camera_mat.at<double>(0, 0), camera.camera_mat.at<double>(0, 1), camera.camera_mat.at<double>(0, 2),
+         camera.camera_mat.at<double>(1, 0), camera.camera_mat.at<double>(1, 1), camera.camera_mat.at<double>(1, 2),
+         camera.camera_mat.at<double>(2, 0), camera.camera_mat.at<double>(2, 1), camera.camera_mat.at<double>(2, 2);
+    std::cout << K << std::endl;
+
     for (int i = 0; i < 100; i++) {
         // grab new frame and track features
         camera.getFrame(frame);
         cv::cvtColor(frame, img_2, cv::COLOR_BGR2GRAY);
         vo.featureTracking(img_1, img_2, pts_1, pts_2, errors, status);
 
-        // measure and record pose estimation
-        if (vo.measure(pts_1, pts_2) == 0) {
-            x = vo.t.at<double>(0);
-            y = vo.t.at<double>(1);
-            z = vo.t.at<double>(2);
-            yaw = atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
+        pts2mat(pts_1, epts1);
+        pts2mat(pts_2, epts2);
 
-            output_file << i << ", ";
-            output_file << x << ", ";
-            output_file << y << ", ";
-            output_file << z << ", ";
-            output_file << yaw;
-            output_file << std::endl;
-        }
+        estimator.estimate(epts1, epts2, K, E);
+        estimator.obtainPossiblePoses(E, poses);
+
+        pt1 = epts1.block(0, 0, 1, 3).transpose();
+        pt2 = epts2.block(0, 0, 1, 3).transpose();
+
+        estimator.obtainPose(pt1, pt2, K, K, poses, pose);
+
+        x = pose(0, 3);
+        y = pose(1, 3);
+        z = pose(2, 3);
+
+        output_file << i << ", ";
+        output_file << x << ", ";
+        output_file << y << ", ";
+        output_file << z << ", ";
+        output_file << yaw;
+        output_file << std::endl;
+
+        // measure and record pose estimation
+        // if (vo.measure(pts_1, pts_2) == 0) {
+        //     x = vo.t.at<double>(0);
+        //     y = vo.t.at<double>(1);
+        //     z = vo.t.at<double>(2);
+        //     yaw = atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
+        //
+        //     output_file << i << ", ";
+        //     output_file << x << ", ";
+        //     output_file << y << ", ";
+        //     output_file << z << ", ";
+        //     output_file << yaw;
+        //     output_file << std::endl;
+        // }
 
         // display optical flow
         vo.displayOpticalFlow(frame, pts_1, pts_2);

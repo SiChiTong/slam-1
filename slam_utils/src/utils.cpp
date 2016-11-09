@@ -86,4 +86,9 @@ MatX kronecker_product(MatX A, MatX B)
     return C;
 }
 
+int sign(double x)
+{
+    return (x < 0) ? -1 : 1;
+}
+
 } // end of slam namespace

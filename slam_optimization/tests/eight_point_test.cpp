@@ -19,6 +19,7 @@ int testEightPointApproximateFundamentalMatrix(void);
 int testEightPointRefineFundamentalMatrix(void);
 int testEightPointDenormalizeFundamentalMatrix(void);
 int testEightPointConfigure(void);
+int testEightPointObtainPossiblePoses(void);
 void testSuite(void);
 
 
@@ -236,6 +237,7 @@ int testEightPointEstimate(void)
     slam::MatX pts1;
     slam::MatX pts2;
     slam::MatX F;
+    slam::Mat3 K, E;
     slam::Vec3 x;
     slam::optimization::EightPoint estimator;
 
@@ -243,25 +245,92 @@ int testEightPointEstimate(void)
     pts1 = load_data(TEST_1_DATA);
     pts2 = load_data(TEST_2_DATA);
     estimator.configure(800, 600);
+    K << 687.189819, 0.000000, 375.042664,
+         0.000000, 641.376221, 308.712708,
+         0.000000, 0.000000, 1.000000;
 
-    // estimate
+    // estimate fundamental matrix F
     estimator.estimate(pts1, pts2, F);
 
-    for (int i = 0; i < pts1.rows(); i++) {
-        x = pts1.block(i, 0, 1, 3).transpose();
-        result = x.transpose() * F * x;
-        std::cout << result << std::endl;
-        mu_check(result > 0.0);
-        mu_check(result < 1.0);
-    }
+    // for (int i = 0; i < pts1.rows(); i++) {
+    //     x = pts1.block(i, 0, 1, 3).transpose();
+    //     result = x.transpose() * F * x;
+    //     mu_check(result > 0.0);
+    //     mu_check(result < 1.0);
+    // }
+    //
+    // for (int i = 0; i < pts2.rows(); i++) {
+    //     x = pts2.block(i, 0, 1, 3).transpose();
+    //     result = x.transpose() * F * x;
+    //     mu_check(result > 0.0);
+    //     mu_check(result < 1.0);
+    // }
 
-    for (int i = 0; i < pts2.rows(); i++) {
-        x = pts2.block(i, 0, 1, 3).transpose();
-        result = x.transpose() * F * x;
-        std::cout << result << std::endl;
-        mu_check(result > 0.0);
-        mu_check(result < 1.0);
-    }
+    // estimate essential matrix E
+    estimator.estimate(pts1, pts2, K, E);
+
+    return 0;
+}
+
+int testEightPointObtainPossiblePoses(void)
+{
+    double result;
+    slam::MatX pts1;
+    slam::MatX pts2;
+    slam::Mat3 K, E;
+    slam::optimization::EightPoint estimator;
+    std::vector<slam::MatX> poses;
+
+    // setup
+    pts1 = load_data(TEST_1_DATA);
+    pts2 = load_data(TEST_2_DATA);
+    estimator.configure(800, 600);
+    K << 687.189819, 0.000000, 375.042664,
+         0.000000, 641.376221, 308.712708,
+         0.000000, 0.000000, 1.000000;
+    estimator.estimate(pts1, pts2, K, E);
+
+    // test and assert
+    estimator.obtainPossiblePoses(E, poses);
+
+    std::cout << poses[0] << std::endl;
+    std::cout << std::endl;
+    std::cout << poses[1] << std::endl;
+    std::cout << std::endl;
+    std::cout << poses[2] << std::endl;
+    std::cout << std::endl;
+    std::cout << poses[3] << std::endl;
+
+    return 0;
+}
+
+int testEightPointObtainPose(void)
+{
+    double result;
+    slam::MatX pts1;
+    slam::MatX pts2;
+    slam::Vec3 pt1;
+    slam::Vec3 pt2;
+    slam::Mat3 K, E;
+    slam::MatX pose;
+    slam::optimization::EightPoint estimator;
+    std::vector<slam::MatX> poses;
+
+    // setup
+    pts1 = load_data(TEST_1_DATA);
+    pts2 = load_data(TEST_2_DATA);
+    estimator.configure(800, 600);
+    K << 687.189819, 0.000000, 375.042664,
+         0.000000, 641.376221, 308.712708,
+         0.000000, 0.000000, 1.000000;
+    estimator.estimate(pts1, pts2, K, E);
+    estimator.obtainPossiblePoses(E, poses);
+
+    // test and assert
+    pt1 = pts1.block(0, 0, 1, 3).transpose();
+    pt2 = pts2.block(0, 0, 1, 3).transpose();
+    estimator.obtainPose(pt1, pt2, K, K, poses, pose);
+    std::cout << pose << std::endl;
 
     return 0;
 }
@@ -276,6 +345,8 @@ void testSuite(void)
     mu_add_test(testEightPointRefineFundamentalMatrix);
     mu_add_test(testEightPointDenormalizeFundamentalMatrix);
     mu_add_test(testEightPointEstimate);
+    mu_add_test(testEightPointObtainPossiblePoses);
+    mu_add_test(testEightPointObtainPose);
 }
 
 mu_run_tests(testSuite);

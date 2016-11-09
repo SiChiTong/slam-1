@@ -1,55 +1,65 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 PROJECT(slam)
 
+# INCLUDE
+INCLUDE_DIRECTORIES(
+    slam_calibration/include
+    slam_camera/include
+    slam_estimation/include
+    slam_feature/include
+    slam_gimbal/include
+    slam_kinematics/include
+    slam_odometry/include
+    slam_optimization/include
+    slam_symmath/include
+    slam_utils/include
+)
+
 
 # libslam_utils.a
-INCLUDE_DIRECTORIES(slam_utils/include)
 ADD_SUBDIRECTORY(slam_utils)
 
 # libslam_camera.a
-INCLUDE_DIRECTORIES(slam_camera/include)
 ADD_SUBDIRECTORY(slam_camera)
 ADD_DEPENDENCIES(slam_camera slam_utils)
 
 # libslam_calibration.a
-INCLUDE_DIRECTORIES(slam_calibration/include)
 ADD_SUBDIRECTORY(slam_calibration)
 ADD_DEPENDENCIES(slam_calibration slam_utils slam_camera)
 
 # libslam_feature.a
-INCLUDE_DIRECTORIES(slam_feature/include)
 ADD_SUBDIRECTORY(slam_feature)
 ADD_DEPENDENCIES(slam_feature slam_utils slam_camera)
 
+# libslam_optimization.a
+ADD_SUBDIRECTORY(slam_optimization)
+ADD_DEPENDENCIES(slam_optimization slam_utils)
+
 # libslam_odometry.a
-INCLUDE_DIRECTORIES(slam_odometry/include)
 ADD_SUBDIRECTORY(slam_odometry)
-ADD_DEPENDENCIES(slam_odometry slam_utils slam_camera slam_feature)
+ADD_DEPENDENCIES(
+    slam_odometry
+    slam_utils
+    slam_camera
+    slam_feature
+    slam_optimization
+)
 
 # libslam_kinematics.a
-INCLUDE_DIRECTORIES(slam_kinematics/include)
 ADD_SUBDIRECTORY(slam_kinematics)
 ADD_DEPENDENCIES(slam_kinematics slam_utils)
 
 # libslam_estimation.a
-INCLUDE_DIRECTORIES(slam_estimation/include)
 ADD_SUBDIRECTORY(slam_estimation)
 ADD_DEPENDENCIES(slam_estimation slam_utils slam_kinematics)
 
 # libslam_symath.a
-INCLUDE_DIRECTORIES(slam_symmath/include)
 ADD_SUBDIRECTORY(slam_symmath)
 ADD_DEPENDENCIES(slam_symmath slam_utils)
 
 # libslam_gimbal.a
-INCLUDE_DIRECTORIES(slam_gimbal/include)
 ADD_SUBDIRECTORY(slam_gimbal)
 ADD_DEPENDENCIES(slam_gimbal slam_utils)
-
-# libslam_optimization.a
-INCLUDE_DIRECTORIES(slam_optimization/include)
-ADD_SUBDIRECTORY(slam_optimization)
-ADD_DEPENDENCIES(slam_optimization slam_utils)
 
 
 # libslam.a

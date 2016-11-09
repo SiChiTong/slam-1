@@ -58,6 +58,7 @@ ADD_LIBRARY(
 SET(
     DEPS
     slam_odometry
+    slam_optimization
     slam_feature
     slam_camera
     slam_utils

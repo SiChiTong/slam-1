@@ -32,6 +32,7 @@ ADD_LIBRARY(
 SET(
     DEPS
     slam_optimization
+    slam_utils
 )
 
 
