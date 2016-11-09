@@ -53,12 +53,7 @@ int RANSAC::randomSample(MatX &data, Vec2 &sample)
     return 0;
 }
 
-int RANSAC::computeDistances(
-    MatX &data,
-    Vec2 &p1,
-    Vec2 &p2,
-    VecX &dists
-)
+int RANSAC::computeDistances(MatX &data, Vec2 &p1, Vec2 &p2, VecX &dists)
 {
     int indicies[2];
     double dx, dy, dist, pdiff_norm;

@@ -1,5 +1,5 @@
-#ifndef __SLAM_QUADROTOR_HPP__
-#define __SLAM_QUADROTOR_HPP__
+#ifndef __SLAM_KINEMATICS_QUADROTOR_HPP__
+#define __SLAM_KINEMATICS_QUADROTOR_HPP__
 
 #include "slam/utils/utils.hpp"
 

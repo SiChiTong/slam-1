@@ -1,5 +1,5 @@
-#ifndef __SLAM_SYMMATH_HPP__
-#define __SLAM_SYMMATH_HPP__
+#ifndef __SLAM_SYMMATH_SYMMATH_HPP__
+#define __SLAM_SYMMATH_SYMMATH_HPP__
 
 #include <iostream>
 #include <vector>

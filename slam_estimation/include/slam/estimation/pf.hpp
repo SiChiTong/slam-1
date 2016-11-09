@@ -1,5 +1,5 @@
-#ifndef __SLAM_PF_HPP__
-#define __SLAM_PF_HPP__
+#ifndef __SLAM_ESTIMATION_PF_HPP__
+#define __SLAM_ESTIMATION_PF_HPP__
 
 #include <iostream>
 #include <functional>

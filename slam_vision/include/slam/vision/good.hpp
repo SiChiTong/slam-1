@@ -1,5 +1,5 @@
-#ifndef __SLAM_GOOD_HPP__
-#define __SLAM_GOOD_HPP__
+#ifndef __SLAM_VISION_GOOD_HPP__
+#define __SLAM_VISION_GOOD_HPP__
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>

@@ -1,5 +1,5 @@
-#ifndef __SLAM_CAMERA_HPP__
-#define __SLAM_CAMERA_HPP__
+#ifndef __SLAM_VISION_CAMERA_HPP__
+#define __SLAM_VISION_CAMERA_HPP__
 
 #include <iostream>
 

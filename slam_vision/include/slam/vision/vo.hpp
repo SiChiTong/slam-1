@@ -1,5 +1,5 @@
-#ifndef __SLAM_ODOMETRY_HPP__
-#define __SLAM_ODOMETRY_HPP__
+#ifndef __SLAM_VISION_VO_HPP__
+#define __SLAM_VISION_VO_HPP__
 
 #include "slam/vision/camera.hpp"
 

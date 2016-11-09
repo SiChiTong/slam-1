@@ -1,5 +1,5 @@
-#ifndef __SLAM_CALIBRATION_HPP__
-#define __SLAM_CALIBRATION_HPP__
+#ifndef __SLAM_VISION_CALIBRATION_HPP__
+#define __SLAM_VISION_CALIBRATION_HPP__
 
 #include <errno.h>
 #include <sys/stat.h>

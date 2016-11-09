@@ -1,5 +1,5 @@
-#ifndef __SLAM_TWOWHEEL_HPP__
-#define __SLAM_TWOWHEEL_HPP__
+#ifndef __SLAM_KINEMATICS_TWOWHEEL_HPP__
+#define __SLAM_KINEMATICS_TWOWHEEL_HPP__
 
 #include "slam/utils/utils.hpp"
 

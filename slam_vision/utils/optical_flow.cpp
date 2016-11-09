@@ -3,10 +3,9 @@
 
 #include <Eigen/Dense>
 
+#include "slam/vision/vo.hpp"
 #include "slam/vision/fast.hpp"
 #include "slam/vision/eight_point.hpp"
-
-#include "slam/odometry/odometry.hpp"
 
 #define CALIB_FILE "utils/data/calibration.yaml"
 
@@ -202,14 +201,18 @@ int main(void)
         estimator.estimate(epts1, epts2, K, E);
         estimator.obtainPossiblePoses(E, poses);
 
+        for (int j = 0; j < errors.size(); j++) {
+            std::cout << errors[j] << std::endl;
+        }
+
         pt1 = epts1.block(0, 0, 1, 3).transpose();
         pt2 = epts2.block(0, 0, 1, 3).transpose();
 
         estimator.obtainPose(pt1, pt2, K, K, poses, pose);
 
-        x = pose(0, 3);
-        y = pose(1, 3);
-        z = pose(2, 3);
+        x += pose(0, 3);
+        y += pose(1, 3);
+        z += pose(2, 3);
 
         output_file << i << ", ";
         output_file << x << ", ";

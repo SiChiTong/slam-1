@@ -1,5 +1,5 @@
-#ifndef __MUNIT_H__
-#define __MUNIT_H__
+#ifndef __SLAM_UTILS_MUNIT_H__
+#define __SLAM_UTILS_MUNIT_H__
 
 #include <iostream>
 #include <fstream>

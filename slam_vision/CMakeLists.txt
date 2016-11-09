@@ -94,12 +94,16 @@ TARGET_LINK_LIBRARIES(vo_test ${DEPS})
 
 # UTILS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/utils)
+FILE(COPY utils/data DESTINATION ${PROJECT_BINARY_DIR}/utils)
 
 ADD_EXECUTABLE(calibration utils/calibration.cpp)
 TARGET_LINK_LIBRARIES(calibration ${DEPS})
 
-ADD_EXECUTABLE(video_capture utils/video_capture.cpp)
-TARGET_LINK_LIBRARIES(video_capture ${DEPS})
-
 ADD_EXECUTABLE(feature_demo utils/feature_demo.cpp)
 TARGET_LINK_LIBRARIES(feature_demo ${DEPS})
+
+ADD_EXECUTABLE(optical_flow utils/optical_flow.cpp)
+TARGET_LINK_LIBRARIES(optical_flow ${DEPS})
+
+ADD_EXECUTABLE(video_capture utils/video_capture.cpp)
+TARGET_LINK_LIBRARIES(video_capture ${DEPS})

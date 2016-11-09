@@ -1,5 +1,5 @@
-#ifndef __SLAM_EKF_HPP__
-#define __SLAM_EKF_HPP__
+#ifndef __SLAM_ESTIMATION_EKF_HPP__
+#define __SLAM_ESTIMATION_EKF_HPP__
 
 #include <iostream>
 #include <functional>

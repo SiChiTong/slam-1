@@ -1,5 +1,5 @@
-#ifndef __SLAM_SBGC_HPP__
-#define __SLAM_SBGC_HPP__
+#ifndef __SLAM_GIMBAL_SBGC_HPP__
+#define __SLAM_GIMBAL_SBGC_HPP__
 
 #include <errno.h>
 #include <fcntl.h>
