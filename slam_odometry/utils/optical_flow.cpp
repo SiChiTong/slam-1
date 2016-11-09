@@ -3,7 +3,7 @@
 
 #include <Eigen/Dense>
 
-#include "slam/feature/fast.hpp"
+#include "slam/vision/fast.hpp"
 #include "slam/optimization/eight_point.hpp"
 
 #include "slam/odometry/odometry.hpp"

@@ -1,7 +1,7 @@
 #ifndef __SLAM_ODOMETRY_HPP__
 #define __SLAM_ODOMETRY_HPP__
 
-#include "slam/camera/camera.hpp"
+#include "slam/vision/camera.hpp"
 
 
 namespace slam {

@@ -1,7 +1,7 @@
 #include <Eigen/Dense>
 
 #include "slam/utils/munit.hpp"
-#include "slam/feature/fast.hpp"
+#include "slam/vision/fast.hpp"
 #include "slam/odometry/odometry.hpp"
 
 #define TEST_IMAGE_1 "tests/data/sample_0.jpg"

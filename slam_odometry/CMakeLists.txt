@@ -59,8 +59,7 @@ SET(
     DEPS
     slam_odometry
     slam_optimization
-    slam_feature
-    slam_camera
+    slam_vision
     slam_utils
     yaml-cpp
     ${OPENCV3_LIBS}
