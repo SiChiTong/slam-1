@@ -26,6 +26,8 @@ LINK_DIRECTORIES(
 ADD_LIBRARY(
     slam_optimization
     STATIC
+    src/ba.cpp
+    src/lls.cpp
     src/ransac.cpp
 )
 SET(
@@ -43,3 +45,6 @@ FILE(COPY scripts DESTINATION ${PROJECT_BINARY_DIR})
 
 ADD_EXECUTABLE(ransac_test tests/ransac_test.cpp)
 TARGET_LINK_LIBRARIES(ransac_test ${DEPS})
+
+ADD_EXECUTABLE(lls_test tests/lls_test.cpp)
+TARGET_LINK_LIBRARIES(lls_test ${DEPS})

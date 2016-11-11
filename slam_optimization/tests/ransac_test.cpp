@@ -4,7 +4,8 @@
 #include <string>
 
 #include "slam/utils/munit.hpp"
-#include "slam/utils/utils.hpp"
+#include "slam/utils/math.hpp"
+#include "slam/utils/data.hpp"
 #include "slam/optimization/ransac.hpp"
 
 #define TEST_DATA "tests/data/ransac/ransac_sample.dat"
@@ -18,55 +19,6 @@ int testRANSACComputeDistances(void);
 int testRANSACComputeInliers(void);
 int testRANSACUpdate(void);
 void testSuite(void);
-
-
-slam::MatX load_data(void)
-{
-    int line_no;
-    int nb_lines;
-    std::string line;
-    std::ifstream infile(TEST_DATA);
-    std::vector<double> vdata;
-    std::string element;
-    double value;
-    slam::MatX data;
-
-    // load file
-    if (infile.good() != true) {
-        printf("ERROR: FAILED TO LOAD TEST DATA [%s]!!\n", TEST_DATA);
-        exit(-1);
-    }
-
-    // obtain number of lines
-    nb_lines = 0;
-    while (std::getline(infile, line)) {
-        nb_lines++;
-    }
-
-    // rewind file
-    infile.clear();
-    infile.seekg(0);
-
-    // parse file line by line
-    line_no = 0;
-    data.resize(2, nb_lines - 1);
-    while (std::getline(infile, line)) {
-        std::istringstream ss(line);
-
-        if (line_no != 0) {  // skip header line
-            // assuming data is 2 columns
-            for (int i = 0; i < 2; i++) {
-                std::getline(ss, element, ',');
-                value = atof(element.c_str());
-                data(i, line_no - 1) = value;
-            }
-        }
-
-        line_no++;
-    }
-
-    return data;
-}
 
 int testRANSAC(void)
 {
@@ -210,15 +162,17 @@ int testRANSACUpdate(void)
 int testRANSACOptimize(void)
 {
     slam::MatX data;
+    slam::MatX x;
     slam::RANSAC ransac;
 
     // setup
-    data = load_data();
+    slam::csv2mat(TEST_DATA, true, data);
+    x = data.transpose();
     ransac.configure(40, 0.5, 5);
 
     // test and assert
     clock_t begin = clock();
-    ransac.optimize(data);
+    ransac.optimize(x);
     clock_t end = clock();
 
     double secs = double(end - begin) / CLOCKS_PER_SEC;

@@ -9,6 +9,7 @@
 
 #include <Eigen/Dense>
 
+#include "slam/utils/math.hpp"
 #include "slam/utils/utils.hpp"
 
 

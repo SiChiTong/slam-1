@@ -8,7 +8,6 @@
 
 namespace slam {
 
-/* LOG */
 #define ERROR_FORMAT "[ERROR] (%s:%d) "
 #define WARN_FORMAT "[WARN] (%s:%d) "
 #define INFO_FORMAT "[INFO] "

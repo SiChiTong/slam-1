@@ -5,6 +5,7 @@
 
 #include "slam/utils/munit.hpp"
 #include "slam/utils/utils.hpp"
+#include "slam/utils/math.hpp"
 
 #include "slam/vision/eight_point.hpp"
 
