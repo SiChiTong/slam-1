@@ -1,6 +1,8 @@
 #ifndef __SLAM_OPTIMIZATION_LLS_HPP__
 #define __SLAM_OPTIMIZATION_LLS_HPP__
 
+#include "slam/utils/utils.hpp"
+
 
 namespace slam {
 
@@ -11,7 +13,7 @@ public:
 
     LLSSolver(void);
     int configure(void);
-    int solve(void);
+    int solve(MatX A, MatX b, VecX &x);
 };
 
 }  // end of slam namespace

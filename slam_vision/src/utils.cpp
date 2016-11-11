@@ -3,7 +3,7 @@
 
 namespace slam {
 
-void cvmat2emat(cv::Mat A, MatX &B)
+void cvmat2mat(cv::Mat A, MatX &B)
 {
     B.resize(A.rows, A.cols);
     for (int i = 0; i < A.rows; i++) {
@@ -13,7 +13,7 @@ void cvmat2emat(cv::Mat A, MatX &B)
     }
 }
 
-void cvpts2emat(std::vector<cv::Point2f> points, slam::MatX &mat)
+void cvpts2mat(std::vector<cv::Point2f> points, slam::MatX &mat)
 {
     cv::Point2f p;
 

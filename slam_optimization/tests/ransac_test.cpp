@@ -3,7 +3,8 @@
 #include <sstream>
 #include <string>
 
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/math.hpp"
 #include "slam/utils/data.hpp"
 #include "slam/optimization/ransac.hpp"
@@ -11,54 +12,41 @@
 #define TEST_DATA "tests/data/ransac/ransac_sample.dat"
 
 
-// TEST FUNCTIONS
-int testRANSAC(void);
-int testRANSACConfigure(void);
-int testRANSACRandomSample(void);
-int testRANSACComputeDistances(void);
-int testRANSACComputeInliers(void);
-int testRANSACUpdate(void);
-void testSuite(void);
-
-int testRANSAC(void)
+TEST(RANSAC, constructor)
 {
     slam::RANSAC ransac;
 
-    mu_check(ransac.configured == false);
+    ASSERT_EQ(ransac.configured, false);
 
-    mu_check(ransac.max_iter == 0);
-    mu_check(fltcmp(ransac.thresh_ratio, 1.0) == 0);
-    mu_check(fltcmp(ransac.thresh_dist, 0.0) == 0);
+    ASSERT_EQ(ransac.max_iter, 0);
+    ASSERT_FLOAT_EQ(ransac.thresh_ratio, 1.0);
+    ASSERT_FLOAT_EQ(ransac.thresh_dist, 0.0);
 
-    mu_check(ransac.iter == 0);
-    mu_check(ransac.max_inliers == 0);
-    mu_check(fltcmp(ransac.model_params[0], 0.0) == 0);
-    mu_check(fltcmp(ransac.model_params[1], 0.0) == 0);
-
-    return 0;
+    ASSERT_EQ(ransac.iter, 0);
+    ASSERT_EQ(ransac.max_inliers, 0);
+    ASSERT_FLOAT_EQ(ransac.model_params[0], 0.0);
+    ASSERT_FLOAT_EQ(ransac.model_params[1], 0.0);
 }
 
-int testRANSACConfigure(void)
+TEST(RANSAC, configure)
 {
     slam::RANSAC ransac;
 
     ransac.configure(10, 0.8, 0.1);
 
-    mu_check(ransac.configured == true);
+    ASSERT_EQ(ransac.configured, true);
 
-    mu_check(ransac.max_iter == 10);
-    mu_check(fltcmp(ransac.thresh_ratio, 0.8) == 0);
-    mu_check(fltcmp(ransac.thresh_dist, 0.1) == 0);
+    ASSERT_EQ(ransac.max_iter, 10);
+    ASSERT_FLOAT_EQ(ransac.thresh_ratio, 0.8);
+    ASSERT_FLOAT_EQ(ransac.thresh_dist, 0.1);
 
-    mu_check(ransac.iter == 0);
-    mu_check(ransac.max_inliers == 0);
-    mu_check(fltcmp(ransac.model_params[0], 0.0) == 0);
-    mu_check(fltcmp(ransac.model_params[1], 0.0) == 0);
-
-    return 0;
+    ASSERT_EQ(ransac.iter, 0);
+    ASSERT_EQ(ransac.max_inliers, 0);
+    ASSERT_FLOAT_EQ(ransac.model_params[0], 0.0);
+    ASSERT_FLOAT_EQ(ransac.model_params[1], 0.0);
 }
 
-int testRANSACRandomSample(void)
+TEST(RANSAC, RandomSample)
 {
     int retval;
     slam::Vec2 sample;
@@ -76,14 +64,12 @@ int testRANSACRandomSample(void)
     sample << -1, -1;
     retval = ransac.randomSample(data, sample);
 
-    mu_check(retval == 0);
-    mu_check(sample(0) != -1);
-    mu_check(sample(1) != -1);
-
-    return 0;
+    ASSERT_EQ(retval, 0);
+    ASSERT_NE(sample(0), -1);
+    ASSERT_NE(sample(1), -1);
 }
 
-int testRANSACComputeDistances(void)
+TEST(RANSAC, computeDistances)
 {
     int retval;
     slam::MatX data(2, 100);
@@ -104,12 +90,10 @@ int testRANSACComputeDistances(void)
     ransac.randomSample(data, p2);
     retval = ransac.computeDistances(data, p1, p2, dists);
 
-    mu_check(retval == 0);
-
-    return 0;
+    ASSERT_EQ(retval, 0);
 }
 
-int testRANSACComputeInliers(void)
+TEST(RANSAC, computeInliers)
 {
     int retval;
     slam::RANSAC ransac;
@@ -121,18 +105,16 @@ int testRANSACComputeInliers(void)
 
     // test and assert
     retval = ransac.computeInliers(dists);
-    mu_check(retval == 0);
-    mu_check(ransac.inliers.size() == 5);
-    mu_check(fltcmp(ransac.inliers[0], 0) == 0);
-    mu_check(fltcmp(ransac.inliers[1], 1) == 0);
-    mu_check(fltcmp(ransac.inliers[2], 2) == 0);
-    mu_check(fltcmp(ransac.inliers[3], 3) == 0);
-    mu_check(fltcmp(ransac.inliers[4], 4) == 0);
-
-    return 0;
+    ASSERT_EQ(retval, 0);
+    ASSERT_EQ(ransac.inliers.size(), 5);
+    ASSERT_EQ(ransac.inliers[0], 0);
+    ASSERT_EQ(ransac.inliers[1], 1);
+    ASSERT_EQ(ransac.inliers[2], 2);
+    ASSERT_EQ(ransac.inliers[3], 3);
+    ASSERT_EQ(ransac.inliers[4], 4);
 }
 
-int testRANSACUpdate(void)
+TEST(RANSAC, update)
 {
     int retval;
     slam::RANSAC ransac;
@@ -152,14 +134,12 @@ int testRANSACUpdate(void)
 
     // test and assert
     retval = ransac.update(p1, p2);
-    mu_check(ransac.max_inliers = 4);
-    mu_check(fltcmp(ransac.model_params[0], 1) == 0);
-    mu_check(fltcmp(ransac.model_params[1], 1) == 0);
-
-    return 0;
+    ASSERT_EQ(ransac.max_inliers, 4);
+    ASSERT_FLOAT_EQ(ransac.model_params[0], 1.0);
+    ASSERT_FLOAT_EQ(ransac.model_params[1], 1.0);
 }
 
-int testRANSACOptimize(void)
+TEST(RANSAC, optimize)
 {
     slam::MatX data;
     slam::MatX x;
@@ -178,23 +158,14 @@ int testRANSACOptimize(void)
     double secs = double(end - begin) / CLOCKS_PER_SEC;
     std::cout << "elasped: " << secs << " seconds" << std::endl;
 
-    mu_check(ransac.model_params[0] < 23);
-    mu_check(ransac.model_params[0] > 18);
-    mu_check(ransac.model_params[1] < 13);
-    mu_check(ransac.model_params[1] > 8);
-
-    return 0;
+    ASSERT_TRUE(ransac.model_params[0] < 23);
+    ASSERT_TRUE(ransac.model_params[0] > 18);
+    ASSERT_TRUE(ransac.model_params[1] < 13);
+    ASSERT_TRUE(ransac.model_params[1] > 8);
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testRANSAC);
-    mu_add_test(testRANSACConfigure);
-    mu_add_test(testRANSACRandomSample);
-    mu_add_test(testRANSACComputeDistances);
-    mu_add_test(testRANSACComputeInliers);
-    mu_add_test(testRANSACUpdate);
-    mu_add_test(testRANSACOptimize);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite);
