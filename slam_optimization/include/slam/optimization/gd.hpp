@@ -8,23 +8,28 @@
 
 namespace slam {
 
-class GDSolver
+#define EGDC "GDOpt is not configured!"
+#define EGDF "Failed to execute GDOpt.f() [%s]"
+
+class GDOpt
 {
 public:
     bool configured;
 
     int max_iter;
-    int nb_functions;
-    int nb_unknowns;
     VecX eta;
     VecX x;
-    std::function<VecX (VecX x)> f;
-    std::function<MatX (VecX x)> diff_func;
+    std::function<double (VecX x)> f;
 
-    GDSolver(void);
-    int configure(int max_iter, VecX eta, VecX x);
-    int calcJacobian(MatX &J);
-    int solve(void);
+    GDOpt(void);
+    int configure(
+        int max_iter,
+        VecX eta,
+        VecX x,
+        std::function<double (VecX x)> f
+    );
+    int calcGradient(VecX &df);
+    int optimize(void);
 };
 
 }  // end of slam namespace

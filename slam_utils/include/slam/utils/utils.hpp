@@ -10,6 +10,7 @@
 #include "slam/utils/data.hpp"
 #include "slam/utils/math.hpp"
 #include "slam/utils/time.hpp"
+#include "slam/utils/logging.hpp"
 
 
 namespace slam {

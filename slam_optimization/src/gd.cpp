@@ -3,83 +3,88 @@
 
 namespace slam {
 
-slam::VecX beale(slam::VecX x)
-{
-    slam::VecX y(1);
-
-    y << pow((1.5 - x(0) + x(0) * x(1)), 2)
-         + pow((2.25 - x(0) + x(0) * pow(x(1), 2)), 2)
-         + pow((2.625 - x(0) + x(0) * pow(x(1), 3)), 2);
-
-    return y;
-}
-
-GDSolver::GDSolver(void)
+GDOpt::GDOpt(void)
 {
     this->configured = false;
 
     this->max_iter = 1000;
+    this->eta;
+    this->x;
+    this->f;
 }
 
-int GDSolver::configure(int max_iter, VecX eta, VecX x)
+int GDOpt::configure(
+    int max_iter,
+    VecX eta,
+    VecX x,
+    std::function<double (VecX x)> f
+)
 {
     this->configured = true;
 
     this->max_iter = max_iter;
     this->eta = eta;
     this->x = x;
+    this->f = f;
 
     return 0;
 }
 
-int GDSolver::calcJacobian(MatX &J)
+int GDOpt::calcGradient(VecX &df)
 {
     double step;
     VecX px, nx;
 
-    // pre-check
-    if (this->configured == false) {
-        return -1;
-    }
+    try {
+        // pre-check
+        if (this->configured == false) {
+            LOG_ERROR(EGDC);
+            return -1;
+        }
 
-    // setup
-    step = 0.001;
-    px.resize(this->nb_unknowns);
-    nx.resize(this->nb_unknowns);
+        // setup
+        step = 0.001;
 
-    // calculate jacobian
-    for (int i = 0; i < this->nb_functions; i++) {
-        for (int j = 0; j < this->nb_unknowns; j++) {
+        // calculate gradient using central finite difference
+        for (int i = 0; i < this->x.rows(); i++) {
             px = this->x;
             nx = this->x;
-            px(j) += step;
-            nx(j) -= step;
-
-            J.block(i, j, 1, 1) = (this->f(px) - this->f(nx)) / (step * 2);
+            px(i) += step;
+            nx(i) -= step;
+            df(i) = (this->f(px) - this->f(nx)) / (step * 2);
         }
+
+    } catch(const std::bad_function_call& e) {
+        LOG_ERROR(EGDF, e.what());
+        return -2;
     }
 
     return 0;
 }
 
-int GDSolver::solve(void)
+int GDOpt::optimize(void)
 {
-    MatX J;
-    VecX G;
+    VecX df;
 
-    // pre-check
-    if (this->configured == false) {
-        return -1;
-    }
+    try {
+        // pre-check
+        if (this->configured == false) {
+            LOG_ERROR(EGDC);
+            return -1;
+        }
 
-    // setup
-    J.resize(this->nb_functions, this->nb_unknowns);
+        // setup
+        df.resize(this->x.rows(), 1);
 
-    // optimize
-    for (int i = 0; i < this->max_iter; i++) {
-        this->calcJacobian(J);
-        G = this->f(this->x);
-        this->x = this->x - this->eta.cwiseProduct(J.transpose() * G);
+        // optimize
+        for (int i = 0; i < this->max_iter; i++) {
+            this->calcGradient(df);
+            this->x = this->x - this->eta.cwiseProduct(df);
+        }
+
+    } catch(const std::bad_function_call& e) {
+        LOG_ERROR(EGDF, e.what());
+        return -2;
     }
 
     return 0;

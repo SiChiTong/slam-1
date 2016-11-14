@@ -3,64 +3,90 @@
 #include <gtest/gtest.h>
 
 #include "slam/optimization/gd.hpp"
+#include "slam/optimization/benchmark.hpp"
 
 
-slam::VecX beale(slam::VecX x)
+TEST(GDOpt, constructor)
 {
-    slam::VecX y(1);
-
-    y << pow((1.5 - x(0) + x(0) * x(1)), 2)
-         + pow((2.25 - x(0) + x(0) * pow(x(1), 2)), 2)
-         + pow((2.625 - x(0) + x(0) * pow(x(1), 3)), 2);
-
-    return y;
+    slam::GDOpt opt;
+    ASSERT_EQ(opt.configured, false);
 }
 
-TEST(GDSolver, constructor)
-{
-    slam::GDSolver solver;
-    ASSERT_EQ(solver.configured, false);
-}
-
-TEST(GDSolver, configure)
+TEST(GDOpt, configure)
 {
     int max_iter;
     slam::VecX eta(2);
     slam::VecX x(2);
-    slam::GDSolver solver;
+    slam::GDOpt opt;
 
     max_iter = 1000;
     eta << 1.0, 1.0;
     x << 0.0, 0.0;
 
-    solver.configure(max_iter, eta, x);
-    ASSERT_EQ(solver.configured, true);
-    ASSERT_EQ(solver.max_iter, 1000);
-    ASSERT_FLOAT_EQ(solver.eta(0), 1.0);
+    opt.configure(
+        max_iter,
+        eta,
+        x,
+        std::bind(slam::beale, std::placeholders::_1)
+    );
+
+    ASSERT_EQ(true, opt.configured);
+    ASSERT_EQ(max_iter, opt.max_iter);
+    ASSERT_FLOAT_EQ(eta(0), opt.eta(0));
+    ASSERT_FLOAT_EQ(eta(1), opt.eta(1));
+    ASSERT_FLOAT_EQ(x(0), opt.x(0));
+    ASSERT_FLOAT_EQ(x(1), opt.x(1));
 }
 
-TEST(GDSolver, solve)
+TEST(GDOpt, calcGradient)
 {
     int max_iter;
     slam::VecX eta(2);
     slam::VecX x(2);
-    slam::GDSolver solver;
+    slam::VecX df(2, 1);
+    slam::GDOpt opt;
 
-    max_iter = 100000;
+    max_iter = 1000;
+    eta << 1.0, 1.0;
+    x << 0.0, 0.0;
+
+    opt.configure(
+        max_iter,
+        eta,
+        x,
+        std::bind(slam::beale, std::placeholders::_1)
+    );
+    opt.calcGradient(df);
+    // std::cout << df << std::endl;
+
+    ASSERT_FLOAT_EQ(-12.75, df(0));
+    ASSERT_FLOAT_EQ(0.0, df(1));
+}
+
+TEST(GDOpt, optimize)
+{
+    int max_iter;
+    slam::VecX eta(2);
+    slam::VecX x(2);
+    slam::GDOpt opt;
+
+    max_iter = 10000;
     eta << 0.006, 0.006;
     x << 0.0, 0.0;
 
-    solver.configure(max_iter, eta, x);
-    solver.diff_func = std::bind(diff_func, std::placeholders::_1);
-    solver.f = std::bind(beale, std::placeholders::_1);
-    solver.nb_functions = 1;
-    solver.nb_unknowns = 2;
-    solver.solve();
+    opt.configure(
+        max_iter,
+        eta,
+        x,
+        std::bind(slam::beale, std::placeholders::_1)
+    );
+    opt.optimize();
+    // std::cout << opt.x << std::endl;
 
-    ASSERT_TRUE(solver.x(0) > 2.8);
-    ASSERT_TRUE(solver.x(0) <= 3.0);
-    ASSERT_TRUE(solver.x(1) > 0.4);
-    ASSERT_TRUE(solver.x(1) <= 0.5);
+    ASSERT_TRUE(opt.x(0) > 2.7);
+    ASSERT_TRUE(opt.x(0) <= 3.0);
+    ASSERT_TRUE(opt.x(1) > 0.4);
+    ASSERT_TRUE(opt.x(1) <= 0.5);
 }
 
 int main(int argc, char* argv[])

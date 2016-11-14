@@ -63,4 +63,16 @@ MatX kronecker_product(MatX A, MatX B)
     return C;
 }
 
+bool isposdef(MatX A)
+{
+    // cholesky decomposition of A
+    Eigen::LLT<MatX> llt(A);
+
+    if (llt.info() == Eigen::NumericalIssue) {
+        return false;
+    }
+
+    return true;
+}
+
 }  // end of slam namespace

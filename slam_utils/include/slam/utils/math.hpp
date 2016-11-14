@@ -30,6 +30,7 @@ float deg2rad(float d);
 float rad2deg(float r);
 int fltcmp(float f1, float f2);
 MatX kronecker_product(MatX A, MatX B);
+bool isposdef(MatX A);
 
 } // end of slam namespace
 #endif
