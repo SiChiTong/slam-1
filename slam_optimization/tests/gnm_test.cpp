@@ -6,13 +6,13 @@
 #include "slam/optimization/benchmark.hpp"
 
 
-static VecX test_function(VecX x)
+static slam::VecX test_function(slam::VecX x)
 {
-    VecX out(3);
+    slam::VecX out(3);
 
-    out << slam::ackley(x),
+    out << slam::beale(x),
            slam::beale(x),
-           slam::booth(x);
+           slam::beale(x);
 
     return out;
 }
@@ -26,23 +26,22 @@ TEST(GNMOpt, constructor)
 TEST(GNMOpt, configure)
 {
     int max_iter;
-    int nb_funcs;
-    int nb_params;
+    int m;
     slam::VecX eta(2);
     slam::VecX x(2);
     slam::GNMOpt opt;
 
     max_iter = 1000;
-    nb_funcs = 1;
-    nb_params = 2;
+    m = 1;
     eta << 1.0, 1.0;
     x << 0.0, 0.0;
 
     opt.configure(
         max_iter,
+        m,
         eta,
         x,
-        std::bind(test_functions, std::placeholders::_1)
+        std::bind(test_function, std::placeholders::_1)
     );
 
     ASSERT_EQ(opt.configured, true);
@@ -53,26 +52,28 @@ TEST(GNMOpt, configure)
     ASSERT_FLOAT_EQ(opt.x(1), x(1));
 }
 
-
 TEST(GNMOpt, optimize)
 {
     int max_iter;
+    int m;
     slam::VecX eta(2);
     slam::VecX x(2);
     slam::GNMOpt opt;
 
-    max_iter = 10000;
-    eta << 1.0, 1.0;
-    x << 1.0, 2.0;
+    max_iter = 2;
+    m = 3;
+    eta << 0.001, 0.001;
+    x << 0.5, 1.0;
 
     opt.configure(
         max_iter,
+        m,
         eta,
         x,
-        std::bind(test_functions, std::placeholders::_1)
+        std::bind(test_function, std::placeholders::_1)
     );
     opt.optimize();
-    std::cout << opt.x << std::endl;
+    // std::cout << opt.x << std::endl;
 
     // ASSERT_TRUE(opt.x(0) > 2.7);
     // ASSERT_TRUE(opt.x(0) <= 3.0);

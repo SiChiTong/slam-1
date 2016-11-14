@@ -20,6 +20,7 @@ public:
     int max_iter;
     double step;
 
+    int m;
     VecX eta;
     VecX x;
     std::function<VecX (VecX x)> f;
@@ -27,6 +28,7 @@ public:
     GNMOpt(void);
     int configure(
         int max_iter,
+        int m,
         VecX eta,
         VecX x,
         std::function<VecX (VecX x)> f

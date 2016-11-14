@@ -79,7 +79,7 @@ int GDOpt::optimize(void)
         // optimize
         for (int i = 0; i < this->max_iter; i++) {
             this->calcGradient(df);
-            this->x = this->x - this->eta.cwiseProduct(df);
+            this->x -= this->eta.cwiseProduct(df);
         }
 
     } catch(const std::bad_function_call& e) {

@@ -10,6 +10,7 @@ GNMOpt::GNMOpt(void)
     this->max_iter = 0;
     this->step = 0;
 
+    this->m = 0;
     this->eta;
     this->x;
     this->f = NULL;
@@ -17,6 +18,7 @@ GNMOpt::GNMOpt(void)
 
 int GNMOpt::configure(
     int max_iter,
+    int m,
     VecX eta,
     VecX x,
     std::function<VecX (VecX x)> f
@@ -25,8 +27,9 @@ int GNMOpt::configure(
     this->configured = true;
 
     this->max_iter = max_iter;
-    this->step = 0.0001;
+    this->step = 0.1;
 
+    this->m = m;
     this->eta = eta;
     this->x = x;
     this->f = f;
@@ -36,8 +39,7 @@ int GNMOpt::configure(
 
 int GNMOpt::calcJacobian(MatX &J)
 {
-    double step;
-    VecX px, nx;
+    VecX px, nx, cfd;
 
     // pre-check
     if (this->configured == false) {
@@ -45,15 +47,14 @@ int GNMOpt::calcJacobian(MatX &J)
     }
 
     // calculate jacobian
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < this->x.rows(); j++) {
-            px = this->x;
-            nx = this->x;
-            px(j) += step;
-            nx(j) -= step;
+    for (int j = 0; j < this->x.rows(); j++) {
+        px = this->x;
+        nx = this->x;
+        px(j) += this->step;
+        nx(j) -= this->step;
 
-            J.block(i, j, 3, 1) = (this->f(px) - this->f(nx)) / (step * 2);
-        }
+        cfd = (this->f(px) - this->f(nx)) / (this->step * 2);
+        J.block(0, j, this->m, 1) = cfd;
     }
 
     return 0;
@@ -61,8 +62,8 @@ int GNMOpt::calcJacobian(MatX &J)
 
 int GNMOpt::optimize(void)
 {
-    VecX df;
-    VecX H_approx;
+    MatX J;
+    MatX H_approx;
     VecX g;
 
     try {
@@ -73,16 +74,15 @@ int GNMOpt::optimize(void)
         }
 
         // setup
-        df.resize(this->x.rows(), 1);
-        H_approx.resize(, 1);
+        J.resize(this->m, this->x.rows());
+        H_approx.resize(this->x.rows(), this->x.rows());
 
         // optimize
         for (int i = 0; i < this->max_iter; i++) {
-            this->calcGradient(df);
-            H_approx = (df.transpose() * df).inverse();
-            g = df.transpose() * this->f(this->x);
-
-            this->x = this->x - this->eta.cwiseProduct(H_approx.inverse() * g);
+            this->calcJacobian(J);
+            H_approx = (J.transpose() * J).inverse();
+            g = J.transpose() * this->f(this->x);
+            this->x -= this->eta.cwiseProduct(H_approx.inverse() * g);
         }
 
     } catch(const std::bad_function_call& e) {

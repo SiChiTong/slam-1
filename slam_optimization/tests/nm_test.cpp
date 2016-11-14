@@ -5,6 +5,10 @@
 #include "slam/optimization/nm.hpp"
 #include "slam/optimization/benchmark.hpp"
 
+double test_function(slam::VecX x)
+{
+    return pow(x(0), 2) + pow(x(1), 2);
+}
 
 TEST(NMOpt, constructor)
 {
@@ -31,7 +35,7 @@ TEST(NMOpt, configure)
         max_iter,
         eta,
         x,
-        std::bind(slam::sphere, std::placeholders::_1)
+        std::bind(slam::beale, std::placeholders::_1)
     );
 
     ASSERT_EQ(opt.configured, true);
@@ -52,29 +56,19 @@ TEST(NMOpt, calcGradient)
 
     max_iter = 1000;
     eta << 1.0, 1.0;
-    x << 1.0, 2.0;
+    x << 0.0, 0.0;
 
     opt.configure(
         max_iter,
         eta,
         x,
-        std::bind(slam::sphere, std::placeholders::_1)
+        std::bind(test_function, std::placeholders::_1)
     );
     opt.calcGradient(df);
-    std::cout << df << std::endl;
+    // std::cout << df << std::endl;
 
-    // ASSERT_FLOAT_EQ(-12.75, df(0));
-    // ASSERT_FLOAT_EQ(0.0, df(1));
-}
-
-TEST(NMOpt, forwardInnerPartialDerivative)
-{
-
-}
-
-TEST(NMOpt, backwardInnerPartialDerivative)
-{
-
+    ASSERT_FLOAT_EQ(0.0, df(0));
+    ASSERT_FLOAT_EQ(0.0, df(1));
 }
 
 TEST(NMOpt, calcHessian)
@@ -87,16 +81,15 @@ TEST(NMOpt, calcHessian)
 
     max_iter = 1000;
     eta << 1.0, 1.0;
-    x << 1.0, 2.0;
+    x << 0.0, 0.0;
 
     opt.configure(
         max_iter,
         eta,
         x,
-        std::bind(slam::sphere, std::placeholders::_1)
+        std::bind(test_function, std::placeholders::_1)
     );
     opt.calcHessian(H);
-
     // std::cout << H << std::endl;
 }
 
@@ -107,23 +100,23 @@ TEST(NMOpt, optimize)
     slam::VecX x(2);
     slam::NMOpt opt;
 
-    max_iter = 10000;
-    eta << 1.0, 1.0;
-    x << 1.0, 2.0;
+    max_iter = 100;
+    eta << 0.1, 0.1;
+    x << 2.0, 2.0;
 
     opt.configure(
         max_iter,
         eta,
         x,
-        std::bind(slam::sphere, std::placeholders::_1)
+        std::bind(test_function, std::placeholders::_1)
     );
     opt.optimize();
-    std::cout << opt.x << std::endl;
+    // std::cout << opt.x << std::endl;
 
-    // ASSERT_TRUE(opt.x(0) > 2.7);
-    // ASSERT_TRUE(opt.x(0) <= 3.0);
-    // ASSERT_TRUE(opt.x(1) > 0.4);
-    // ASSERT_TRUE(opt.x(1) <= 0.5);
+    ASSERT_TRUE(opt.x(0) > -0.1);
+    ASSERT_TRUE(opt.x(0) < 0.1);
+    ASSERT_TRUE(opt.x(1) > -0.1);
+    ASSERT_TRUE(opt.x(1) < 0.1);
 }
 
 int main(int argc, char* argv[])

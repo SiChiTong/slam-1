@@ -25,7 +25,7 @@ int NMOpt::configure(
     this->configured = true;
 
     this->max_iter = max_iter;
-    this->step = 0.0001;
+    this->step = 0.000001;
 
     this->eta = eta;
     this->x = x;
@@ -45,7 +45,7 @@ int NMOpt::calcGradient(VecX &df)
             return -1;
         }
 
-        // calculate gradient using central finite difference
+        // calculate gradient - central finite difference
         for (int i = 0; i < this->x.rows(); i++) {
             px = this->x;
             nx = this->x;
@@ -127,6 +127,7 @@ int NMOpt::optimize(void)
     VecX df;
     MatX H;
     MatX H_inv;
+    double y;
 
     try {
         // pre-check
@@ -138,19 +139,31 @@ int NMOpt::optimize(void)
         // setup
         df.resize(this->x.rows(), 1);
         H.resize(this->x.rows(), this->x.rows());
-
-        // calculate Hessian and inverse it
         this->calcHessian(H);
-        if (isposdef(H) == false) {
-            LOG_ERROR(ENMH);
-            return -3;
-        }
-        H_inv = H.inverse();
 
         // optimize
-        for (int i = 0; i < this->max_iter; i++) {
-            this->calcGradient(df);
-            this->x = this->x - this->eta.cwiseProduct(H_inv * df);
+        if (isposdef(H)) {
+            H_inv = H.inverse();
+            for (int i = 0; i < this->max_iter; i++) {
+                this->calcGradient(df);
+                this->x -= this->eta.cwiseProduct(H_inv * df);
+            }
+
+
+        } else {
+            LOG_INFO(ENMH);
+
+            for (int i = 0; i < this->max_iter; i++) {
+                this->calcGradient(df);
+                y = this->f(this->x);
+
+                for (int j = 0; j < this->x.rows(); j++) {
+                    if (fltcmp(df(j), 0.0) == 0) {
+                        this->x(j) -= this->eta(j) * y / df(j);
+                    }
+                }
+            }
+
         }
 
     } catch(const std::bad_function_call& e) {
