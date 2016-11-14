@@ -7,12 +7,14 @@ ENDIF()
 
 # PACKAGES
 FIND_PACKAGE(GTest REQUIRED)
+FIND_PACKAGE(Ceres REQUIRED)
 
 
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/include/
     /usr/include/eigen3
+    ${CERES_INCLUDE_DIRS}
     /usr/local/include
     include
 )
@@ -41,6 +43,7 @@ SET(
     DEPS
     slam_optimization
     slam_utils
+    ${CERES_LIBRARIES}
     ${GTEST_LIBRARIES}
     pthread
 )
@@ -51,6 +54,9 @@ SET(
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 FILE(COPY tests/data DESTINATION ${PROJECT_BINARY_DIR}/tests)
 FILE(COPY scripts DESTINATION ${PROJECT_BINARY_DIR})
+
+ADD_EXECUTABLE(ba_test tests/ba_test.cpp)
+TARGET_LINK_LIBRARIES(ba_test ${DEPS})
 
 ADD_EXECUTABLE(gd_test tests/gd_test.cpp)
 TARGET_LINK_LIBRARIES(gd_test ${DEPS})
