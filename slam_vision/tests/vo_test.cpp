@@ -1,6 +1,5 @@
-#include <Eigen/Dense>
+#include <gtest/gtest.h>
 
-#include "slam/utils/munit.hpp"
 #include "slam/vision/fast.hpp"
 #include "slam/vision/vo.hpp"
 
@@ -10,24 +9,14 @@
 #define TEST_FRAME_2 "tests/data/frame_2.jpg"
 
 
-// TESTS
-int testVisualOdometry(void);
-int testVisualOdometryConfigure(void);
-int testVisualOdometryFeatureTracking(void);
-int testVisualOdometryMeasure(void);
-void testSuite(void);
-
-
-int testVisualOdometry(void)
+TEST(VisualOdometry, constructor)
 {
     slam::VisualOdometry vo;
 
-    mu_check(vo.configured == false);
-
-    return 0;
+    ASSERT_EQ(false, vo.configured);
 }
 
-int testVisualOdometryConfigure(void)
+TEST(VisualOdometry, configure)
 {
     cv::Mat K;
     slam::Camera camera;
@@ -38,12 +27,10 @@ int testVisualOdometryConfigure(void)
     K.at<double>(1, 2) = 3.0;
 
     vo.configure(K);
-    mu_check(vo.configured == true);
-
-    return 0;
+    ASSERT_EQ(true, vo.configured);
 }
 
-int testVisualOdometryFeatureTracking(void)
+TEST(VisualOdometry, featureTracking)
 {
     cv::Mat K;
     cv::Mat mask;
@@ -70,18 +57,16 @@ int testVisualOdometryFeatureTracking(void)
 
     // test and assert
     vo.featureTracking(img_1, img_2, pts_1, pts_2, errors, status);
-    mu_check(pts_1.size() == pts_2.size());
-    mu_check(errors.size() == pts_2.size());
-    mu_check(status.size() == pts_2.size());
+    ASSERT_EQ(pts_2.size(), pts_1.size());
+    ASSERT_EQ(pts_2.size(), errors.size());
+    ASSERT_EQ(pts_2.size(), status.size());
 
     // vo.displayOpticalFlow(img_2, pts_1, pts_2);
     // cv::imshow("Test Feature Tracking", img_2);
     // cv::waitKey(0);
-
-    return 0;
 }
 
-int testVisualOdometryMeasure(void)
+TEST(VisualOdometry, measure)
 {
     cv::Mat K;
     cv::Mat mask;
@@ -113,9 +98,9 @@ int testVisualOdometryMeasure(void)
     // // test and assert
     // std::cout << pts_1.size() << std::endl;
     // vo.featureTracking(img_1, img_2, pts_1, pts_2, errors, status);
-    // mu_check(pts_1.size() == pts_2.size());
-    // mu_check(errors.size() == pts_2.size());
-    // mu_check(status.size() == pts_2.size());
+    // ASSERT_EQ(pts_1.size() == pts_2.size());
+    // ASSERT_EQ(errors.size() == pts_2.size());
+    // ASSERT_EQ(status.size() == pts_2.size());
     //
     // vo.displayOpticalFlow(img_2, pts_1, pts_2);
     // cv::imshow("Frame 1", img_1);
@@ -137,37 +122,6 @@ int testVisualOdometryMeasure(void)
     //     pts_2.push_back(cv::Point2f(5.0, (float) i + 10));
     // }
 
-    pts_1.push_back(cv::Point2f(245.77, 169.57));
-    pts_1.push_back(cv::Point2f(248.66, 105.82));
-    pts_1.push_back(cv::Point2f(263.39, 182.45));
-    pts_1.push_back(cv::Point2f(251.11, 146.54));
-    pts_1.push_back(cv::Point2f(249.88, 197.99));
-    pts_1.push_back(cv::Point2f(287.57, 137.11));
-    pts_1.push_back(cv::Point2f(240.93, 113.15));
-    pts_1.push_back(cv::Point2f(206.84, 171.57));
-    pts_1.push_back(cv::Point2f(224.95, 170.34));
-    pts_1.push_back(cv::Point2f(231.47, 170.21));
-    pts_1.push_back(cv::Point2f(257.55, 124.43));
-    pts_1.push_back(cv::Point2f(264.71, 176.16));
-    pts_1.push_back(cv::Point2f(227.67, 127.05));
-    pts_1.push_back(cv::Point2f(246.01, 113.26));
-    pts_1.push_back(cv::Point2f(244.15, 154.41));
-
-    pts_2.push_back(cv::Point2f(267.07, 172.34));
-    pts_2.push_back(cv::Point2f(252.92, 105.02));
-    pts_2.push_back(cv::Point2f(254.22, 190.25));
-    pts_2.push_back(cv::Point2f(284.33, 145.10));
-    pts_2.push_back(cv::Point2f(236.82, 190.63));
-    pts_2.push_back(cv::Point2f(220.04, 135.11));
-    pts_2.push_back(cv::Point2f(255.90, 114.37));
-    pts_2.push_back(cv::Point2f(259.09, 165.90));
-    pts_2.push_back(cv::Point2f(241.73, 164.27));
-    pts_2.push_back(cv::Point2f(258.62, 168.30));
-    pts_2.push_back(cv::Point2f(277.83, 112.98));
-    pts_2.push_back(cv::Point2f(219.62, 170.46));
-    pts_2.push_back(cv::Point2f(262.91, 129.03));
-    pts_2.push_back(cv::Point2f(250.93, 114.50));
-    pts_2.push_back(cv::Point2f(287.09, 155.89));
 
     cv::Mat dis_coef;
 
@@ -255,16 +209,10 @@ int testVisualOdometryMeasure(void)
     // vo.displayOpticalFlow(img_2, pts_1, pts_2);
     // cv::imshow("Test Feature Tracking", img_2);
     // cv::waitKey(0);
-
-    return 0;
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testVisualOdometry);
-    mu_add_test(testVisualOdometryConfigure);
-    mu_add_test(testVisualOdometryFeatureTracking);
-    mu_add_test(testVisualOdometryMeasure);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)
