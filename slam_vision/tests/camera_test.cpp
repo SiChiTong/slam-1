@@ -1,29 +1,22 @@
-#include "slam/utils/munit.hpp"
-#include "slam/vision/camera.hpp"
+#include <gtest/gtest.h>
 
+#include "slam/vision/camera.hpp"
 
 #define CALIB_FILE "tests/data/calibration.yaml"
 
-// TESTS
-int testCamera(void);
-int testCameraConfigure(void);
-void testSuite(void);
 
-
-int testCamera(void)
+TEST(Camera, constructor)
 {
     slam::Camera camera;
 
-    mu_check(camera.configured == false);
-    mu_check(camera.capture == NULL);
-    mu_check(camera.capture_index == 0);
-    mu_check(camera.image_width == 0);
-    mu_check(camera.image_height == 0);
-
-    return 0;
+    ASSERT_EQ(false, camera.configured);
+    ASSERT_EQ(NULL, camera.capture);
+    ASSERT_EQ(0, camera.capture_index);
+    ASSERT_EQ(0, camera.image_width);
+    ASSERT_EQ(0, camera.image_height);
 }
 
-int testCameraConfigure(void)
+TEST(Camera, configure)
 {
     int retval;
     cv::Mat image;
@@ -31,18 +24,16 @@ int testCameraConfigure(void)
 
     // configure camera with index, image dimensions
     retval = camera.configure(0, 320, 240);
-    mu_check(retval == 0);
+    ASSERT_EQ(0, retval);
     camera.close();
 
     // configure camera with index, calibration file
     camera.configure(0, CALIB_FILE);
-    mu_check(retval == 0);
+    ASSERT_EQ(0, retval);
     camera.close();
-
-    return 0;
 }
 
-int testCameraGetFrame(void)
+TEST(Camera, getFrame)
 {
     slam::Camera camera;
     cv::Mat image;
@@ -55,15 +46,10 @@ int testCameraGetFrame(void)
         cv::waitKey(1);
     }
     camera.close();
-
-    return 0;
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testCamera);
-    mu_add_test(testCameraConfigure);
-    mu_add_test(testCameraGetFrame);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)
