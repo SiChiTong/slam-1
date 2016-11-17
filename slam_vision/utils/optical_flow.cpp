@@ -150,12 +150,7 @@ int main(void)
     camera.configure(0, CALIB_FILE);
 
     // setup VO
-    vo.configure();
-    vo.focal_length = camera.camera_mat.at<double>(0, 0);  // fx
-    vo.principle_point = cv::Point2f(
-        camera.camera_mat.at<double>(0, 2),  // cx
-        camera.camera_mat.at<double>(1, 2)   // cy
-    );
+    vo.configure(camera.camera_mat);
     std::cout << "focal length: " << vo.focal_length << std::endl;
     std::cout << "principle point: " << vo.principle_point << std::endl;
 

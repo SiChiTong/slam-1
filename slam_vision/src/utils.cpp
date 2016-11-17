@@ -13,7 +13,7 @@ void cvmat2mat(cv::Mat A, MatX &B)
     }
 }
 
-void cvpts2mat(std::vector<cv::Point2f> points, slam::MatX &mat)
+void cvpts2mat(std::vector<cv::Point2f> points, MatX &mat)
 {
     cv::Point2f p;
 

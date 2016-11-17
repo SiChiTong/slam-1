@@ -7,8 +7,8 @@ namespace slam {
 BundleAdjustment::BundleAdjustment(void)
 {
     this->configured = false;
-    // this->x1_pts.clear();
-    // this->x2_pts.clear();
+    this->x1_pts.clear();
+    this->x2_pts.clear();
 }
 
 // int BundleAdjustment::configure(

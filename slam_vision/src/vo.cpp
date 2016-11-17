@@ -6,14 +6,20 @@ namespace slam {
 VisualOdometry::VisualOdometry(void)
 {
     this->configured = false;
+
+    this->focal_length = 0.0;
+    this->principle_point = cv::Point2f(0.0, 0.0);
 }
 
-int VisualOdometry::configure(void)
+int VisualOdometry::configure(cv::Mat K)
 {
     this->configured = true;
 
-    this->focal_length = 1.0;
-    this->principle_point = cv::Point2f(0.0, 0.0);
+    this->focal_length = K.at<double>(0, 0);  // fx
+    this->principle_point = cv::Point2f(
+        K.at<double>(0, 2),  // cx
+        K.at<double>(1, 2)   // cy
+    );
 
     return 0;
 }

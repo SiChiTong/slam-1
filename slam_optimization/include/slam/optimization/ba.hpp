@@ -5,6 +5,7 @@
 #include <ceres/ceres.h>
 
 #include "slam/utils/utils.hpp"
+#include "slam/vision/vision.hpp"
 
 
 namespace slam {
@@ -113,8 +114,9 @@ class BundleAdjustment
 {
 public:
     bool configured;
-    // std::vector<cv::Point2f> x1_pts;
-    // std::vector<cv::Point2f> x2_pts;
+    Mat3 K;
+    std::vector<cv::Point2f> x1_pts;
+    std::vector<cv::Point2f> x2_pts;
 
     BundleAdjustment(void);
     // int configure(

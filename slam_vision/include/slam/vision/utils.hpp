@@ -11,8 +11,8 @@
 
 namespace slam {
 
-void cvmat2mat(cv::Mat mat, MatX &mat);
-void cvpts2mat(std::vector<cv::Point2f> points, slam::MatX &mat);
+void cvmat2mat(cv::Mat A, MatX &B);
+void cvpts2mat(std::vector<cv::Point2f> points, MatX &mat);
 
 } // end of slam namespace
 #endif

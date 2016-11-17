@@ -5,12 +5,6 @@
 #include "slam/optimization/ba.hpp"
 
 
-TEST(BAResidual, calculate)
-{
-
-}
-
-
 TEST(BundleAdjustment, constructor)
 {
     slam::BundleAdjustment ba;

@@ -29,10 +29,15 @@ int testVisualOdometry(void)
 
 int testVisualOdometryConfigure(void)
 {
+    cv::Mat K;
     slam::Camera camera;
     slam::VisualOdometry vo;
 
-    vo.configure();
+    K.at<double>(0, 0) = 1.0;
+    K.at<double>(0, 2) = 2.0;
+    K.at<double>(1, 2) = 3.0;
+
+    vo.configure(K);
     mu_check(vo.configured == true);
 
     return 0;
@@ -40,6 +45,7 @@ int testVisualOdometryConfigure(void)
 
 int testVisualOdometryFeatureTracking(void)
 {
+    cv::Mat K;
     cv::Mat mask;
     cv::Mat frame;
     cv::Mat img_1;
@@ -53,7 +59,10 @@ int testVisualOdometryFeatureTracking(void)
 
     // setup
     fast.configure(20, true);
-    vo.configure();
+    K.at<double>(0, 0) = 1.0;
+    K.at<double>(0, 2) = 0.0;
+    K.at<double>(1, 2) = 0.0;
+    vo.configure(K);
 
     img_1 = cv::imread(TEST_IMAGE_1);
     img_2 = cv::imread(TEST_IMAGE_2);
@@ -74,6 +83,7 @@ int testVisualOdometryFeatureTracking(void)
 
 int testVisualOdometryMeasure(void)
 {
+    cv::Mat K;
     cv::Mat mask;
     cv::Mat frame;
     cv::Mat img_1;
@@ -87,7 +97,12 @@ int testVisualOdometryMeasure(void)
 
     // // setup
     // fast.configure(60, true);
-    vo.configure();
+    K.at<double>(0, 0) = 1.0;  // fx
+    K.at<double>(1, 1) = 1.0;  // fy
+    K.at<double>(0, 2) = 0.0;  // cx
+    K.at<double>(1, 0) = 0.0;  // cy
+    K.at<double>(2, 2) = 1.0;  // 1
+    vo.configure(K);
     vo.focal_length = 1.0;
     vo.principle_point = cv::Point2f(0.0, 0.0);
     // img_1 = cv::imread(TEST_FRAME_1);
@@ -153,14 +168,6 @@ int testVisualOdometryMeasure(void)
     pts_2.push_back(cv::Point2f(262.91, 129.03));
     pts_2.push_back(cv::Point2f(250.93, 114.50));
     pts_2.push_back(cv::Point2f(287.09, 155.89));
-
-    cv::Mat K(3, 3, CV_64F, double(0));
-    K.at<double>(0, 0) = 1.0;  // fx
-    K.at<double>(1, 1) = 1.0;  // fy
-    K.at<double>(0, 2) = 0.0;  // cx
-    K.at<double>(1, 0) = 0.0;  // cy
-    K.at<double>(2, 2) = 1.0;  // 1
-    std::cout << K << std::endl;
 
     cv::Mat dis_coef;
 
