@@ -1,13 +1,9 @@
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/math.hpp"
 
 
-// TEST FUNCTIONS
-int test_kronecker_product(void);
-void testSuite(void);
-
-
-int test_kronecker_product(void)
+TEST(kronecker_product, test)
 {
     slam::MatX A(2, 2);
     slam::MatX B(2, 2);
@@ -27,16 +23,13 @@ int test_kronecker_product(void)
     // test and assert
     product = slam::kronecker_product(A, B);
     std::cout << product << std::endl;
-    mu_check(product == expected);
-    mu_check(product.rows() == 4);
-    mu_check(product.cols() == 4);
-
-    return 0;
+    ASSERT_EQ(expected, product);
+    ASSERT_EQ(4, product.rows());
+    ASSERT_EQ(4, product.cols());
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(test_kronecker_product);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite);
