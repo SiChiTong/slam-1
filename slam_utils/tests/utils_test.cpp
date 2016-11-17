@@ -1,62 +1,40 @@
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/utils.hpp"
 
 
-// TEST FUNCTIONS
-int test_deg2rad(void);
-int test_rad2deg(void);
-int test_fltcmp(void);
-int test_tic(void);
-int test_toc(void);
-int test_mtoc(void);
-// int test_kronecker_product(void);
-void testSuite(void);
-
-
-int test_deg2rad(void)
+TEST(deg2rad, test)
 {
 
-    return 0;
 }
 
-int test_rad2deg(void)
+TEST(rad2deg, test)
 {
 
-    return 0;
 }
 
-int test_fltcmp(void)
+TEST(fltcmp, test)
 {
 
-    return 0;
 }
 
-int test_tic(void)
+TEST(tic, test)
 {
 
-    return 0;
 }
 
-int test_toc(void)
+TEST(toc, test)
 {
 
-    return 0;
 }
 
-int test_mtoc(void)
+TEST(mtoc, test)
 {
 
-    return 0;
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(test_deg2rad);
-    mu_add_test(test_rad2deg);
-    mu_add_test(test_fltcmp);
-    mu_add_test(test_tic);
-    mu_add_test(test_toc);
-    mu_add_test(test_mtoc);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite);
