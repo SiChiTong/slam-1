@@ -5,6 +5,9 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
     ADD_DEFINITIONS(-std=gnu++0x)
 ENDIF()
 
+# PACKAGES
+FIND_PACKAGE(GTest REQUIRED)
+
 
 # INCLUDES
 INCLUDE_DIRECTORIES(
@@ -31,7 +34,12 @@ ADD_LIBRARY(
     src/time.cpp
     src/utils.cpp
 )
-SET(DEPS slam_utils)
+SET(
+    DEPS
+    slam_utils
+    ${GTEST_LIBRARIES}
+    pthread
+)
 
 
 # UNIT TESTS

@@ -1,4 +1,5 @@
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/math.hpp"
 #include "slam/utils/data.hpp"
 
@@ -6,59 +7,43 @@
 #define TEST_DATA "tests/data/matrix.dat"
 
 
-// TEST FUNCTIONS
-int test_csvrows(void);
-int test_csvcols(void);
-int test_csv2mat(void);
-void testSuite(void);
-
-
-int test_csvrows(void)
+TEST(csvrows, test)
 {
     int rows;
 
     rows = slam::csvrows(TEST_DATA);
-    mu_print("rows: %d\n", rows);
-    mu_check(rows == 281);
-
-    return 0;
+    printf("rows: %d\n", rows);
+    ASSERT_EQ(281, rows);
 }
 
-int test_csvcols(void)
+TEST(csvcols, test)
 {
     int cols;
 
     cols = slam::csvcols(TEST_DATA);
-    mu_print("cols: %d\n", cols);
-    mu_check(cols == 2);
-
-    return 0;
+    printf("cols: %d\n", cols);
+    ASSERT_EQ(2, cols);
 }
 
-int test_csv2mat(void)
+TEST(csv2mat, test)
 {
     slam::MatX data;
 
     slam::csv2mat(TEST_DATA, true, data);
 
-    mu_print("rows: %d\n", (int) data.rows());
-    mu_print("cols: %d\n", (int) data.cols());
+    printf("rows: %d\n", (int) data.rows());
+    printf("cols: %d\n", (int) data.cols());
 
-    mu_check(data.rows() == 280);
-    mu_check(data.cols() == 2);
-    mu_check(fltcmp(data(0, 0), -2.22482078596) == 0);
-    mu_check(fltcmp(data(0, 1), 9.9625789766) == 0);
-    mu_check(fltcmp(data(279, 0), 47.0485650525) == 0);
-    mu_check(fltcmp(data(279, 1), 613.503760567) == 0);
-
-    return 0;
+    ASSERT_EQ(280, data.rows());
+    ASSERT_EQ(2, data.cols());
+    ASSERT_FLOAT_EQ(-2.22482078596, data(0, 0));
+    ASSERT_FLOAT_EQ(9.9625789766, data(0, 1));
+    ASSERT_FLOAT_EQ(47.0485650525, data(279, 0));
+    ASSERT_FLOAT_EQ(613.503760567, data(279, 1));
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(test_csvrows);
-    mu_add_test(test_csvcols);
-    mu_add_test(test_csv2mat);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite);
