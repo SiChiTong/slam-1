@@ -3,7 +3,8 @@
 #include <sstream>
 #include <string>
 
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/utils.hpp"
 #include "slam/utils/math.hpp"
 
@@ -11,18 +12,6 @@
 
 #define TEST_1_DATA "tests/data/eight_point/img_1.dat"
 #define TEST_2_DATA "tests/data/eight_point/img_2.dat"
-
-
-// TEST FUNCTIONS
-int testEightPoint(void);
-int testEightPointNormalizePoints(void);
-int testEightPointFormMatrixA(void);
-int testEightPointApproximateFundamentalMatrix(void);
-int testEightPointRefineFundamentalMatrix(void);
-int testEightPointDenormalizeFundamentalMatrix(void);
-int testEightPointConfigure(void);
-int testEightPointObtainPossiblePoses(void);
-void testSuite(void);
 
 
 slam::MatX load_data(std::string file_path)
@@ -74,19 +63,17 @@ slam::MatX load_data(std::string file_path)
     return data;
 }
 
-int testEightPoint(void)
+TEST(EightPoint, constructor)
 {
     slam::optimization::EightPoint estimator;
 
-    mu_check(estimator.configured == false);
+    ASSERT_EQ(false, estimator.configured);
 
-    mu_check(estimator.image_width == 0);
-    mu_check(estimator.image_height == 0);
-
-    return 0;
+    ASSERT_EQ(0, estimator.image_width);
+    ASSERT_EQ(0, estimator.image_height);
 }
 
-int testEightPointConfigure(void)
+TEST(EightPoint, configure)
 {
     slam::optimization::EightPoint estimator;
 
@@ -94,15 +81,13 @@ int testEightPointConfigure(void)
     estimator.configure(800, 600);
 
     // test and assert
-    mu_check(estimator.configured == true);
+    ASSERT_EQ(true, estimator.configured);
 
-    mu_check(estimator.image_width == 800);
-    mu_check(estimator.image_height == 600);
-
-    return 0;
+    ASSERT_EQ(800, estimator.image_width);
+    ASSERT_EQ(600, estimator.image_height);
 }
 
-int testEightPointNormalizePoints(void)
+TEST(EightPoint, normalizePoints)
 {
     slam::MatX pts1;
     slam::MatX pts2;
@@ -116,21 +101,19 @@ int testEightPointNormalizePoints(void)
     // test and assert
     estimator.normalizePoints(pts1, pts2);
     for (int i = 0; i < pts1.rows(); i++) {
-        mu_check(pts1(i, 0) < 1.0);
-        mu_check(pts1(i, 0) > -1.0);
-        mu_check(pts1(i, 1) < 1.0);
-        mu_check(pts1(i, 1) > -1.0);
+        ASSERT_TRUE(pts1(i, 0) < 1.0);
+        ASSERT_TRUE(pts1(i, 0) > -1.0);
+        ASSERT_TRUE(pts1(i, 1) < 1.0);
+        ASSERT_TRUE(pts1(i, 1) > -1.0);
 
-        mu_check(pts2(i, 0) < 1.0);
-        mu_check(pts2(i, 0) > -1.0);
-        mu_check(pts2(i, 1) < 1.0);
-        mu_check(pts2(i, 1) > -1.0);
+        ASSERT_TRUE(pts2(i, 0) < 1.0);
+        ASSERT_TRUE(pts2(i, 0) > -1.0);
+        ASSERT_TRUE(pts2(i, 1) < 1.0);
+        ASSERT_TRUE(pts2(i, 1) > -1.0);
     }
-
-    return 0;
 }
 
-int testEightPointFormMatrixA(void)
+TEST(EightPoint, formMatrixA)
 {
     slam::MatX pts1;
     slam::MatX pts2;
@@ -146,25 +129,23 @@ int testEightPointFormMatrixA(void)
     // test and assert
     estimator.formMatrixA(pts1, pts2, A);
 
-    mu_check(A.rows() == pts1.rows());
-    mu_check(A.cols() == 9);
+    ASSERT_EQ(pts1.rows(), A.rows());
+    ASSERT_EQ(9, A.cols());
 
     for (int i = 0; i < pts1.rows(); i++) {
-        mu_check(fltcmp(A(i, 0), pts1(i, 0) * pts2(i, 0)) == 0);
-        mu_check(fltcmp(A(i, 1), pts1(i, 1) * pts2(i, 0)) == 0);
-        mu_check(fltcmp(A(i, 2), pts2(i, 0)) == 0);
-        mu_check(fltcmp(A(i, 3), pts1(i, 0) * pts2(i, 1)) == 0);
-        mu_check(fltcmp(A(i, 4), pts1(i, 1) * pts2(i, 1)) == 0);
-        mu_check(fltcmp(A(i, 5), pts2(i, 1)) == 0);
-        mu_check(fltcmp(A(i, 6), pts1(i, 0)) == 0);
-        mu_check(fltcmp(A(i, 7), pts1(i, 1)) == 0);
-        mu_check(fltcmp(A(i, 8), 1.0) == 0);
+        ASSERT_FLOAT_EQ(pts1(i, 0) * pts2(i, 0), A(i, 0));
+        ASSERT_FLOAT_EQ(pts1(i, 1) * pts2(i, 0), A(i, 1));
+        ASSERT_FLOAT_EQ(pts2(i, 0), A(i, 2));
+        ASSERT_FLOAT_EQ(pts1(i, 0) * pts2(i, 1), A(i, 3));
+        ASSERT_FLOAT_EQ(pts1(i, 1) * pts2(i, 1), A(i, 4));
+        ASSERT_FLOAT_EQ(pts2(i, 1), A(i, 5));
+        ASSERT_FLOAT_EQ(pts1(i, 0), A(i, 6));
+        ASSERT_FLOAT_EQ(pts1(i, 1), A(i, 7));
+        ASSERT_FLOAT_EQ(1.0, A(i, 8));
     }
-
-    return 0;
 }
 
-int testEightPointApproximateFundamentalMatrix(void)
+TEST(EightPoint, approximateFundamentalMatrix)
 {
     slam::MatX pts1;
     slam::MatX pts2;
@@ -180,14 +161,11 @@ int testEightPointApproximateFundamentalMatrix(void)
 
     // test and assert
     estimator.approximateFundamentalMatrix(A, F);
-
-    mu_check(F.rows() == 3);
-    mu_check(F.cols() == 3);
-
-    return 0;
+    ASSERT_EQ(3, F.rows());
+    ASSERT_EQ(3, F.cols());
 }
 
-int testEightPointRefineFundamentalMatrix(void)
+TEST(EightPoint, refineFundamentalMatrix)
 {
     slam::MatX pts1;
     slam::MatX pts2;
@@ -204,14 +182,11 @@ int testEightPointRefineFundamentalMatrix(void)
 
     // test and assert
     estimator.refineFundamentalMatrix(F);
-
-    mu_check(F.rows() == 3);
-    mu_check(F.cols() == 3);
-
-    return 0;
+    ASSERT_EQ(3, F.rows());
+    ASSERT_EQ(3, F.cols());
 }
 
-int testEightPointDenormalizeFundamentalMatrix(void)
+TEST(EightPoint, denormalizeFundamentalMatrix)
 {
     slam::MatX pts1;
     slam::MatX pts2;
@@ -229,11 +204,9 @@ int testEightPointDenormalizeFundamentalMatrix(void)
 
     // test and assert
     estimator.denormalizeFundamentalMatrix(F);
-
-    return 0;
 }
 
-int testEightPointEstimate(void)
+TEST(EightPoint, estimate)
 {
     double result;
     slam::MatX pts1;
@@ -270,11 +243,9 @@ int testEightPointEstimate(void)
 
     // estimate essential matrix E
     estimator.estimate(pts1, pts2, K, E);
-
-    return 0;
 }
 
-int testEightPointObtainPossiblePoses(void)
+TEST(EightPoint, obtainPossiblePoses)
 {
     double result;
     slam::MatX pts1;
@@ -302,11 +273,9 @@ int testEightPointObtainPossiblePoses(void)
     std::cout << poses[2] << std::endl;
     std::cout << std::endl;
     std::cout << poses[3] << std::endl;
-
-    return 0;
 }
 
-int testEightPointObtainPose(void)
+TEST(EightPoint, obtainPose)
 {
     double result;
     slam::MatX pts1;
@@ -333,22 +302,10 @@ int testEightPointObtainPose(void)
     pt2 = pts2.block(0, 0, 1, 3).transpose();
     estimator.obtainPose(pt1, pt2, K, K, poses, pose);
     std::cout << pose << std::endl;
-
-    return 0;
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testEightPoint);
-    mu_add_test(testEightPointConfigure);
-    mu_add_test(testEightPointNormalizePoints);
-    mu_add_test(testEightPointFormMatrixA);
-    mu_add_test(testEightPointApproximateFundamentalMatrix);
-    mu_add_test(testEightPointRefineFundamentalMatrix);
-    mu_add_test(testEightPointDenormalizeFundamentalMatrix);
-    mu_add_test(testEightPointEstimate);
-    mu_add_test(testEightPointObtainPossiblePoses);
-    mu_add_test(testEightPointObtainPose);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite);

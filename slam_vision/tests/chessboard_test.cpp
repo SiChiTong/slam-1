@@ -1,47 +1,36 @@
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/vision/chessboard.hpp"
 
 
-// TESTS
-int testChessboard(void);
-int testChessboardConfigure(void);
-void testSuite(void);
-
-
-int testChessboard(void)
+TEST(Chessboard, constructor)
 {
     slam::Chessboard chessboard;
 
-    mu_check(chessboard.configured == false);
+    ASSERT_EQ(false, chessboard.configured);
 
-    mu_check(chessboard.nb_corners_rows == 0);
-    mu_check(chessboard.nb_corners_columns == 0);
-    mu_check(chessboard.nb_corners_total == 0);
-    mu_check(chessboard.board_size == cv::Size(0, 0));
-
-    return 0;
+    ASSERT_EQ(0, chessboard.nb_corners_rows);
+    ASSERT_EQ(0, chessboard.nb_corners_columns);
+    ASSERT_EQ(0, chessboard.nb_corners_total);
+    ASSERT_EQ(cv::Size(0, 0), chessboard.board_size);
 }
 
-int testChessboardConfigure(void)
+TEST(Chessboard, configure)
 {
     slam::Chessboard chessboard;
 
     chessboard.configure(1, 2);
 
-    mu_check(chessboard.configured == true);
+    ASSERT_EQ(true, chessboard.configured);
 
-    mu_check(chessboard.nb_corners_rows == 1);
-    mu_check(chessboard.nb_corners_columns == 2);
-    mu_check(chessboard.nb_corners_total == 2);
-    mu_check(chessboard.board_size == cv::Size(1, 2));
-
-    return 0;
+    ASSERT_EQ(2, chessboard.nb_corners_rows);
+    ASSERT_EQ(1, chessboard.nb_corners_columns);
+    ASSERT_EQ(2, chessboard.nb_corners_total);
+    ASSERT_EQ(cv::Size(1, 2), chessboard.board_size);
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testChessboard);
-    mu_add_test(testChessboardConfigure);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)
