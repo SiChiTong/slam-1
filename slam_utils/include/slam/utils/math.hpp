@@ -7,7 +7,6 @@
 
 namespace slam {
 
-// TYPEDEFS
 #ifndef __EIGEN_TYPEDEF__
 #define __EIGEN_TYPEDEF__
   typedef Eigen::Vector2f Vec2;
@@ -21,7 +20,6 @@ namespace slam {
   typedef Eigen::MatrixXf MatX;
 #endif
 
-// FUNCTIONS
 int sign(double x);
 double C(double x);
 double S(double x);
