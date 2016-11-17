@@ -1,37 +1,25 @@
 #include <fstream>
 
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
 #include "slam/vision/calibration.hpp"
 
 
 #define TEST_IMAGE "tests/data/chessboard.jpg"
 
 
-// TESTS
-int testCalibration(void);
-int testCalibrationConfigure(void);
-int testCalibrationConfigure(void);
-int testCalibrationFindChessboardCorners(void);
-int testCalibrationSaveImage(void);
-int testCalibrationSaveCalibrationOutputs(void);
-void testSuite(void);
-
-
-int testCalibration(void)
+TEST(Calibration, constructor)
 {
     slam::Calibration calibration;
 
-    mu_check(calibration.configured == false);
-    mu_check(calibration.state == IDEL);
+    ASSERT_EQ(false, calibration.configured);
+    ASSERT_EQ(IDEL, calibration.state);
 
-    mu_check(calibration.nb_samples == 0);
-    mu_check(calibration.nb_max_samples == 10);
-    mu_check(calibration.save_path == "./");
-
-    return 0;
+    ASSERT_EQ(0, calibration.nb_samples);
+    ASSERT_EQ(10, calibration.nb_max_samples);
+    ASSERT_EQ("./", calibration.save_path);
 }
 
-int testCalibrationConfigure(void)
+TEST(Calibration, configure)
 {
     slam::Calibration calib;
     slam::Chessboard chess;
@@ -41,14 +29,12 @@ int testCalibrationConfigure(void)
     chess.configure(4, 4);
     calib.configure("/tmp/test", chess, cv::Size(600, 600), 10);
 
-    mu_check(calib.nb_samples == 0);
-    mu_check(calib.nb_max_samples == 10);
-    mu_check(calib.save_path == "/tmp/test");
-
-    return 0;
+    ASSERT_EQ(0, calib.nb_samples);
+    ASSERT_EQ(10, calib.nb_max_samples);
+    ASSERT_EQ("/tmp/test", calib.save_path);
 }
 
-int testCalibrationFindChessboardCorners(void)
+TEST(Calibration, findChessboardCorners)
 {
     bool retval;
     cv::Mat image;
@@ -65,16 +51,14 @@ int testCalibrationFindChessboardCorners(void)
 
     // test and assert
     retval = calib.findChessboardCorners(image, corners);
-    mu_check(retval == true);
-    mu_check(corners.size() == 49);
+    ASSERT_EQ(true, retval);
+    ASSERT_EQ(49, corners.size());
 
     cv::imshow("test", image);
     cv::waitKey(1000);
-
-    return 0;
 }
 
-int testCalibrationSaveImage(void)
+TEST(Calibration, saveImage)
 {
     std::ifstream image_file;
     cv::Mat image;
@@ -93,12 +77,10 @@ int testCalibrationSaveImage(void)
 
     // test and assert
     image_file.open("/tmp/test/sample_0.jpg", std::ifstream::in);
-    mu_check(image_file.good());
-
-    return 0;
+    ASSERT_TRUE(image_file.good());
 }
 
-int testCalibrationSaveCalibrationOutputs(void)
+TEST(Calibration, saveCalibrationOutputs)
 {
     int k;
     cv::Mat image;
@@ -136,18 +118,11 @@ int testCalibrationSaveCalibrationOutputs(void)
     // test and assert
     calib.saveCalibrationOutputs();
     yaml_file.open("/tmp/test/calibration.yaml", std::ifstream::in);
-    mu_check(yaml_file.good());
-
-    return 0;
+    ASSERT_TRUE(yaml_file.good());
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testCalibration);
-    mu_add_test(testCalibrationConfigure);
-    mu_add_test(testCalibrationFindChessboardCorners);
-    mu_add_test(testCalibrationSaveImage);
-    mu_add_test(testCalibrationSaveCalibrationOutputs);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)

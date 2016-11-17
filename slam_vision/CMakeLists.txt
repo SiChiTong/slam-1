@@ -5,6 +5,9 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
     ADD_DEFINITIONS(-std=gnu++0x)
 ENDIF()
 
+# PACKAGES
+FIND_PACKAGE(GTest REQUIRED)
+
 
 # INCLUDES
 INCLUDE_DIRECTORIES(
@@ -67,6 +70,8 @@ SET(
     slam_vision
     slam_utils
     yaml-cpp
+    ${GTEST_LIBRARIES}
+    pthread
     ${OPENCV3_LIBS}
 )
 
