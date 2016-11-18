@@ -1,7 +1,8 @@
 #include <iostream>
 #include <random>
 
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/utils.hpp"
 #include "slam/estimation/kf.hpp"
 
@@ -55,7 +56,7 @@ void recordTimeStep(
     output_file << est(2) << std::endl;
 }
 
-int testKalmanFilter(void)
+TEST(KalmanFilter, estimate)
 {
     float dt;
 
@@ -136,13 +137,10 @@ int testKalmanFilter(void)
         recordTimeStep(output_file, i, mea, est);
     }
     output_file.close();
-
-    return 0;
 }
 
-void test_suite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testKalmanFilter);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(test_suite)
