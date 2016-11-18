@@ -232,7 +232,7 @@ int main(void)
         // }
 
         // display optical flow
-        vo.displayOpticalFlow(frame, pts_1, pts_2);
+        // vo.drawOpticalFlow(frame, pts_1, pts_2);
         cv::imshow("test", frame);
         cv::waitKey(1);
 

@@ -62,8 +62,9 @@ ADD_LIBRARY(
     src/eight_point.cpp
     src/fast.cpp
     src/good.cpp
-    src/vo.cpp
     src/orb.cpp
+    src/utils.cpp
+    src/vo.cpp
 )
 SET(
     DEPS

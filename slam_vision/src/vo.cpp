@@ -24,6 +24,19 @@ int VisualOdometry::configure(cv::Mat K)
     return 0;
 }
 
+int VisualOdometry::configure(Mat3 K)
+{
+    this->configured = true;
+
+    this->focal_length = K(0, 0);  // fx
+    this->principle_point = cv::Point2f(
+        K(0, 2),  // cx
+        K(1, 2)   // cy
+    );
+
+    return 0;
+}
+
 int VisualOdometry::featureTracking(
     cv::Mat img_1,
     cv::Mat img_2,
@@ -50,8 +63,8 @@ int VisualOdometry::featureTracking(
     win_size = cv::Size(21, 21);
     term_crit = cv::TermCriteria(
         cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
-        20,
-        0.3
+        100,
+        0.6
     );
 
     // optical flow
@@ -131,10 +144,12 @@ int VisualOdometry::measure(
     return 0;
 }
 
-int VisualOdometry::displayOpticalFlow(
-    cv::Mat &image,
-    std::vector<cv::Point2f> &pts_1,
-    std::vector<cv::Point2f> &pts_2
+int VisualOdometry::drawOpticalFlow(
+    cv::Mat img_1,
+    cv::Mat img_2,
+    std::vector<cv::Point2f> pts_1,
+    std::vector<cv::Point2f> pts_2,
+    cv::Mat &output
 )
 {
     cv::Point2f p;
@@ -145,15 +160,18 @@ int VisualOdometry::displayOpticalFlow(
         return -1;
     }
 
+    // setup
+    combine_cvimgs(img_1, img_2, output);
+
     // draw flow lines
     for (int i = 0; i < std::min(pts_1.size(), pts_2.size()); i++) {
         p.x = pts_1[i].x;
         p.y = pts_1[i].y;
 
-        q.x = pts_2[i].x;
+        q.x = img_1.size().width + pts_2[i].x;
         q.y = pts_2[i].y;
 
-        cv::arrowedLine(image, p, q, cv::Scalar(0, 0, 255), 1);
+        cv::arrowedLine(output, p, q, cv::Scalar(0, 0, 255), 1, 8, 0, 0.005);
     }
 }
 

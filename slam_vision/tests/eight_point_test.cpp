@@ -8,10 +8,16 @@
 #include "slam/utils/utils.hpp"
 #include "slam/utils/math.hpp"
 
+#include "slam/vision/vo.hpp"
+#include "slam/vision/good.hpp"
+#include "slam/vision/fast.hpp"
+#include "slam/vision/utils.hpp"
 #include "slam/vision/eight_point.hpp"
 
 #define TEST_1_DATA "tests/data/eight_point/img_1.dat"
 #define TEST_2_DATA "tests/data/eight_point/img_2.dat"
+#define TEST_IMAGE_1 "tests/data/eight_point/left.jpg"
+#define TEST_IMAGE_2 "tests/data/eight_point/right.jpg"
 
 
 slam::MatX load_data(std::string file_path)
@@ -233,7 +239,7 @@ TEST(EightPoint, estimate)
     //     mu_check(result > 0.0);
     //     mu_check(result < 1.0);
     // }
-    //
+
     // for (int i = 0; i < pts2.rows(); i++) {
     //     x = pts2.block(i, 0, 1, 3).transpose();
     //     result = x.transpose() * F * x;
@@ -294,6 +300,57 @@ TEST(EightPoint, obtainPose)
     K << 687.189819, 0.000000, 375.042664,
          0.000000, 641.376221, 308.712708,
          0.000000, 0.000000, 1.000000;
+    estimator.estimate(pts1, pts2, K, E);
+    estimator.obtainPossiblePoses(E, poses);
+
+    // test and assert
+    pt1 = pts1.block(0, 0, 1, 3).transpose();
+    pt2 = pts2.block(0, 0, 1, 3).transpose();
+    estimator.obtainPose(pt1, pt2, K, K, poses, pose);
+    std::cout << pose << std::endl;
+}
+
+TEST(EightPoint, obtainPose2)
+{
+    double result;
+    cv::Mat img_1, img_2, twin_img;
+    std::vector<cv::Point2f> cvpts_1, cvpts_2;
+    std::vector<float> errors;
+    std::vector<uchar> status;
+
+    slam::MatX pts1, pts2;
+    slam::Vec3 pt1, pt2;
+    slam::Mat3 K, E;
+    slam::MatX pose;
+    std::vector<slam::MatX> poses;
+    slam::optimization::EightPoint estimator;
+    slam::FastDetector fast;
+    slam::VisualOdometry vo;
+
+    // setup
+    K << 279.0161682343449, 0, 150.3072895826164,
+         0, 276.3467561622266, 123.3623526538343,
+         0, 0, 1;
+    fast.configure(60, true);
+    vo.configure(K);
+
+    // load test image
+    img_1 = cv::imread(TEST_IMAGE_1);
+    img_2 = cv::imread(TEST_IMAGE_2);
+
+    // detect and track features
+    fast.detect(img_1, cvpts_1);
+    vo.featureTracking(img_1, img_2, cvpts_1, cvpts_2, errors, status);
+
+    // display tracked features
+    vo.drawOpticalFlow(img_1, img_2, cvpts_1, cvpts_2, twin_img);
+    cv::imshow("image", twin_img);
+    cv::waitKey(0);
+
+    slam::convert_cvpts(cvpts_1, pts1);
+    slam::convert_cvpts(cvpts_2, pts2);
+
+    estimator.configure(960, 720);
     estimator.estimate(pts1, pts2, K, E);
     estimator.obtainPossiblePoses(E, poses);
 

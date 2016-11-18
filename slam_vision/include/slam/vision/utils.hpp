@@ -8,11 +8,14 @@
 
 #include <Eigen/Dense>
 
+#include "slam/utils/utils.hpp"
+
 
 namespace slam {
 
-void cvmat2mat(cv::Mat A, MatX &B);
-void cvpts2mat(std::vector<cv::Point2f> points, MatX &mat);
+void convert_cvmat(cv::Mat A, MatX &B);
+void convert_cvpts(std::vector<cv::Point2f> points, MatX &mat);
+void combine_cvimgs(cv::Mat img1, cv::Mat img2, cv::Mat &out);
 
 } // end of slam namespace
 #endif
