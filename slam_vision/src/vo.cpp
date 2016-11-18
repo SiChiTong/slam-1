@@ -160,10 +160,8 @@ int VisualOdometry::drawOpticalFlow(
         return -1;
     }
 
-    // setup
-    combine_cvimgs(img_1, img_2, output);
-
     // draw flow lines
+    combine_cvimgs(img_1, img_2, output);
     for (int i = 0; i < std::min(pts_1.size(), pts_2.size()); i++) {
         p.x = pts_1[i].x;
         p.y = pts_1[i].y;

@@ -331,7 +331,7 @@ TEST(EightPoint, obtainPose2)
     K << 279.0161682343449, 0, 150.3072895826164,
          0, 276.3467561622266, 123.3623526538343,
          0, 0, 1;
-    fast.configure(60, true);
+    fast.configure(30, true);
     vo.configure(K);
 
     // load test image
@@ -359,6 +359,12 @@ TEST(EightPoint, obtainPose2)
     pt2 = pts2.block(0, 0, 1, 3).transpose();
     estimator.obtainPose(pt1, pt2, K, K, poses, pose);
     std::cout << pose << std::endl;
+
+    slam::Mat3 R;
+    slam::Vec3 e;
+    R = pose.block(0, 0, 3, 3);
+    e = R.eulerAngles(0, 1, 2);
+    std::cout << e << std::endl;
 }
 
 int main(int argc, char* argv[])

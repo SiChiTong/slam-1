@@ -5,6 +5,7 @@
 
 
 #define TEST_DATA "tests/data/matrix.dat"
+#define TEST_OUTPUT "/tmp/matrix.dat"
 
 
 TEST(csvrows, test)
@@ -40,6 +41,22 @@ TEST(csv2mat, test)
     ASSERT_FLOAT_EQ(9.9625789766, data(0, 1));
     ASSERT_FLOAT_EQ(47.0485650525, data(279, 0));
     ASSERT_FLOAT_EQ(613.503760567, data(279, 1));
+}
+
+TEST(mat2csv, test)
+{
+    slam::MatX x;
+    slam::MatX y;
+
+    slam::csv2mat(TEST_DATA, true, x);
+    slam::mat2csv(TEST_OUTPUT, x);
+    slam::csv2mat(TEST_OUTPUT, false, y);
+
+    for (int i = 0; i < x.rows(); i++) {
+        for (int j = 0; j < x.cols(); j++) {
+            ASSERT_NEAR(x(i, j), y(i, j), 0.1);
+        }
+    }
 }
 
 int main(int argc, char* argv[])

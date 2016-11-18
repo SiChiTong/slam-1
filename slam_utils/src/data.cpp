@@ -99,4 +99,32 @@ int csv2mat(std::string file_path, bool header, MatX &data)
     return 0;
 }
 
+int mat2csv(std::string file_path, MatX data)
+{
+    std::ofstream outfile(file_path);
+
+    // open file
+    if (outfile.good() != true) {
+        printf(E_CSV_DATA_OPEN, file_path.c_str());
+        return -1;
+    }
+
+    // save matrix
+    for (int i = 0; i < data.rows(); i++) {
+        for (int j = 0; j < data.cols(); j++) {
+            outfile << data(i, j);
+
+            if ((j + 1) != data.cols()) {
+                outfile << ",";
+            }
+        }
+        outfile << "\n";
+    }
+
+    // close file
+    outfile.close();
+
+    return 0;
+}
+
 }  // end of slam namespace
