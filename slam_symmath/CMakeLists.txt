@@ -6,9 +6,14 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 
+# PACKAGES
+FIND_PACKAGE(GTest REQUIRED)
+
+
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/include/
+    /usr/include/eigen3
     /usr/local/include
     include
 )
@@ -30,5 +35,14 @@ ADD_LIBRARY(
 SET(
     DEPS
     slam_symmath
+    slam_kinematics
     ginac
+    ${GTEST_LIBRARIES}
+    pthread
 )
+
+# UNIT TESTS
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+
+ADD_EXECUTABLE(symmath_test tests/symmath_test.cpp)
+TARGET_LINK_LIBRARIES(symmath_test ${DEPS})

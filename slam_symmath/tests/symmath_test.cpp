@@ -1,13 +1,10 @@
-#include "munit.hpp"
-#include "model.hpp"
-#include "symmath.hpp"
+#include <gtest/gtest.h>
+
+#include "slam/kinematics/quadrotor.hpp"
+#include "slam/symmath/symmath.hpp"
 
 
-// TESTS
-int testSymbolicDifferentiation(void);
-
-
-int testSymbolicDifferentiation(void)
+TEST(SymbolicDifferentiation, test)
 {
     GiNaC::symbol x("x");
     GiNaC::symbol y("y");
@@ -19,14 +16,11 @@ int testSymbolicDifferentiation(void)
 
     slam::QuadrotorModel quad;
 
-    quad.generateMotionModelJacobian();
-
-    return 0;
+    // quad.generateMotionModelJacobian();
 }
 
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testSymbolicDifferentiation);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)

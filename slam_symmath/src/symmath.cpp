@@ -1,4 +1,4 @@
-#include "symmath.hpp"
+#include "slam/symmath/symmath.hpp"
 
 
 namespace slam {
