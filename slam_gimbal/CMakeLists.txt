@@ -6,6 +6,10 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 
+# PACKAGES
+FIND_PACKAGE(GTest REQUIRED)
+
+
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/include/
@@ -31,6 +35,8 @@ SET(
     DEPS
     slam_gimbal
     slam_utils
+    ${GTEST_LIBRARIES}
+    pthread
 )
 
 

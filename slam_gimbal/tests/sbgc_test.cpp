@@ -1,25 +1,16 @@
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/gimbal/sbgc.hpp"
 
 
-// TEST FUNCTIONS
-int testSBGCConnectDisconnect(void);
-int testSBGCSendFrame(void);
-int testSBGCReadFrame(void);
-int testSBGCGetBoardInfo(void);
-int testSBGCGetRealtimeData(void);
-
-
-int testSBGCConnectDisconnect(void)
+TEST(SBGC, connectAndDisconnect)
 {
     slam::SBGC sbgc("/dev/ttyUSB0");
-    mu_check(sbgc.connect() == 0);
-    mu_check(sbgc.disconnect() == 0);
-
-    return 0;
+    ASSERT_EQ(0, sbgc.connect());
+    ASSERT_EQ(0, sbgc.disconnect());
 }
 
-int testSBGCSendFrame(void)
+TEST(SBGC, sendFrame)
 {
     int retval;
     slam::SBGCFrame frame;
@@ -31,19 +22,17 @@ int testSBGCSendFrame(void)
     // turn motors on
     frame.buildFrame(CMD_MOTORS_ON);
     retval = sbgc.sendFrame(frame);
-    mu_check(retval == 0);
+    ASSERT_EQ(0, retval);
     sleep(1);
 
     // turn motors off
     frame.buildFrame(CMD_MOTORS_OFF);
     retval = sbgc.sendFrame(frame);
-    mu_check(retval == 0);
+    ASSERT_EQ(0, retval);
     sleep(1);
-
-    return 0;
 }
 
-int testSBGCReadFrame(void)
+TEST(SBGC, readFrame)
 {
     int retval;
     slam::SBGCFrame frame;
@@ -58,13 +47,11 @@ int testSBGCReadFrame(void)
     retval = sbgc.readFrame(CMD_BOARD_INFO_FRAME_SIZE, frame);
 
     // assert
-    mu_check(frame.data_size == 18);
-    mu_check(retval == 0);
-
-    return 0;
+    ASSERT_EQ(18, frame.data_size);
+    ASSERT_EQ(0, retval);
 }
 
-int testSBGCGetBoardInfo(void)
+TEST(SBGC, getBoardInfo)
 {
     slam::SBGC sbgc("/dev/ttyUSB0");
 
@@ -79,13 +66,11 @@ int testSBGCGetBoardInfo(void)
     printf("board features: %d\n", sbgc.board_features);
     printf("connection flags: %d\n", sbgc.connection_flags);
 
-    mu_check(sbgc.board_version == 30);
-    mu_check(sbgc.firmware_version == 2569);
-
-    return 0;
+    ASSERT_EQ(30, sbgc.board_version);
+    ASSERT_EQ(2569, sbgc.firmware_version);
 }
 
-int testSBGCGetRealtimeData(void)
+TEST(SBGC, getRealtimeData)
 {
     slam::SBGC sbgc("/dev/ttyUSB0");
 
@@ -100,15 +85,13 @@ int testSBGCGetRealtimeData(void)
         // printf("pitch %f \n", sbgc.data.rc_angles(1));
         // printf("yaw %f \n", sbgc.data.rc_angles(2));
     }
-
-    return 0;
 }
 
-int testSBGCSetAngle(void)
+TEST(SBGC, setAngle)
 {
     slam::SBGC sbgc("/dev/ttyUSB0");
 
-    mu_check(sbgc.connect() == 0);
+    ASSERT_EQ(0, sbgc.connect());
     sbgc.on();
 
     sbgc.setAngle(0, -90, 0);
@@ -117,35 +100,23 @@ int testSBGCSetAngle(void)
         sbgc.setAngle(0, angle, 0);
     }
     sbgc.off();
-
-    return 0;
 }
 
-int testSBGCSetSpeedAngle(void)
+TEST(SBGC, setSpeedAngle)
 {
     slam::SBGC sbgc("/dev/ttyUSB0");
 
-    mu_check(sbgc.connect() == 0);
+    ASSERT_EQ(0, sbgc.connect());
     sbgc.on();
 
     sbgc.setSpeedAngle(0, 10, 0, 0, -2, 0);
     sleep(3);
 
     sbgc.off();
-
-    return 0;
 }
 
-
-void testSuite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testSBGCConnectDisconnect);
-    mu_add_test(testSBGCSendFrame);
-    mu_add_test(testSBGCReadFrame);
-    mu_add_test(testSBGCGetBoardInfo);
-    mu_add_test(testSBGCGetRealtimeData);
-    mu_add_test(testSBGCSetAngle);
-    mu_add_test(testSBGCSetSpeedAngle);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(testSuite)
