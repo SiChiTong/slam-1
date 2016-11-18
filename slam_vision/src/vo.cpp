@@ -128,7 +128,6 @@ int VisualOdometry::measure(
     if (this->E.rows != 3 || this->E.cols != 3) {
         return -4;
     }
-    std::cout << this->E << std::endl;
 
     // recover pose
     cv::recoverPose(

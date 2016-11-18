@@ -9,8 +9,16 @@
 
 #include <Eigen/Dense>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/features2d/features2d.hpp>
+
 #include "slam/utils/math.hpp"
 #include "slam/utils/utils.hpp"
+
+#include "slam/vision/utils.hpp"
 
 
 namespace slam {
@@ -33,7 +41,18 @@ public:
     void refineFundamentalMatrix(MatX &F);
     void denormalizeFundamentalMatrix(MatX &F);
     int estimate(MatX pts1, MatX pts2, MatX &F);
+    int estimate(
+        std::vector<cv::Point2f> cvpts1,
+        std::vector<cv::Point2f> cvpts2,
+        MatX &F
+    );
     int estimate(MatX pts1, MatX pts2, Mat3 &K, Mat3 &E);
+    int estimate(
+        std::vector<cv::Point2f> cvpts1,
+        std::vector<cv::Point2f> cvpts2,
+        Mat3 &K,
+        Mat3 &E
+    );
     int obtainPossiblePoses(Mat3 E, std::vector<MatX> &poses);
     int obtainPose(
         Vec3 pt1,

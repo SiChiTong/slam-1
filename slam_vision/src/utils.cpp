@@ -3,6 +3,16 @@
 
 namespace slam {
 
+void convert_mat(MatX A, cv::Mat &B)
+{
+    B = cv::Mat(A.rows(), A.cols(), CV_8UC1);
+    for (int i = 0; i < A.rows(); i++) {
+        for (int j = 0; j < A.cols(); j++) {
+            B.at<double>(i, j) = A(i, j);
+        }
+    }
+}
+
 void convert_cvmat(cv::Mat A, MatX &B)
 {
     B.resize(A.rows, A.cols);
