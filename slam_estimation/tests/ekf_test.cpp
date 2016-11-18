@@ -1,7 +1,8 @@
 #include <iostream>
 #include <random>
 
-#include "slam/utils/munit.hpp"
+#include <gtest/gtest.h>
+
 #include "slam/utils/utils.hpp"
 #include "slam/estimation/ekf.hpp"
 
@@ -16,8 +17,6 @@ void recordTimeStep(
     slam::Vec3 mea,
     slam::Vec3 est
 );
-int testExtendedKalmanFilter(void);
-
 
 int prepareOutputFile(std::ofstream &output_file, std::string output_path)
 {
@@ -55,7 +54,7 @@ void recordTimeStep(
     output_file << est(2) << std::endl;
 }
 
-int testExtendedKalmanFilter(void)
+TEST(ExtendedKalmanFilter, estimate)
 {
     float dt;
     slam::VecX x(3);
@@ -119,13 +118,10 @@ int testExtendedKalmanFilter(void)
         recordTimeStep(output_file, i, x, ekf.mu);
     }
     output_file.close();
-
-    return 0;
 }
 
-void test_suite(void)
+int main(int argc, char* argv[])
 {
-    mu_add_test(testExtendedKalmanFilter);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-mu_run_tests(test_suite)

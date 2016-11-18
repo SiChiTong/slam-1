@@ -6,6 +6,10 @@ IF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 
+# PACKAGES
+FIND_PACKAGE(GTest REQUIRED)
+
+
 # INCLUDES
 INCLUDE_DIRECTORIES(
     /usr/include/
@@ -36,6 +40,8 @@ SET(
     slam_utils
     ginac
     ${OPENCV3_LIBS}
+    ${GTEST_LIBRARIES}
+    pthread
 )
 
 
