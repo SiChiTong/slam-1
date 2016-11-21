@@ -7,6 +7,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
+#include "slam/utils/utils.hpp"
+
 
 namespace slam {
 
@@ -22,6 +24,7 @@ public:
     int configure(int threshold, bool nonmax_suppression);
     int detect(cv::Mat &image, std::vector<cv::KeyPoint> &keypoints);
     int detect(cv::Mat &image, std::vector<cv::Point2f> &points);
+    int detect(cv::Mat &image, MatX &points);
 };
 
 }  // end of slam namespace

@@ -123,21 +123,6 @@ int EightPoint::estimate(MatX pts1, MatX pts2, MatX &F)
     return 0;
 }
 
-int EightPoint::estimate(
-    std::vector<cv::Point2f> cvpts1,
-    std::vector<cv::Point2f> cvpts2,
-    MatX &F
-)
-{
-    MatX pts1;
-    MatX pts2;
-
-    convert_cvpts(cvpts1, pts1);
-    convert_cvpts(cvpts2, pts2);
-
-    return this->estimate(pts1, pts2, F);
-}
-
 int EightPoint::estimate(MatX pts1, MatX pts2, Mat3 &K, Mat3 &E)
 {
     VecX S;
@@ -161,22 +146,6 @@ int EightPoint::estimate(MatX pts1, MatX pts2, Mat3 &K, Mat3 &E)
     E = K.transpose() * F * K;
 
     return 0;
-}
-
-int EightPoint::estimate(
-    std::vector<cv::Point2f> cvpts1,
-    std::vector<cv::Point2f> cvpts2,
-    Mat3 &K,
-    Mat3 &E
-)
-{
-    MatX pts1;
-    MatX pts2;
-
-    convert_cvpts(cvpts1, pts1);
-    convert_cvpts(cvpts2, pts2);
-
-    return this->estimate(pts1, pts2, K, E);
 }
 
 int EightPoint::obtainPossiblePoses(Mat3 E, std::vector<MatX> &poses)

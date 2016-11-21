@@ -22,7 +22,6 @@ public:
     cv::Mat t;
 
     VisualOdometry(void);
-    int configure(cv::Mat K);
     int configure(Mat3 K);
     int featureTracking(
         cv::Mat img_1,

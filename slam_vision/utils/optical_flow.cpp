@@ -131,117 +131,117 @@ static void pts2mat(std::vector<cv::Point2f> points, slam::MatX &mat)
 
 int main(void)
 {
-    cv::Mat frame;
-    cv::Mat img_1;
-    cv::Mat img_2;
-    std::vector<cv::Point2f> pts_1;
-    std::vector<cv::Point2f> pts_2;
-    std::vector<float> errors;
-    std::vector<uchar> status;
-    double x, y, z, yaw;
-
-    std::ofstream output_file;
-
-    slam::Camera camera;
-    slam::VisualOdometry vo;
-    slam::FastDetector fast;
-
-    // setup camera
-    camera.configure(0, CALIB_FILE);
-
-    // setup VO
-    vo.configure(camera.camera_mat);
-    std::cout << "focal length: " << vo.focal_length << std::endl;
-    std::cout << "principle point: " << vo.principle_point << std::endl;
-
-    // setup feature detector
-    fast.configure(70, true);
-
-    // setup data file
-    output_file.open("/tmp/odometry.dat");
-    output_file << "i, x, y, z" << std::endl;
-
-    // loop
-    x = 0.0;
-    y = 0.0;
-    z = 0.0;
-    yaw = 0.0;
-
-    camera.getFrame(frame);
-    cv::cvtColor(frame, img_1, cv::COLOR_BGR2GRAY);
-    feature_extraction(fast, img_1, pts_1);
-
-    slam::Mat3 K, E;
-    slam::Vec3 pt1, pt2;
-    slam::MatX pose;
-    slam::MatX epts1;
-    slam::MatX epts2;
-    std::vector<slam::MatX> poses;
-    slam::optimization::EightPoint estimator;
-    estimator.configure(320, 240);
-    K << camera.camera_mat.at<double>(0, 0), camera.camera_mat.at<double>(0, 1), camera.camera_mat.at<double>(0, 2),
-         camera.camera_mat.at<double>(1, 0), camera.camera_mat.at<double>(1, 1), camera.camera_mat.at<double>(1, 2),
-         camera.camera_mat.at<double>(2, 0), camera.camera_mat.at<double>(2, 1), camera.camera_mat.at<double>(2, 2);
-    std::cout << K << std::endl;
-
-    for (int i = 0; i < 100; i++) {
-        // grab new frame and track features
-        camera.getFrame(frame);
-        cv::cvtColor(frame, img_2, cv::COLOR_BGR2GRAY);
-        vo.featureTracking(img_1, img_2, pts_1, pts_2, errors, status);
-
-        pts2mat(pts_1, epts1);
-        pts2mat(pts_2, epts2);
-
-        estimator.estimate(epts1, epts2, K, E);
-        estimator.obtainPossiblePoses(E, poses);
-
-        for (int j = 0; j < errors.size(); j++) {
-            std::cout << errors[j] << std::endl;
-        }
-
-        pt1 = epts1.block(0, 0, 1, 3).transpose();
-        pt2 = epts2.block(0, 0, 1, 3).transpose();
-
-        estimator.obtainPose(pt1, pt2, K, K, poses, pose);
-
-        x += pose(0, 3);
-        y += pose(1, 3);
-        z += pose(2, 3);
-
-        output_file << i << ", ";
-        output_file << x << ", ";
-        output_file << y << ", ";
-        output_file << z << ", ";
-        output_file << yaw;
-        output_file << std::endl;
-
-        // measure and record pose estimation
-        // if (vo.measure(pts_1, pts_2) == 0) {
-        //     x = vo.t.at<double>(0);
-        //     y = vo.t.at<double>(1);
-        //     z = vo.t.at<double>(2);
-        //     yaw = atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
-        //
-        //     output_file << i << ", ";
-        //     output_file << x << ", ";
-        //     output_file << y << ", ";
-        //     output_file << z << ", ";
-        //     output_file << yaw;
-        //     output_file << std::endl;
-        // }
-
-        // display optical flow
-        // vo.drawOpticalFlow(frame, pts_1, pts_2);
-        cv::imshow("test", frame);
-        cv::waitKey(1);
-
-        // update previous image and keypoints
-        feature_extraction(fast, img_2, pts_1);
-        img_2.copyTo(img_1);
-        pts_1 = pts_2;
-    }
-    output_file.close();
+    // cv::Mat frame;
+    // cv::Mat img_1;
+    // cv::Mat img_2;
+    // std::vector<cv::Point2f> pts_1;
+    // std::vector<cv::Point2f> pts_2;
+    // std::vector<float> errors;
+    // std::vector<uchar> status;
+    // double x, y, z, yaw;
+    //
+    // std::ofstream output_file;
+    //
+    // slam::Camera camera;
+    // slam::VisualOdometry vo;
+    // slam::FastDetector fast;
+    //
+    // // setup camera
+    // camera.configure(0, CALIB_FILE);
+    //
+    // // setup VO
+    // vo.configure(camera.camera_mat);
+    // std::cout << "focal length: " << vo.focal_length << std::endl;
+    // std::cout << "principle point: " << vo.principle_point << std::endl;
+    //
+    // // setup feature detector
+    // fast.configure(70, true);
+    //
+    // // setup data file
+    // output_file.open("/tmp/odometry.dat");
+    // output_file << "i, x, y, z" << std::endl;
+    //
+    // // loop
+    // x = 0.0;
+    // y = 0.0;
+    // z = 0.0;
+    // yaw = 0.0;
+    //
+    // camera.getFrame(frame);
+    // cv::cvtColor(frame, img_1, cv::COLOR_BGR2GRAY);
+    // feature_extraction(fast, img_1, pts_1);
+    //
+    // slam::Mat3 K, E;
+    // slam::Vec3 pt1, pt2;
+    // slam::MatX pose;
+    // slam::MatX epts1;
+    // slam::MatX epts2;
+    // std::vector<slam::MatX> poses;
+    // slam::optimization::EightPoint estimator;
+    // estimator.configure(320, 240);
+    // K << camera.camera_mat.at<double>(0, 0), camera.camera_mat.at<double>(0, 1), camera.camera_mat.at<double>(0, 2),
+    //      camera.camera_mat.at<double>(1, 0), camera.camera_mat.at<double>(1, 1), camera.camera_mat.at<double>(1, 2),
+    //      camera.camera_mat.at<double>(2, 0), camera.camera_mat.at<double>(2, 1), camera.camera_mat.at<double>(2, 2);
+    // std::cout << K << std::endl;
+    //
+    // for (int i = 0; i < 100; i++) {
+    //     // grab new frame and track features
+    //     camera.getFrame(frame);
+    //     cv::cvtColor(frame, img_2, cv::COLOR_BGR2GRAY);
+    //     vo.featureTracking(img_1, img_2, pts_1, pts_2, errors, status);
+    //
+    //     pts2mat(pts_1, epts1);
+    //     pts2mat(pts_2, epts2);
+    //
+    //     estimator.estimate(epts1, epts2, K, E);
+    //     estimator.obtainPossiblePoses(E, poses);
+    //
+    //     for (int j = 0; j < errors.size(); j++) {
+    //         std::cout << errors[j] << std::endl;
+    //     }
+    //
+    //     pt1 = epts1.block(0, 0, 1, 3).transpose();
+    //     pt2 = epts2.block(0, 0, 1, 3).transpose();
+    //
+    //     estimator.obtainPose(pt1, pt2, K, K, poses, pose);
+    //
+    //     x += pose(0, 3);
+    //     y += pose(1, 3);
+    //     z += pose(2, 3);
+    //
+    //     output_file << i << ", ";
+    //     output_file << x << ", ";
+    //     output_file << y << ", ";
+    //     output_file << z << ", ";
+    //     output_file << yaw;
+    //     output_file << std::endl;
+    //
+    //     // measure and record pose estimation
+    //     // if (vo.measure(pts_1, pts_2) == 0) {
+    //     //     x = vo.t.at<double>(0);
+    //     //     y = vo.t.at<double>(1);
+    //     //     z = vo.t.at<double>(2);
+    //     //     yaw = atan2(vo.R.at<double>(1, 0), vo.R.at<double>(0, 0));
+    //     //
+    //     //     output_file << i << ", ";
+    //     //     output_file << x << ", ";
+    //     //     output_file << y << ", ";
+    //     //     output_file << z << ", ";
+    //     //     output_file << yaw;
+    //     //     output_file << std::endl;
+    //     // }
+    //
+    //     // display optical flow
+    //     // vo.drawOpticalFlow(frame, pts_1, pts_2);
+    //     cv::imshow("test", frame);
+    //     cv::waitKey(1);
+    //
+    //     // update previous image and keypoints
+    //     feature_extraction(fast, img_2, pts_1);
+    //     img_2.copyTo(img_1);
+    //     pts_1 = pts_2;
+    // }
+    // output_file.close();
 
     return 0;
 }

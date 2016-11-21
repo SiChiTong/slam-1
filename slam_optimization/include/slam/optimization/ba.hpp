@@ -1,11 +1,11 @@
 #ifndef __SLAM_OPTIMIZATION_BUNDLE_ADJUSTMENT_HPP__
 #define __SLAM_OPTIMIZATION_BUNDLE_ADJUSTMENT_HPP__
 
+#include <typeinfo>
 
 #include <ceres/ceres.h>
 
 #include "slam/utils/utils.hpp"
-#include "slam/vision/vision.hpp"
 
 
 namespace slam {
@@ -13,73 +13,42 @@ namespace slam {
 class BAResidual
 {
 public:
-    Mat3 K;
-    Vec3 x1;
-    Vec3 x2;
+    double fx;
+    double fy;
+    double cx;
+    double cy;
+
+    double p1_x;
+    double p1_y;
+    double p2_x;
+    double p2_y;
 
     BAResidual(void)
     {
+        this->fx = 0.0;
+        this->fy = 0.0;
+        this->cx = 0.0;
+        this->cy = 0.0;
 
+        this->p1_x = 0.0;
+        this->p1_y = 0.0;
+
+        this->p2_x = 0.0;
+        this->p2_y = 0.0;
     }
 
-    BAResidual(Mat3 K, Vec3 x1, Vec3 x2)
+    BAResidual(Mat3 K, Vec2 x1, Vec2 x2)
     {
-        this->K = K;
-        this->x1 = x1;
-        this->x2 = x2;
-    }
+        this->fx = K(0, 0);
+        this->fy = K(1, 1);
+        this->cx = K(0, 2);
+        this->cy = K(1, 2);
 
-    template <typename T>
-    void setupRotationMatrix(const T * const q, Mat3 &R)
-    {
-        double qx, qy, qz, qw;
+        this->p1_x = x1(0);
+        this->p1_y = x1(1);
 
-        // rotation matrix - parameterized quaternion
-        qx = q[0];
-        qy = q[1];
-        qz = q[2];
-        qw = q[3];
-
-        R(0, 0) = 1 - 2 * pow(qy, 2) - 2 * pow(qz, 2);
-        R(0, 1) = 2 * qx * qy + 2 * qw * qz;
-        R(0, 2) = 2 * qx * qz - 2 * qw * qy;
-
-        R(1, 0) = 2 * qx * qy - 2 * qw * qz;
-        R(1, 1) = 1 - 2 * pow(qx, 2) - 2 * pow(qz, 2);
-        R(1, 2) = 2 * qy * qz + 2 * qw * qz;
-
-        R(2, 0) = 2 * qx * qz - 2 * qw * qy;
-        R(2, 1) = 2 * qy * qz - 2 * qw * qx;
-        R(2, 2) = 1 - 2 * pow(qx, 2) - 2 * pow(qy, 2);
-    }
-
-    template <typename T>
-    void setupCameraCenter(const T * const c, Vec3 &C)
-    {
-        C << c[0], c[1], c[2];
-    }
-
-    template <typename T>
-    void setup3DPoint(const T * const x, Vec3 &X)
-    {
-        X << x[0], x[1], x[2];
-    }
-
-    double calcReprojectionError(Mat3 R, Vec3 C, Vec3 X, Vec2 m_tilde)
-    {
-        Vec3 x;
-        Vec2 m;
-
-        // 3D point
-        X << x[0], x[1], x[2];
-
-        // calculate reprojection error
-        x = this->K * R * (X - C);
-        m << x(0) / x(2),
-             x(1) / x(2);
-
-        // euclidean distance between observed and predicted
-        return (m_tilde - m).norm();
+        this->p2_x = x2(0);
+        this->p2_y = x2(1);
     }
 
     template <typename T>
@@ -88,23 +57,61 @@ public:
         const T * const c,
         const T * const x,
         T *residual
-    )
+    ) const
     {
-        double d1, d2;
-        Mat3 R;
-        Vec3 C, X;
+        Eigen::Matrix<T, 3, 3> K, R;
+        Eigen::Matrix<T, 3, 1> C, X;
+        Eigen::Matrix<T, 3, 1> x1_est, x2_est;
+        Eigen::Matrix<T, 2, 1> x1_est_pixel, x2_est_pixel, err1, err2;
 
-        // setup
-        R = this->setupRotationMatrix(q);
-        C = this->setupCameraCenter(c);
-        X = this->setup3DPoint(x);
+        // camera intrinsics matrix
+        K(0, 0) = T(this->fx);
+        K(0, 1) = T(0.0);
+        K(0, 2) = T(this->cx);
 
-        // calculate reprojection errors for x1 and x2 point correspondances
-        d1 = this->calcReprojectionError(q, c, x, this->x1);
-        d2 = this->calcReprojectionError(q, c, x, this->x2);
+        K(1, 0) = T(0.0);
+        K(1, 1) = T(this->fy);
+        K(1, 2) = T(this->cy);
+
+        K(2, 0) = T(0.0);
+        K(2, 1) = T(0.0);
+        K(2, 2) = T(1.0);
+
+        // rotation matrix from quaternion q = (x, y, z, w)
+        R(0, 0) = T(1) - T(2) * (q[1] * q[1]) - T(2) * (q[2] * q[2]);
+        R(0, 1) = T(2) * q[0] * q[1] + T(2) * q[3] * q[2];
+        R(0, 2) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+
+        R(1, 0) = T(2) * q[0] * q[1] - T(2) * q[3] * q[2];
+        R(1, 1) = T(1) - T(2) * (q[0] * q[0]) - T(2) * (q[2] * q[2]);
+        R(1, 2) = T(2) * q[1] * q[2] + T(2) * q[3] * q[2];
+
+        R(2, 0) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+        R(2, 1) = T(2) * q[1] * q[2] - T(2) * q[3] * q[0];
+        R(2, 2) = T(1) - T(2) * (q[0] * q[0]) - T(2) * (q[1] * q[1]);
+
+        // camera center
+        C << c[0], c[1], c[2];
+
+        // 3D point
+        X << x[0], x[1], x[2];
+
+        // calculate reprojection error for camera 1
+        x1_est = K * X;
+        x1_est_pixel << x1_est(0) / x1_est(2),
+                        x1_est(1) / x1_est(2);
+        err1 << T(this->p1_x) - x1_est_pixel(0),
+                T(this->p1_y) - x1_est_pixel(1);
+
+        // calculate reprojection error for camera 2
+        x2_est = K * R * (X - C);
+        x2_est_pixel << x2_est(0) / x2_est(2),
+                        x2_est(1) / x2_est(2);
+        err2 << T(this->p2_x) - x2_est_pixel(0),
+                T(this->p2_y) - x2_est_pixel(1);
 
         // calculate error
-        residual[0] = pow(d1, 2) + pow(d2, 2);
+        residual[0] = err1(0) + err2(0);
 
         return true;
     }
@@ -115,14 +122,11 @@ class BundleAdjustment
 public:
     bool configured;
     Mat3 K;
-    std::vector<cv::Point2f> x1_pts;
-    std::vector<cv::Point2f> x2_pts;
+    MatX x1_pts;
+    MatX x2_pts;
 
     BundleAdjustment(void);
-    // int configure(
-    //     std::vector<cv::Point2f> x1_pts,
-    //     std::vector<cv::Point2f> x2_pts
-    // );
+    int configure(Mat3 K, MatX x1_pts, MatX x2_pts);
     int solve(void);
 };
 

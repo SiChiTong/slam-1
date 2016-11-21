@@ -41,18 +41,7 @@ public:
     void refineFundamentalMatrix(MatX &F);
     void denormalizeFundamentalMatrix(MatX &F);
     int estimate(MatX pts1, MatX pts2, MatX &F);
-    int estimate(
-        std::vector<cv::Point2f> cvpts1,
-        std::vector<cv::Point2f> cvpts2,
-        MatX &F
-    );
     int estimate(MatX pts1, MatX pts2, Mat3 &K, Mat3 &E);
-    int estimate(
-        std::vector<cv::Point2f> cvpts1,
-        std::vector<cv::Point2f> cvpts2,
-        Mat3 &K,
-        Mat3 &E
-    );
     int obtainPossiblePoses(Mat3 E, std::vector<MatX> &poses);
     int obtainPose(
         Vec3 pt1,

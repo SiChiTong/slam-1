@@ -303,6 +303,13 @@ TEST(EightPoint, obtainPose)
     estimator.estimate(pts1, pts2, K, E);
     estimator.obtainPossiblePoses(E, poses);
 
+    // test and assert
+    pt1 = pts1.block(0, 0, 1, 3).transpose();
+    pt2 = pts2.block(0, 0, 1, 3).transpose();
+    estimator.obtainPose(pt1, pt2, K, K, poses, pose);
+    std::cout << "8 point: \n" << pose << std::endl << std::endl;
+
+    // compare with opencv's 8 point
     slam::VisualOdometry vo;
     vo.configure(K);
     std::vector<cv::Point2f> cvpts1;
@@ -313,14 +320,8 @@ TEST(EightPoint, obtainPose)
         cvpts2.push_back(cv::Point2f(pts2(i, 0), pts2(i, 1)));
     }
     vo.measure(cvpts1, cvpts2);
-    std::cout << "cv rotation:" << vo.R << std::endl;
-    std::cout << "cv translation:" << vo.t << std::endl;
-
-    // test and assert
-    pt1 = pts1.block(0, 0, 1, 3).transpose();
-    pt2 = pts2.block(0, 0, 1, 3).transpose();
-    estimator.obtainPose(pt1, pt2, K, K, poses, pose);
-    std::cout << "8 point: " << pose << std::endl;
+    std::cout << "cv rotation: \n" << vo.R << std::endl << std::endl;
+    std::cout << "cv translation: \n" << vo.t << std::endl << std::endl;
 }
 
 TEST(EightPoint, obtainPose2)
@@ -354,29 +355,23 @@ TEST(EightPoint, obtainPose2)
     // detect and track features
     fast.detect(img_1, cvpts_1);
     vo.featureTracking(img_1, img_2, cvpts_1, cvpts_2, errors, status);
-
-    // display tracked features
-    // vo.drawOpticalFlow(img_1, img_2, cvpts_1, cvpts_2, twin_img);
-    // cv::imshow("image", twin_img);
-    // cv::waitKey(0);
-
-    estimator.configure(960, 720);
-    estimator.estimate(cvpts_1, cvpts_2, K, E);
-    estimator.obtainPossiblePoses(E, poses);
-
-    // test and assert
     slam::convert_cvpts(cvpts_1, pts1);
     slam::convert_cvpts(cvpts_2, pts2);
+
+    // display tracked features
+    vo.drawOpticalFlow(img_1, img_2, cvpts_1, cvpts_2, twin_img);
+    cv::imshow("image", twin_img);
+    cv::waitKey(5000);
+
+    // test 8-point
+    estimator.configure(960, 720);
+    estimator.estimate(pts1, pts2, K, E);
+    estimator.obtainPossiblePoses(E, poses);
+
     pt1 = pts1.block(0, 0, 1, 3).transpose();
     pt2 = pts2.block(0, 0, 1, 3).transpose();
     estimator.obtainPose(pt1, pt2, K, K, poses, pose);
-    std::cout << "estimated: \n" << pose << std::endl << std::endl;
-
-    slam::Mat3 R;
-    slam::Vec3 e;
-    R = pose.block(0, 0, 3, 3);
-    e = R.eulerAngles(0, 1, 2);
-    std::cout << e << std::endl;
+    std::cout << "8 point: \n" << pose << std::endl << std::endl;
 
     // compare with opencv 8-point
     vo.measure(cvpts_1, cvpts_2);

@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 
+#include <sr/sr.h>
 #include <ginac/ginac.h>
 
 
