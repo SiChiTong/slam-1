@@ -32,7 +32,7 @@ int BundleAdjustment::solve(void)
     ceres::Problem problem;
     ceres::Solver::Options options;
     ceres::Solver::Summary summary;
-    ceres::AutoDiffCostFunction<BAResidual, 1, 4, 3, 3> *cost_func;
+    ceres::AutoDiffCostFunction<BAResidual, 2, 4, 3, 3> *cost_func;
     BAResidual *r;
 
     // setup
@@ -45,30 +45,31 @@ int BundleAdjustment::solve(void)
     c[1] = 0.0;
     c[2] = 0.0;
 
-    x[0] = 1.0;
-    x[1] = 1.0;
-    x[2] = 1.0;
+    x[0] = 0.0;
+    x[1] = 0.0;
+    x[2] = 0.1;
 
     // options
-    // options.linear_solver_type = ceres::DENSE_SCHUR;
-    // options.minimizer_progress_to_stdout = true;
-    // options.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
-    // options.use_inner_iterations = false;
-    options.use_nonmonotonic_steps = true;
+    // options.use_nonmonotonic_steps = true;
     options.preconditioner_type = ceres::SCHUR_JACOBI;
     options.linear_solver_type = ceres::DENSE_SCHUR;
     options.max_num_iterations = 100;
 
     // load data
     for (int i = 0; i < this->x1_pts.rows(); i++) {
-        pt1 << this->x1_pts(i, 0) , this->x1_pts(i, 1);
-        pt2 << this->x2_pts(i, 0) , this->x2_pts(i, 1);
+        pt1 << this->x1_pts(i, 0), this->x1_pts(i, 1);
+        pt2 << this->x2_pts(i, 0), this->x2_pts(i, 1);
 
         r = new BAResidual(this->K, pt1, pt2);
-        cost_func = new ceres::AutoDiffCostFunction<BAResidual, 1, 4, 3, 3>(r);
-        problem.AddResidualBlock(cost_func, NULL, q, c, x);
+        cost_func = new ceres::AutoDiffCostFunction<BAResidual, 2, 4, 3, 3>(r);
+        problem.AddResidualBlock(
+            cost_func,
+            NULL,  // squared loss function
+            q,
+            c,
+            x
+        );
     }
-
 
     // solve
     ceres::Solve(options, &problem, &summary);
