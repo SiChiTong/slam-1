@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "slam/optimization/ba.hpp"
+#include "slam/optimization/ceres/ba.hpp"
 
 #define TEST_DATA_1 "tests/data/ba/pts1.dat"
 #define TEST_DATA_2 "tests/data/ba/pts2.dat"
@@ -20,7 +20,7 @@ TEST(BAResidual, constructor)
     x << 130, 62;
 
     // test and assert
-    slam::BAResidual r(K, x, true);
+    slam::ceres::BAResidual r(K, x, true);
     ASSERT_FLOAT_EQ(K(0, 0), r.fx);
     ASSERT_FLOAT_EQ(K(1, 1), r.fy);
     ASSERT_FLOAT_EQ(K(0, 2), r.cx);
@@ -157,7 +157,7 @@ TEST(BAResidual, constructor)
 
 TEST(BundleAdjustment, constructor)
 {
-    slam::BundleAdjustment ba;
+    slam::ceres::BundleAdjustment ba;
     ASSERT_EQ(false, ba.configured);
 }
 
@@ -165,7 +165,7 @@ TEST(BundleAdjustment, configure)
 {
     slam::Mat3 K;
     slam::MatX x1_pts, x2_pts;
-    slam::BundleAdjustment ba;
+    slam::ceres::BundleAdjustment ba;
 
     // setup
     slam::csv2mat(TEST_DATA_1, false, x1_pts);
@@ -187,7 +187,7 @@ TEST(BundleAdjustment, solve)
 {
     slam::Mat3 K;
     slam::MatX x1_pts, x2_pts;
-    slam::BundleAdjustment ba;
+    slam::ceres::BundleAdjustment ba;
 
     // setup
     slam::csv2mat(TEST_DATA_1, false, x1_pts);

@@ -9,6 +9,7 @@
 
 
 namespace slam {
+namespace ceres {
 
 class BAResidual
 {
@@ -101,9 +102,9 @@ public:
 
         // calculate reprojection error
         if (origin) {
-            x_est = K * X;  // for camera 1
+            x_est = K * X;  // for image 1
         } else {
-            x_est = K * quat * (X - C);  // for camera 2
+            x_est = K * quat * (X - C);  // for image 2 and beyond
         }
 
         // convert predicted 2d point in homogenous coordinates
@@ -134,5 +135,6 @@ public:
     int solve(void);
 };
 
+}  // end of ceres namespace
 }  // end of slam namespace
 #endif

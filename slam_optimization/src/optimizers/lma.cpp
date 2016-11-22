@@ -1,9 +1,9 @@
-#include "slam/optimization/nm.hpp"
+#include "slam/optimization/optimizers/lma.hpp"
 
 
 namespace slam {
 
-NMOpt::NMOpt(void)
+LMAOpt::LMAOpt(void)
 {
     this->configured = false;
 
@@ -15,7 +15,7 @@ NMOpt::NMOpt(void)
     this->f = NULL;
 }
 
-int NMOpt::configure(
+int LMAOpt::configure(
     int max_iter,
     VecX eta,
     VecX x,
@@ -25,7 +25,7 @@ int NMOpt::configure(
     this->configured = true;
 
     this->max_iter = max_iter;
-    this->step = 0.000001;
+    this->step = 0.0001;
 
     this->eta = eta;
     this->x = x;
@@ -34,18 +34,18 @@ int NMOpt::configure(
     return 0;
 }
 
-int NMOpt::calcGradient(VecX &df)
+int LMAOpt::calcGradient(VecX &df)
 {
     VecX px, nx;
 
     try {
         // pre-check
         if (this->configured == false) {
-            LOG_ERROR(ENMC);
+            LOG_ERROR(ELMAC);
             return -1;
         }
 
-        // calculate gradient - central finite difference
+        // calculate gradient using central finite difference
         for (int i = 0; i < this->x.rows(); i++) {
             px = this->x;
             nx = this->x;
@@ -55,14 +55,14 @@ int NMOpt::calcGradient(VecX &df)
         }
 
     } catch(const std::bad_function_call& e) {
-        LOG_ERROR(ENMF, e.what());
+        LOG_ERROR(ELMAF, e.what());
         return -2;
     }
 
     return 0;
 }
 
-int NMOpt::forwardInnerPartialDerviative(int i, int j, double &deriv)
+int LMAOpt::forwardInnerPartialDerviative(int i, int j, double &deriv)
 {
     VecX fp, bp, fd;
 
@@ -81,7 +81,7 @@ int NMOpt::forwardInnerPartialDerviative(int i, int j, double &deriv)
     return 0;
 }
 
-int NMOpt::backwardInnerPartialDerviative(int i, int j, double &deriv)
+int LMAOpt::backwardInnerPartialDerviative(int i, int j, double &deriv)
 {
     VecX fp, bp, fd;
 
@@ -99,13 +99,13 @@ int NMOpt::backwardInnerPartialDerviative(int i, int j, double &deriv)
     return 0;
 }
 
-int NMOpt::calcHessian(MatX &H)
+int LMAOpt::calcHessian(MatX &H)
 {
     double ifd, ibd, cfd;
 
     // pre-check
     if (this->configured == false) {
-        LOG_ERROR(ENMC);
+        LOG_ERROR(ELMAC);
         return -1;
     }
 
@@ -122,52 +122,34 @@ int NMOpt::calcHessian(MatX &H)
     return 0;
 }
 
-int NMOpt::optimize(void)
+int LMAOpt::optimize(void)
 {
     VecX df;
-    MatX H;
-    MatX H_inv;
-    double y;
+    VecX H_approx;
+    VecX g;
 
     try {
         // pre-check
         if (this->configured == false) {
-            LOG_ERROR(ENMC);
+            LOG_ERROR(ELMAC);
             return -1;
         }
 
         // setup
         df.resize(this->x.rows(), 1);
-        H.resize(this->x.rows(), this->x.rows());
-        this->calcHessian(H);
+        H_approx.resize(1, 1);
 
         // optimize
-        if (isposdef(H)) {
-            H_inv = H.inverse();
-            for (int i = 0; i < this->max_iter; i++) {
-                this->calcGradient(df);
-                this->x -= this->eta.cwiseProduct(H_inv * df);
-            }
+        for (int i = 0; i < this->max_iter; i++) {
+            this->calcGradient(df);
+            H_approx = (df.transpose() * df).inverse();
+            g = df.transpose() * this->f(this->x);
 
-
-        } else {
-            LOG_INFO(ENMH);
-
-            for (int i = 0; i < this->max_iter; i++) {
-                this->calcGradient(df);
-                y = this->f(this->x);
-
-                for (int j = 0; j < this->x.rows(); j++) {
-                    if (fltcmp(df(j), 0.0) == 0) {
-                        this->x(j) -= this->eta(j) * y / df(j);
-                    }
-                }
-            }
-
+            this->x = this->x - this->eta.cwiseProduct(H_approx.inverse() * g);
         }
 
     } catch(const std::bad_function_call& e) {
-        LOG_ERROR(ENMF, e.what());
+        LOG_ERROR(ELMAF, e.what());
         return -2;
     }
 

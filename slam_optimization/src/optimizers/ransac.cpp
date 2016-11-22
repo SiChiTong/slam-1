@@ -1,4 +1,4 @@
-#include "slam/optimization/ransac.hpp"
+#include "slam/optimization/optimizers/ransac.hpp"
 
 
 namespace slam {

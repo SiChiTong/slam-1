@@ -2,8 +2,8 @@
 
 #include <gtest/gtest.h>
 
-#include "slam/optimization/gd.hpp"
 #include "slam/optimization/benchmark.hpp"
+#include "slam/optimization/optimizers/gd.hpp"
 
 
 TEST(GDOpt, constructor)

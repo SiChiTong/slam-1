@@ -7,7 +7,7 @@
 
 #include "slam/utils/math.hpp"
 #include "slam/utils/data.hpp"
-#include "slam/optimization/ransac.hpp"
+#include "slam/optimization/optimizers/ransac.hpp"
 
 #define TEST_DATA "tests/data/ransac/ransac_sample.dat"
 
