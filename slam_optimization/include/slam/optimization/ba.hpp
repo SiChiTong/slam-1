@@ -13,15 +13,16 @@ namespace slam {
 class BAResidual
 {
 public:
+
     double fx;
     double fy;
     double cx;
     double cy;
 
-    double x1_x;
-    double x1_y;
-    double x2_x;
-    double x2_y;
+    double x;
+    double y;
+
+    bool origin;
 
     BAResidual(void)
     {
@@ -30,25 +31,23 @@ public:
         this->cx = 0.0;
         this->cy = 0.0;
 
-        this->x1_x = 0.0;
-        this->x1_y = 0.0;
+        this->x = 0.0;
+        this->y = 0.0;
 
-        this->x2_x = 0.0;
-        this->x2_y = 0.0;
+        this->origin = false;
     }
 
-    BAResidual(Mat3 K, Vec2 x1, Vec2 x2)
+    BAResidual(Mat3 K, Vec2 x, bool origin)
     {
         this->fx = K(0, 0);
         this->fy = K(1, 1);
         this->cx = K(0, 2);
         this->cy = K(1, 2);
 
-        this->x1_x = x1(0);
-        this->x1_y = x1(1);
+        this->x = x(0);
+        this->y = x(1);
 
-        this->x2_x = x2(0);
-        this->x2_y = x2(1);
+        this->origin = origin;
     }
 
     template <typename T>
@@ -61,8 +60,9 @@ public:
     {
         Eigen::Matrix<T, 3, 3> K, R;
         Eigen::Matrix<T, 3, 1> C, X;
-        Eigen::Matrix<T, 3, 1> x1_est, x2_est;
-        Eigen::Matrix<T, 2, 1> x1_est_pixel, x2_est_pixel, err1, err2;
+        Eigen::Matrix<T, 3, 1> x_est;
+        Eigen::Matrix<T, 2, 1> x_est_pixel, err;
+        Eigen::Quaternion<T> quat;
 
         // camera intrinsics matrix
         K(0, 0) = T(this->fx);
@@ -78,17 +78,20 @@ public:
         K(2, 2) = T(1.0);
 
         // rotation matrix from quaternion q = (x, y, z, w)
-        R(0, 0) = T(1) - T(2) * pow(q[1], 2) - T(2) * pow(q[2], 2);
-        R(0, 1) = T(2) * q[0] * q[1] + T(2) * q[3] * q[2];
-        R(0, 2) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+        quat = Eigen::Map<const Eigen::Quaternion<T>>(q);
+        quat.normalize();
 
-        R(1, 0) = T(2) * q[0] * q[1] - T(2) * q[3] * q[2];
-        R(1, 1) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[2], 2);
-        R(1, 2) = T(2) * q[1] * q[2] + T(2) * q[3] * q[2];
-
-        R(2, 0) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
-        R(2, 1) = T(2) * q[1] * q[2] - T(2) * q[3] * q[0];
-        R(2, 2) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[1], 2);
+        // R(0, 0) = T(1) - T(2) * pow(q[1], 2) - T(2) * pow(q[2], 2);
+        // R(0, 1) = T(2) * q[0] * q[1] + T(2) * q[3] * q[2];
+        // R(0, 2) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+        //
+        // R(1, 0) = T(2) * q[0] * q[1] - T(2) * q[3] * q[2];
+        // R(1, 1) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[2], 2);
+        // R(1, 2) = T(2) * q[1] * q[2] + T(2) * q[3] * q[2];
+        //
+        // R(2, 0) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+        // R(2, 1) = T(2) * q[1] * q[2] - T(2) * q[3] * q[0];
+        // R(2, 2) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[1], 2);
 
         // camera center
         C << c[0], c[1], c[2];
@@ -96,21 +99,23 @@ public:
         // 3D point
         X << x[0], x[1], x[2];
 
-        // calculate reprojection error for camera 1
-        x1_est = K * X;
-        x1_est_pixel << x1_est(0) / x1_est(2), x1_est(1) / x1_est(2);
-        err1 << abs(T(this->x1_x) - x1_est_pixel(0)),
-                abs(T(this->x1_y) - x1_est_pixel(1));
+        // calculate reprojection error
+        if (origin) {
+            x_est = K * X;  // for camera 1
+        } else {
+            x_est = K * quat * (X - C);  // for camera 2
+        }
 
-        // calculate reprojection error for camera 2
-        x2_est = K * R * (X - C);
-        x2_est_pixel << x2_est(0) / x2_est(2), x2_est(1) / x2_est(2);
-        err2 << abs(T(this->x2_x) - x2_est_pixel(0)),
-                abs(T(this->x2_y) - x2_est_pixel(1));
+        // convert predicted 2d point in homogenous coordinates
+        // back to image coordinates
+        x_est_pixel << x_est(0) / x_est(2),
+                       x_est(1) / x_est(2);
 
         // calculate error
-        residual[0] = err1(0);
-        residual[1] = err1(1);
+        err << abs(T(this->x) - x_est_pixel(0)),
+               abs(T(this->y) - x_est_pixel(1));
+        residual[0] = err(0);
+        residual[1] = err(1);
 
         return true;
     }

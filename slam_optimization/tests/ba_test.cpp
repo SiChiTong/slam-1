@@ -11,26 +11,23 @@
 TEST(BAResidual, constructor)
 {
     slam::Mat3 K;
-    slam::Vec2 x1;
-    slam::Vec2 x2;
+    slam::Vec2 x;
 
     // setup
     K << 1.0, 0.0, 3.0,
          0.0, 2.0, 4.0,
          0.0, 0.0, 1.0;
-    x1 << 130, 62;
-    x2 << 131.474, 73.2267;
+    x << 130, 62;
 
     // test and assert
-    slam::BAResidual r(K, x1, x2);
+    slam::BAResidual r(K, x, true);
     ASSERT_FLOAT_EQ(K(0, 0), r.fx);
     ASSERT_FLOAT_EQ(K(1, 1), r.fy);
     ASSERT_FLOAT_EQ(K(0, 2), r.cx);
     ASSERT_FLOAT_EQ(K(1, 2), r.cy);
-    ASSERT_FLOAT_EQ(x1(0), r.x1_x);
-    ASSERT_FLOAT_EQ(x1(1), r.x1_y);
-    ASSERT_FLOAT_EQ(x2(0), r.x2_x);
-    ASSERT_FLOAT_EQ(x2(1), r.x2_y);
+    ASSERT_FLOAT_EQ(x(0), r.x);
+    ASSERT_FLOAT_EQ(x(1), r.y);
+    ASSERT_FLOAT_EQ(true, r.origin);
 }
 
 // TEST(BAResidual, setupRotationMatrix)
