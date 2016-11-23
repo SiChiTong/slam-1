@@ -75,7 +75,7 @@ public:
         Eigen::Matrix<T, 3, 3> K, R;
         Eigen::Matrix<T, 3, 1> C, X;
         Eigen::Matrix<T, 3, 1> x_est;
-        Eigen::Matrix<T, 2, 1> x_est_pixel, err;
+        Eigen::Matrix<T, 2, 1> x_est_pixel;
         Eigen::Quaternion<T> quat;
 
         // camera intrinsics matrix
@@ -122,12 +122,9 @@ public:
         x_est_pixel << x_est(0) / x_est(2),
                        x_est(1) / x_est(2);
 
-        // calculate error
-        err << abs(T(this->x) - x_est_pixel(0)),
-               abs(T(this->y) - x_est_pixel(1));
-
-        residual[0] = err(0);
-        residual[1] = err(1);
+        // calculate residual error
+        residual[0] = abs(T(this->x) - x_est_pixel(0));
+        residual[1] = abs(T(this->y) - x_est_pixel(1));
 
         // calculate quaternion magnitude
         T d;
