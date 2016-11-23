@@ -1,5 +1,5 @@
-#ifndef __SLAM_OPTIMIZATION_RANSAC_HPP__
-#define __SLAM_OPTIMIZATION_RANSAC_HPP__
+#ifndef __SLAM_OPTIMIZATION_OPTIMIZERS_RANSAC_HPP__
+#define __SLAM_OPTIMIZATION_OPTIMIZERS_RANSAC_HPP__
 
 #include <iostream>
 #include <math.h>

@@ -64,11 +64,9 @@ int BundleAdjustment::solve(void)
     options.max_num_iterations = 1000;
     options.use_nonmonotonic_steps = true;
     options.use_inner_iterations = true;
-    options.gradient_tolerance = 1e-16;
-    options.function_tolerance = 1e-16;
-    options.preconditioner_type = ::ceres::JACOBI;
-    options.linear_solver_type = ::ceres::SPARSE_SCHUR;
+    options.linear_solver_type = ::ceres::SPARSE_NORMAL_CHOLESKY;
     options.trust_region_strategy_type = ::ceres::LEVENBERG_MARQUARDT;
+    options.minimizer_progress_to_stdout = true;
 
     // image 1
     for (int i = 0; i < this->x1_pts.rows(); i++) {

@@ -52,6 +52,19 @@ public:
     }
 
     template <typename T>
+    T vectorMagnitude(const T * const v, const T length)
+    {
+        T m;
+
+        for (T i = 0; i < length; i++) {
+            m += pow(v[i], 2);
+        }
+        m = sqrt(m);
+
+        return m;
+    }
+
+    template <typename T>
     bool operator()(
         const T * const q,
         const T * const c,
@@ -79,20 +92,17 @@ public:
         K(2, 2) = T(1.0);
 
         // rotation matrix from quaternion q = (x, y, z, w)
-        quat = Eigen::Map<const Eigen::Quaternion<T>>(q);
-        quat.normalize();
+        R(0, 0) = T(1) - T(2) * pow(q[1], 2) - T(2) * pow(q[2], 2);
+        R(0, 1) = T(2) * q[0] * q[1] + T(2) * q[3] * q[2];
+        R(0, 2) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
 
-        // R(0, 0) = T(1) - T(2) * pow(q[1], 2) - T(2) * pow(q[2], 2);
-        // R(0, 1) = T(2) * q[0] * q[1] + T(2) * q[3] * q[2];
-        // R(0, 2) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
-        //
-        // R(1, 0) = T(2) * q[0] * q[1] - T(2) * q[3] * q[2];
-        // R(1, 1) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[2], 2);
-        // R(1, 2) = T(2) * q[1] * q[2] + T(2) * q[3] * q[2];
-        //
-        // R(2, 0) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
-        // R(2, 1) = T(2) * q[1] * q[2] - T(2) * q[3] * q[0];
-        // R(2, 2) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[1], 2);
+        R(1, 0) = T(2) * q[0] * q[1] - T(2) * q[3] * q[2];
+        R(1, 1) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[2], 2);
+        R(1, 2) = T(2) * q[1] * q[2] + T(2) * q[3] * q[2];
+
+        R(2, 0) = T(2) * q[0] * q[2] - T(2) * q[3] * q[1];
+        R(2, 1) = T(2) * q[1] * q[2] - T(2) * q[3] * q[0];
+        R(2, 2) = T(1) - T(2) * pow(q[0], 2) - T(2) * pow(q[1], 2);
 
         // camera center
         C << c[0], c[1], c[2];
@@ -104,7 +114,7 @@ public:
         if (origin) {
             x_est = K * X;  // for image 1
         } else {
-            x_est = K * quat * (X - C);  // for image 2 and beyond
+            x_est = K * R * (X - C);  // for image 2 and beyond
         }
 
         // convert predicted 2d point in homogenous coordinates
@@ -115,8 +125,18 @@ public:
         // calculate error
         err << abs(T(this->x) - x_est_pixel(0)),
                abs(T(this->y) - x_est_pixel(1));
+
         residual[0] = err(0);
         residual[1] = err(1);
+
+        // calculate quaternion magnitude
+        T d;
+        d = pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2) + pow(q[3], 2);
+        d = sqrt(d);
+
+        // penalize if quaternion is not normal
+        residual[0] += (T(1.0) - d) * T(100000000.0);
+        residual[1] += (T(1.0) - d) * T(100000000.0);
 
         return true;
     }

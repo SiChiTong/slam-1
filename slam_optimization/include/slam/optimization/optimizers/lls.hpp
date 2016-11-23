@@ -1,5 +1,5 @@
-#ifndef __SLAM_OPTIMIZATION_LLS_HPP__
-#define __SLAM_OPTIMIZATION_LLS_HPP__
+#ifndef __SLAM_OPTIMIZATION_OPTIMIZERS_LLS_HPP__
+#define __SLAM_OPTIMIZATION_OPTIMIZERS_LLS_HPP__
 
 #include "slam/utils/utils.hpp"
 
