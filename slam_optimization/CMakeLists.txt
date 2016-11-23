@@ -37,6 +37,7 @@ ADD_LIBRARY(
     src/optimizers/lma.cpp
     src/optimizers/ransac.cpp
     src/benchmark.cpp
+    src/testcase.cpp
 )
 SET(
     DEPS
@@ -68,3 +69,6 @@ TARGET_LINK_LIBRARIES(lma_test ${DEPS})
 
 ADD_EXECUTABLE(ransac_test tests/optimizers/ransac_test.cpp)
 TARGET_LINK_LIBRARIES(ransac_test ${DEPS})
+
+ADD_EXECUTABLE(testcase_test tests/testcase_test.cpp)
+TARGET_LINK_LIBRARIES(testcase_test ${DEPS})

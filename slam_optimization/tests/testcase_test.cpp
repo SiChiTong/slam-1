@@ -1,0 +1,105 @@
+#include <gtest/gtest.h>
+
+#include "slam/optimization/testcase.hpp"
+
+
+TEST(Testcase, constructor)
+{
+    slam::TestCase testcase;
+
+    ASSERT_EQ(false, testcase.configured);
+}
+
+TEST(Testcase, configure)
+{
+    slam::TestCase testcase;
+
+    testcase.configure();
+    ASSERT_EQ(true, testcase.configured);
+}
+
+TEST(Testcase, generateRandom3DPoints)
+{
+    slam::TestCase testcase;
+    slam::TestRange range;
+    slam::MatX pts;
+
+    range.x_min = 0.0;
+    range.x_max = 200.0;
+
+    range.y_min = 0.0;
+    range.y_max = 200.0;
+
+    range.z_min = 0.0;
+    range.z_max = 200.0;
+
+    testcase.configure();
+    testcase.generateRandom3DPoints(range, 10, pts);
+
+    for (int i = 0; i < 10; i++) {
+        ASSERT_TRUE(pts(i, 0) > 0.0);
+        ASSERT_TRUE(pts(i, 0) < 200.0);
+
+        ASSERT_TRUE(pts(i, 1) > 0.0);
+        ASSERT_TRUE(pts(i, 1) < 200.0);
+
+        ASSERT_TRUE(pts(i, 2) > 0.0);
+        ASSERT_TRUE(pts(i, 2) < 200.0);
+    }
+}
+
+TEST(TestCase, createP)
+{
+    slam::TestCase testcase;
+    slam::Mat3 K, R;
+    slam::MatX P;
+    slam::Vec3 t;
+
+    // setup
+    K << 1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         0.0, 0.0, 1.0;
+
+    R << 1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         0.0, 0.0, 1.0;
+
+    t << 1.0, 2.0, 3.0;
+
+    // test and assert
+    testcase.createP(K, R, t, P);
+    // std::cout << P << std::endl;
+
+    ASSERT_FLOAT_EQ(1.0, P(0, 0));
+    ASSERT_FLOAT_EQ(1.0, P(1, 1));
+    ASSERT_FLOAT_EQ(1.0, P(2, 2));
+
+    ASSERT_FLOAT_EQ(-1.0, P(0, 3));
+    ASSERT_FLOAT_EQ(-2.0, P(1, 3));
+    ASSERT_FLOAT_EQ(-3.0, P(2, 3));
+}
+
+TEST(TestCase, generateTestCase)
+{
+    slam::TestRange range;
+    slam::TestCase testcase;
+
+    // setup
+    range.x_min = 0.0;
+    range.x_max = 200.0;
+
+    range.y_min = 0.0;
+    range.y_max = 200.0;
+
+    range.z_min = 0.0;
+    range.z_max = 200.0;
+
+    testcase.generateTestCase(range);
+
+}
+
+int main(int argc, char* argv[])
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
