@@ -39,7 +39,8 @@ public:
         int nb_pts,
         slam::MatX &pts
     );
-    void project3DTo2D(MatX pts_3d, MatX P, MatX &pts_2d);
+    void project3DTo2D(MatX P, MatX pts_3d, MatX &pts_2d);
+    void project3DTo2D(Mat3 K, Mat3 R, Vec3 t, MatX pts_3d, MatX &pts_2d);
     void generateTestCase(TestRange range, MatX &pts1, MatX &pts2);
 };
 

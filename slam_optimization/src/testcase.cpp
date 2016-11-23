@@ -96,7 +96,7 @@ void TestCase::generateRandom3DPoints(
     }
 }
 
-void TestCase::project3DTo2D(MatX pts_3d, MatX P, MatX &pts_2d)
+void TestCase::project3DTo2D(MatX P, MatX pts_3d, MatX &pts_2d)
 {
     Vec2 p;
     Vec3 x;
@@ -121,6 +121,14 @@ void TestCase::project3DTo2D(MatX pts_3d, MatX P, MatX &pts_2d)
     }
 }
 
+void TestCase::project3DTo2D(Mat3 K, Mat3 R, Vec3 t, MatX pts_3d, MatX &pts_2d)
+{
+    MatX P;
+
+    this->createP(K, R, t, P);
+    this->project3DTo2D(P, pts_3d, pts_2d);
+}
+
 void TestCase::generateTestCase(TestRange range, MatX &pts1, MatX &pts2)
 {
     Mat3 K, R;
@@ -130,6 +138,9 @@ void TestCase::generateTestCase(TestRange range, MatX &pts1, MatX &pts2)
     Vec4 X, q;
 
     // setup
+    this->generateRandom3DPoints(range, 100, pts_3d);
+
+    // create correspondance points on first image
     K << 1.0, 0.0, 0.0,
          0.0, 1.0, 0.0,
          0.0, 0.0, 1.0;
@@ -140,25 +151,16 @@ void TestCase::generateTestCase(TestRange range, MatX &pts1, MatX &pts2)
 
     t << 0.0, 0.0, 0.0;
 
-    this->generateRandom3DPoints(range, 100, pts_3d);
-    this->createP(K, R, t, P);
+    this->project3DTo2D(K, R, t, pts_3d, pts1);
 
-    // create correspondance points on first image
-    this->project3DTo2D(pts_3d, P, pts1);
-
-    // rotate second camera pose
+    // create correspondance points on second image
     q << 0.1, 0.1, 0.1, 1.0;
     q.normalize();
     this->createR(q(0), q(1), q(2), q(3), R);
 
-    // translate second camera pose
     t << 1.0, 1.0, 0.0;
 
-    // create new P
-    this->createP(K, R, t, P);
-
-    // create correspondance points on second image
-    this->project3DTo2D(pts_3d, P, pts2);
+    this->project3DTo2D(K, R, t, pts_3d, pts2);
 }
 
 }  // end of slam namespace

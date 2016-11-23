@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "slam/utils/utils.hpp"
 #include "slam/optimization/testcase.hpp"
 
 
@@ -16,36 +17,6 @@ TEST(Testcase, configure)
 
     testcase.configure();
     ASSERT_EQ(true, testcase.configured);
-}
-
-TEST(Testcase, generateRandom3DPoints)
-{
-    slam::TestCase testcase;
-    slam::TestRange range;
-    slam::MatX pts;
-
-    range.x_min = 0.0;
-    range.x_max = 200.0;
-
-    range.y_min = 0.0;
-    range.y_max = 200.0;
-
-    range.z_min = 0.0;
-    range.z_max = 200.0;
-
-    testcase.configure();
-    testcase.generateRandom3DPoints(range, 10, pts);
-
-    for (int i = 0; i < 10; i++) {
-        ASSERT_TRUE(pts(i, 0) > 0.0);
-        ASSERT_TRUE(pts(i, 0) < 200.0);
-
-        ASSERT_TRUE(pts(i, 1) > 0.0);
-        ASSERT_TRUE(pts(i, 1) < 200.0);
-
-        ASSERT_TRUE(pts(i, 2) > 0.0);
-        ASSERT_TRUE(pts(i, 2) < 200.0);
-    }
 }
 
 TEST(TestCase, createP)
@@ -79,23 +50,56 @@ TEST(TestCase, createP)
     ASSERT_FLOAT_EQ(-3.0, P(2, 3));
 }
 
+TEST(Testcase, generateRandom3DPoints)
+{
+    slam::TestCase testcase;
+    slam::TestRange range;
+    slam::MatX pts;
+
+    range.x_min = 0.0;
+    range.x_max = 1.0;
+
+    range.y_min = 0.0;
+    range.y_max = 1.0;
+
+    range.z_min = 0.1;
+    range.z_max = 1.0;
+
+    testcase.configure();
+    testcase.generateRandom3DPoints(range, 10, pts);
+
+    for (int i = 0; i < 10; i++) {
+        ASSERT_TRUE(pts(i, 0) > 0.0);
+        ASSERT_TRUE(pts(i, 0) < 1.0);
+
+        ASSERT_TRUE(pts(i, 1) > 0.0);
+        ASSERT_TRUE(pts(i, 1) < 1.0);
+
+        ASSERT_TRUE(pts(i, 2) > 0.0);
+        ASSERT_TRUE(pts(i, 2) < 1.0);
+    }
+}
+
 TEST(TestCase, generateTestCase)
 {
     slam::TestRange range;
     slam::TestCase testcase;
+    slam::MatX pts1, pts2;
 
     // setup
     range.x_min = 0.0;
-    range.x_max = 200.0;
+    range.x_max = 1.0;
 
     range.y_min = 0.0;
-    range.y_max = 200.0;
+    range.y_max = 1.0;
 
-    range.z_min = 0.0;
-    range.z_max = 200.0;
+    range.z_min = 0.1;
+    range.z_max = 1.0;
 
-    testcase.generateTestCase(range);
+    testcase.generateTestCase(range, pts1, pts2);
 
+    slam::mat2csv("/tmp/pts1.dat", pts1);
+    slam::mat2csv("/tmp/pts2.dat", pts2);
 }
 
 int main(int argc, char* argv[])
