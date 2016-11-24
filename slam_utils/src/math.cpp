@@ -75,4 +75,23 @@ bool isposdef(MatX A)
     return true;
 }
 
+Mat3 rotmat(Vec4 q)
+{
+    Mat3 R;
+
+    // rotation matrix from quaternion q = (x, y, z, w)
+    R(0, 0) = 1.0 - 2.0 * pow(q(1), 2) - 2.0 * pow(q(2), 2);
+    R(0, 1) = 2.0 * q(0) * q(1) + 2.0 * q[3] * q(2);
+    R(0, 2) = 2.0 * q(0) * q(2) - 2.0 * q[3] * q(1);
+
+    R(1, 0) = 2.0 * q(0) * q(1) - 2.0 * q[3] * q(2);
+    R(1, 1) = 1.0 - 2.0 * pow(q(0), 2) - 2.0 * pow(q(2), 2);
+    R(1, 2) = 2.0 * q(1) * q(2) + 2.0 * q[3] * q(2);
+
+    R(2, 0) = 2.0 * q(0) * q(2) - 2.0 * q[3] * q(1);
+    R(2, 1) = 2.0 * q(1) * q(2) - 2.0 * q[3] * q(0);
+    R(2, 2) = 1.0 - 2.0 * pow(q(0), 2) - 2.0 * pow(q(1), 2);
+}
+
+
 }  // end of slam namespace

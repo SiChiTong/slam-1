@@ -80,26 +80,60 @@ TEST(Testcase, generateRandom3DPoints)
     }
 }
 
+TEST(TestCase, project3DTo2D)
+{
+    slam::TestRange range;
+    slam::TestCase testcase;
+    slam::MatX pts_3d;
+    slam::MatX pts_2d;
+    slam::Mat3 K, R;
+    slam::Vec3 t;
+
+    // setup
+    range.x_min = -1.0;
+    range.x_max = 1.0;
+
+    range.y_min = -1.0;
+    range.y_max = 1.0;
+
+    range.z_min = 2.0;
+    range.z_max = 5.0;
+
+    K << 1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         0.0, 0.0, 1.0;
+
+    R << 1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         0.0, 0.0, 1.0;
+
+    t << 0.0, 0.0, 0.0;
+
+    testcase.generateRandom3DPoints(range, 10, pts_3d);
+    testcase.project3DTo2D(K, R, t, pts_3d, pts_2d);
+}
+
 TEST(TestCase, generateTestCase)
 {
     slam::TestRange range;
     slam::TestCase testcase;
-    slam::MatX pts1, pts2;
+    slam::MatX pts1, pts2, pts3d;
 
     // setup
-    range.x_min = 0.0;
+    range.x_min = -1.0;
     range.x_max = 1.0;
 
-    range.y_min = 0.0;
+    range.y_min = -1.0;
     range.y_max = 1.0;
 
-    range.z_min = 0.1;
-    range.z_max = 1.0;
+    range.z_min = 2.0;
+    range.z_max = 5.0;
 
-    testcase.generateTestCase(range, pts1, pts2);
+    testcase.generateTestCase(range, pts1, pts2, pts3d);
 
     slam::mat2csv("/tmp/pts1.dat", pts1);
     slam::mat2csv("/tmp/pts2.dat", pts2);
+    slam::mat2csv("/tmp/pts3d.dat", pts3d);
 }
 
 int main(int argc, char* argv[])

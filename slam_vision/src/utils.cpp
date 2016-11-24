@@ -62,4 +62,40 @@ void combine_cvimgs(cv::Mat img1, cv::Mat img2, cv::Mat &out)
     out.adjustROI(0, 0, size1.width, 0);
 }
 
+void projection_matrix(Mat3 K, Mat3 R, Vec3 t, MatX &P)
+{
+    P.resize(3, 4);
+    P.block(0, 0, 3, 3) = R;
+    P.block(0, 3, 3, 1) = -(R * t);
+    P = K * P;
+}
+
+void normalize_2dpts(double image_width, double image_height, MatX &pts)
+{
+    Mat3 N;
+    MatX pts_h;
+
+    // convert points to homogeneous coordinates
+    pts_h.resize(pts.rows(), 3);
+    for (int i = 0; i < pts.rows(); i++) {
+        pts_h(i, 0) = pts(i, 0);
+        pts_h(i, 1) = pts(i, 1);
+        pts_h(i, 2) = 1.0;
+    }
+
+    // create normalization matrix N
+    N << 2.0 / image_width, 0.0, -1.0,
+         0.0, 2.0 / image_width, -1.0,
+         0.0, 0.0, 1.0;
+
+    // normalize image points to camera center
+    pts_h = (N * pts_h.transpose()).transpose();
+
+    // convert back to 2d coordinates
+    for (int i = 0; i < pts.rows(); i++) {
+        pts(i, 0) = pts_h(i, 0);
+        pts(i, 1) = pts_h(i, 1);
+    }
+}
+
 } // end of slam namespace

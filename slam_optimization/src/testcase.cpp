@@ -106,7 +106,7 @@ void TestCase::project3DTo2D(MatX P, MatX pts_3d, MatX &pts_2d)
     pts_2d.resize(pts_3d.rows(), 2);
 
     // project 3D points to 2D image points
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < pts_3d.rows(); i++) {
         // convert 3d point to homogeneous coordinates
         X << pts_3d(i, 0), pts_3d(i, 1), pts_3d(i, 2), 1.0;
 
@@ -129,16 +129,21 @@ void TestCase::project3DTo2D(Mat3 K, Mat3 R, Vec3 t, MatX pts_3d, MatX &pts_2d)
     this->project3DTo2D(P, pts_3d, pts_2d);
 }
 
-void TestCase::generateTestCase(TestRange range, MatX &pts1, MatX &pts2)
+void TestCase::generateTestCase(
+    TestRange range,
+    MatX &pts1,
+    MatX &pts2,
+    MatX &pts3d
+)
 {
     Mat3 K, R;
-    MatX P, pts_3d;
+    MatX P;
     Vec2 p;
     Vec3 x, x1, x2, t;
     Vec4 X, q;
 
     // setup
-    this->generateRandom3DPoints(range, 100, pts_3d);
+    this->generateRandom3DPoints(range, 10, pts3d);
 
     // create correspondance points on first image
     K << 1.0, 0.0, 0.0,
@@ -151,16 +156,16 @@ void TestCase::generateTestCase(TestRange range, MatX &pts1, MatX &pts2)
 
     t << 0.0, 0.0, 0.0;
 
-    this->project3DTo2D(K, R, t, pts_3d, pts1);
+    this->project3DTo2D(K, R, t, pts3d, pts1);
 
     // create correspondance points on second image
-    q << 0.1, 0.1, 0.1, 1.0;
+    q << 0.0, -0.174, 0.0, 0.985;
     q.normalize();
     this->createR(q(0), q(1), q(2), q(3), R);
 
-    t << 1.0, 1.0, 0.0;
+    t << 1.0, 0.0, 0.0;
 
-    this->project3DTo2D(K, R, t, pts_3d, pts2);
+    this->project3DTo2D(K, R, t, pts3d, pts2);
 }
 
 }  // end of slam namespace

@@ -63,6 +63,7 @@ ADD_LIBRARY(
     src/fast.cpp
     src/good.cpp
     src/orb.cpp
+    src/sfm.cpp
     src/utils.cpp
     src/vo.cpp
 )
@@ -93,6 +94,9 @@ TARGET_LINK_LIBRARIES(chessboard_test ${DEPS})
 
 ADD_EXECUTABLE(eight_point_test tests/eight_point_test.cpp)
 TARGET_LINK_LIBRARIES(eight_point_test ${DEPS})
+
+ADD_EXECUTABLE(sfm_test tests/sfm_test.cpp)
+TARGET_LINK_LIBRARIES(sfm_test ${DEPS})
 
 ADD_EXECUTABLE(vo_test tests/vo_test.cpp)
 TARGET_LINK_LIBRARIES(vo_test ${DEPS})

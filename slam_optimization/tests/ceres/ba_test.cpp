@@ -2,10 +2,12 @@
 
 #include <gtest/gtest.h>
 
+#include "slam/utils/utils.hpp"
 #include "slam/optimization/ceres/ba.hpp"
 
 #define TEST_DATA_1 "tests/data/ba/pts1.dat"
 #define TEST_DATA_2 "tests/data/ba/pts2.dat"
+#define TEST_DATA_3 "tests/data/ba/pts3d.dat"
 
 
 TEST(BAResidual, constructor)
@@ -97,22 +99,25 @@ TEST(BundleAdjustment, configure)
 TEST(BundleAdjustment, solve)
 {
     slam::Mat3 K;
-    slam::MatX x1_pts, x2_pts;
+    slam::MatX x1_pts, x2_pts, pts3d;
     slam::ceres::BundleAdjustment ba;
 
     // setup
     slam::csv2mat(TEST_DATA_1, false, x1_pts);
     slam::csv2mat(TEST_DATA_2, false, x2_pts);
-    // K << 279.0161682343449, 0, 150.3072895826164,
-    //      0, 276.3467561622266, 123.3623526538343,
-    //      0, 0, 1;
+    slam::csv2mat(TEST_DATA_3, false, pts3d);
+
     K << 1.0, 0.0, 0.0,
          0.0, 1.0, 0.0,
          0.0, 0.0, 1.0;
+
     ba.configure(K, x1_pts, x2_pts);
 
     // test and assert
-    ba.solve();
+    ba.solve(pts3d);
+
+    printf("q: %f %f %f %f\n", ba.q[1][0], ba.q[1][1], ba.q[1][2], ba.q[1][3]);
+    printf("c: %f %f %f \n", ba.c[1][0], ba.c[1][1], ba.c[1][2]);
 }
 
 int main(int argc, char* argv[])

@@ -6,6 +6,7 @@
 #include <ceres/ceres.h>
 
 #include "slam/utils/utils.hpp"
+#include "slam/optimization/ceres/extensions.hpp"
 
 
 namespace slam {
@@ -76,7 +77,6 @@ public:
         Eigen::Matrix<T, 3, 1> C, X;
         Eigen::Matrix<T, 3, 1> x_est;
         Eigen::Matrix<T, 2, 1> x_est_pixel;
-        Eigen::Quaternion<T> quat;
 
         // camera intrinsics matrix
         K(0, 0) = T(this->fx);
@@ -126,15 +126,6 @@ public:
         residual[0] = abs(T(this->x) - x_est_pixel(0));
         residual[1] = abs(T(this->y) - x_est_pixel(1));
 
-        // calculate quaternion magnitude
-        T d;
-        d = pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2) + pow(q[3], 2);
-        d = sqrt(d);
-
-        // penalize if quaternion is not normal
-        residual[0] += (T(1.0) - d) * T(100000000.0);
-        residual[1] += (T(1.0) - d) * T(100000000.0);
-
         return true;
     }
 };
@@ -143,13 +134,19 @@ class BundleAdjustment
 {
 public:
     bool configured;
+
     Mat3 K;
     MatX x1_pts;
     MatX x2_pts;
 
+    double **q;
+    double **c;
+    double **x;
+
     BundleAdjustment(void);
+    ~BundleAdjustment(void);
     int configure(Mat3 K, MatX x1_pts, MatX x2_pts);
-    int solve(void);
+    int solve(MatX pt3d);
 };
 
 }  // end of ceres namespace
