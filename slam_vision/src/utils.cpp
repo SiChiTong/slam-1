@@ -3,7 +3,7 @@
 
 namespace slam {
 
-void convert_mat(MatX A, cv::Mat &B)
+void mat2cvmat(MatX A, cv::Mat &B)
 {
     B = cv::Mat(A.rows(), A.cols(), CV_8UC1);
     for (int i = 0; i < A.rows(); i++) {
@@ -13,7 +13,7 @@ void convert_mat(MatX A, cv::Mat &B)
     }
 }
 
-void convert_cvmat(cv::Mat A, MatX &B)
+void cvmat2mat(cv::Mat A, MatX &B)
 {
     B.resize(A.rows, A.cols);
     for (int i = 0; i < A.rows; i++) {
@@ -23,7 +23,7 @@ void convert_cvmat(cv::Mat A, MatX &B)
     }
 }
 
-void convert_cvpts(std::vector<cv::Point2f> points, MatX &mat)
+void cvpts2mat(std::vector<cv::Point2f> points, MatX &mat)
 {
     cv::Point2f p;
 
@@ -36,7 +36,7 @@ void convert_cvpts(std::vector<cv::Point2f> points, MatX &mat)
     }
 }
 
-void combine_cvimgs(cv::Mat img1, cv::Mat img2, cv::Mat &out)
+void cvmatconcat(cv::Mat img1, cv::Mat img2, cv::Mat &out)
 {
     cv::Size size1;
     cv::Size size2;

@@ -101,6 +101,7 @@ TEST(BundleAdjustment, solve)
     slam::Mat3 K;
     slam::MatX x1_pts, x2_pts, pts3d;
     slam::ceres::BundleAdjustment ba;
+    struct timespec t;
 
     // setup
     slam::csv2mat(TEST_DATA_1, false, x1_pts);
@@ -111,10 +112,14 @@ TEST(BundleAdjustment, solve)
          0.0, 1.0, 0.0,
          0.0, 0.0, 1.0;
 
+    slam::tic(&t);
     ba.configure(K, x1_pts, x2_pts);
+    std::cout << slam::mtoc(&t) << " ms" << std::endl << std::endl;
 
     // test and assert
+    slam::tic(&t);
     ba.solve(pts3d);
+    std::cout << slam::mtoc(&t) << " ms" << std::endl << std::endl;
 
     printf("q: %f %f %f %f\n", ba.q[1][0], ba.q[1][1], ba.q[1][2], ba.q[1][3]);
     printf("c: %f %f %f \n", ba.c[1][0], ba.c[1][1], ba.c[1][2]);

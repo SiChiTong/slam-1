@@ -93,5 +93,63 @@ Mat3 rotmat(Vec4 q)
     R(2, 2) = 1.0 - 2.0 * pow(q(0), 2) - 2.0 * pow(q(1), 2);
 }
 
+int rotmatx(float angle, Mat3 &R)
+{
+    R << 1.0f, 0.0f,        0.0f,
+         0.0f, cos(angle),  sin(angle),
+         0.0f, -sin(angle), cos(angle);
+
+    return 0;
+}
+
+int rotmaty(float angle, Mat3 &R)
+{
+    R << cos(angle), 0.0f, -sin(angle),
+         0.0f,       1.0f, 0.0f,
+         sin(angle), 0.0f, cos(angle);
+
+    return 0;
+}
+
+int rotmatz(float angle, Mat3 &R)
+{
+    R << cos(angle), -sin(angle), 0.0f,
+         sin(angle), cos(angle),  0.0f,
+         0.0f,       0.0f,        1.0f;
+
+    return 0;
+}
+
+int rotmatx(float angle, Mat4 &R)
+{
+    R << 1.0f, 0.0f,        0.0f,       0.0f,
+         0.0f, cos(angle),  sin(angle), 0.0f,
+         0.0f, -sin(angle), cos(angle), 0.0f,
+         0.0f, 0.0f,        0.0f,       1.0f;
+
+    return 0;
+}
+
+int rotmaty(float angle, Mat4 &R)
+{
+    R << cos(angle), 0.0f, -sin(angle), 0.0f,
+         0.0f,       1.0f, 0.0f,        0.0f,
+         sin(angle), 0.0f, cos(angle),  0.0f,
+         0.0f,       0.0f, 0.0f,        1.0f;
+
+    return 0;
+}
+
+int rotmatz(float angle, Mat4 &R)
+{
+    R << cos(angle), -sin(angle), 0.0f, 0.0f,
+         sin(angle), cos(angle),  0.0f, 0.0f,
+         0.0f,       0.0f,        1.0f, 0.0f,
+         0.0f,       0.0f,        0.0f, 1.0f;
+
+    return 0;
+}
+
+
 
 }  // end of slam namespace

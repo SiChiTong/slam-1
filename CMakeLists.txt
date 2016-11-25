@@ -40,6 +40,10 @@ ADD_SUBDIRECTORY(slam_utils)
 ADD_SUBDIRECTORY(slam_vision)
 ADD_DEPENDENCIES(slam_vision slam_utils)
 
+# libslam_viz.a
+ADD_SUBDIRECTORY(slam_viz)
+ADD_DEPENDENCIES(slam_viz slam_utils)
+
 
 # libslam.a
 ADD_CUSTOM_TARGET(

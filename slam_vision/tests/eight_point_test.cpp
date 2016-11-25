@@ -355,8 +355,8 @@ TEST(EightPoint, obtainPose2)
     // detect and track features
     fast.detect(img_1, cvpts_1);
     vo.featureTracking(img_1, img_2, cvpts_1, cvpts_2, errors, status);
-    slam::convert_cvpts(cvpts_1, pts1);
-    slam::convert_cvpts(cvpts_2, pts2);
+    slam::cvpts2mat(cvpts_1, pts1);
+    slam::cvpts2mat(cvpts_2, pts2);
 
     // display tracked features
     vo.drawOpticalFlow(img_1, img_2, cvpts_1, cvpts_2, twin_img);
