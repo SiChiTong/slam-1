@@ -6,17 +6,15 @@
 
 namespace slam {
 
-class VizCamera
-{
-public:
-    bool configured;
-    Vec3 position;
-    Vec3 view;
-    Vec3 up;
-
-    VizCamera(void);
-    int configure(void);
-};
+// class VizCamera
+// {
+// public:
+//     Vec3 position;
+//     Vec3 view;
+//     Vec3 up;
+//
+//     VizCamera(void);
+// };
 
 }  // end of slam namespace
 #endif

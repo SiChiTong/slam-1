@@ -1,14 +1,16 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
-PROJECT(slam_vision)
+PROJECT(slam_viz)
 
 IF (CMAKE_COMPILER_IS_GNUCXX)
     ADD_DEFINITIONS(-std=gnu++0x)
 ENDIF()
 
+INCLUDE(FindPkgConfig)
+PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+
 # PACKAGES
 FIND_PACKAGE(GTest REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
-FIND_PACKAGE(glfw3 REQUIRED)
 
 
 # INCLUDES
@@ -41,7 +43,7 @@ SET(
     slam_viz
     slam_utils
     yaml-cpp
-    glfw
+    ${SDL2_LIBRARIES}
     ${GL_DEPS}
     ${GTEST_DEPS}
 )
