@@ -28,10 +28,17 @@ Viz::Viz(void)
     this->configured = false;
 }
 
-int Viz::configure(void)
+Viz::~Viz(void)
 {
-    this->configured = true;
+    this->configured = false;
 
+    SDL_GL_DeleteContext(this->context);
+    SDL_DestroyWindow(this->window);
+    SDL_Quit();
+}
+
+int Viz::initSDL(void)
+{
     // initialize SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return -1;
@@ -52,6 +59,24 @@ int Viz::configure(void)
 
     // initialize opengl
     this->context = SDL_GL_CreateContext(this->window);
+
+    // set our OpenGL version
+    // SDL_GL_CONTEXT_CORE gives us only the newer version
+    SDL_GL_SetAttribute(
+        SDL_GL_CONTEXT_PROFILE_MASK,
+        SDL_GL_CONTEXT_PROFILE_CORE
+    );
+
+    // 3.2 is part of modern versions of OpenGL, most video cards are ok
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
+    // turn on double buffering with a 24bit Z buffer.
+    // you may need to change this to 16 or 32 for your system
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    // makes buffer swap syncronized with the monitor's vertical refresh
+    SDL_GL_SetSwapInterval(1);
 
     return 0;
 }
@@ -75,6 +100,16 @@ int Viz::initGL(void)
         printf("Error initializing OpenGL! %s\n", gluErrorString(error));
         return -1;
     }
+
+    return 0;
+}
+
+int Viz::configure(void)
+{
+    this->initSDL();
+    this->initGL();
+
+    this->configured = true;
 
     return 0;
 }
@@ -133,9 +168,63 @@ int Viz::renderScene(void)
     return 0;
 }
 
+int Viz::handleKeyboardEvent(void)
+{
+    int loop;
+    SDL_Event event;
+
+    // setup
+    loop = 1;
+
+    // check keyboard event
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            loop = 0;
+        }
+
+        if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                loop = 0;
+                break;
+
+            case SDLK_r:
+                // cover with red and update
+                glClearColor(1.0, 0.0, 0.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT);
+                break;
+
+            case SDLK_g:
+                // cover with green and update
+                glClearColor(0.0, 1.0, 0.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT);
+                break;
+
+            case SDLK_b:
+                // cover with blue and update
+                glClearColor(0.0, 0.0, 1.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT);
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    return loop;
+}
+
 int Viz::run(void)
 {
+    int loop;
 
+    loop = true;
+    while (loop) {
+        this->renderScene();
+        loop = this->handleKeyboardEvent();
+        SDL_GL_SwapWindow(this->window);
+    }
 
     return 0;
 }

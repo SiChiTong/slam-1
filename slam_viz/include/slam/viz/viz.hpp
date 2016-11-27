@@ -38,15 +38,18 @@ public:
     bool configured;
 
     SDL_Window *window;
-    SDL_GLContext *context;
+    SDL_GLContext context;
     VizSettings settings;
     VizCamera camera;
 
     Viz(void);
-    int configure(void);
+    ~Viz(void);
+    int initSDL(void);
     int initGL(void);
+    int configure(void);
     int updateView(void);
     int renderScene(void);
+    int handleKeyboardEvent(void);
     int run(void);
 };
 
