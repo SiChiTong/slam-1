@@ -45,8 +45,8 @@ int SFM::recoverPose(MatX pts1, MatX pts2, SFMPose &pose)
         focal_length,
         principle_point,
         cv::RANSAC,  // outlier rejection method
-        0.999,  // threshold
-        1.0  // confidence level
+        0.999,  // confidence level
+        1  // threshold (pixels)
     );
     if (E.rows != 3 || E.cols != 3) {
         return -1;
@@ -64,11 +64,16 @@ int SFM::recoverPose(MatX pts1, MatX pts2, SFMPose &pose)
     );
 
     // set pose
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            pose.R(i, j) = R.at<double>(i, j);
-        }
-    }
+    pose.R(0, 0) = R.at<double>(0, 0);
+    pose.R(0, 1) = R.at<double>(0, 1);
+    pose.R(0, 2) = R.at<double>(0, 2);
+    pose.R(1, 0) = R.at<double>(1, 0);
+    pose.R(1, 1) = R.at<double>(1, 1);
+    pose.R(1, 2) = R.at<double>(1, 2);
+    pose.R(2, 0) = R.at<double>(2, 0);
+    pose.R(2, 1) = R.at<double>(2, 1);
+    pose.R(2, 2) = R.at<double>(2, 2);
+
     pose.t(0) = t.at<double>(0, 0);
     pose.t(1) = t.at<double>(1, 0);
     pose.t(2) = t.at<double>(2, 0);

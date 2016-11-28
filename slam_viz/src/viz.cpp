@@ -136,6 +136,9 @@ int Viz::renderScene(void)
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
+    glTranslatef(0.0, 0.0, -5.0);
+    glRotatef(0.0, 0.0, 1.0, 0.0);
+
     // draw ground plane
     glColor3f(.3,.3,.3);
     glBegin(GL_QUADS);
@@ -164,6 +167,8 @@ int Viz::renderScene(void)
         glVertex3f(10, 0, i);
     }
     glEnd();
+
+
 
     return 0;
 }

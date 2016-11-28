@@ -97,6 +97,13 @@ int BundleAdjustment::solve(MatX pts3d)
     ::ceres::LocalParameterization *quat_param;
     quat_param = new ceres::extensions::EigenQuaternionParameterization();
 
+    // initialize 3D points (x, y, z)
+    for (int i = 0; i < this->x1_pts.rows(); i++) {
+        this->x[i][0] = pts3d(i, 0);
+        this->x[i][1] = pts3d(i, 1);
+        this->x[i][2] = pts3d(i, 2);
+    }
+
     // image 1
     for (int i = 0; i < this->x1_pts.rows(); i++) {
         pt1 << this->x1_pts(i, 0), this->x1_pts(i, 1);

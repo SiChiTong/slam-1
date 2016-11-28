@@ -42,14 +42,16 @@ TEST(SFM, recoverPose)
     slam::csv2mat(TEST_DATA_1, false, pts1);
     slam::csv2mat(TEST_DATA_2, false, pts2);
 
-    slam::normalize_2dpts(960, 720, pts1);
-    slam::normalize_2dpts(960, 720, pts2);
+    // slam::normalize_2dpts(960, 720, pts1);
+    // slam::normalize_2dpts(960, 720, pts2);
 
     sfm.configure(K);
+    std::cout << pts1 << std::endl << std::endl;
+    std::cout << pts2 << std::endl << std::endl;
 
     // test
     sfm.recoverPose(pts1, pts2, pose);
-    std::cout << pose.R << std::endl;
+    std::cout << pose.R.eulerAngles(0, 1, 2) << std::endl << std::endl;
     std::cout << pose.t << std::endl;
 }
 
