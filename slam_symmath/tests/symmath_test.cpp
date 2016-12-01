@@ -1,22 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "slam/kinematics/quadrotor.hpp"
+#include "slam/symmath/models.hpp"
 #include "slam/symmath/symmath.hpp"
 
 
-TEST(SymbolicDifferentiation, test)
+TEST(Symmath, output_jacobian)
 {
-    GiNaC::symbol x("x");
-    GiNaC::symbol y("y");
-    GiNaC::ex P;
+    std::vector<GiNaC::ex> model;
+    std::vector<GiNaC::symbol> states;
 
-    P = pow(x, 5) + pow(x, 2) + y;
-
-    // std::cout << P.diff(x) << std::endl;  // diff P wrt x
-
-    slam::QuadrotorModel quad;
-
-    // quad.generateMotionModelJacobian();
+    slam::quadrotor_jacobian(model, states);
+    slam::output_jacobian("/tmp/model.dat", model, states);
 }
 
 int main(int argc, char* argv[])

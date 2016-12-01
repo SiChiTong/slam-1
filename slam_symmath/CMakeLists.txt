@@ -30,12 +30,12 @@ LINK_DIRECTORIES(
 ADD_LIBRARY(
     slam_symmath
     STATIC
+    src/models.cpp
     src/symmath.cpp
 )
 SET(
     DEPS
     slam_symmath
-    slam_kinematics
     ginac
     ${GTEST_LIBRARIES}
     pthread
@@ -43,6 +43,9 @@ SET(
 
 # UNIT TESTS
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+
+ADD_EXECUTABLE(models_test tests/models_test.cpp)
+TARGET_LINK_LIBRARIES(models_test ${DEPS})
 
 ADD_EXECUTABLE(symmath_test tests/symmath_test.cpp)
 TARGET_LINK_LIBRARIES(symmath_test ${DEPS})

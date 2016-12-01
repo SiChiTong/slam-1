@@ -11,15 +11,11 @@
 
 namespace slam {
 
-class SymMath
-{
-public:
-    static void outputMotionModelJacobian(
-        std::string file_path,
-        std::vector<GiNaC::ex> model,
-        std::vector<GiNaC::symbol> states
-    );
-};
+void output_jacobian(
+    std::string file_path,
+    std::vector<GiNaC::ex> model,
+    std::vector<GiNaC::symbol> states
+);
 
 } // end of slam namespace
 #endif
