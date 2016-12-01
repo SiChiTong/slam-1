@@ -49,4 +49,33 @@ double sphere(VecX x)
     return sum;
 }
 
+double rosenbrock(VecX x, VecX beta)
+{
+    double a, b;
+
+    a = beta(0);
+    b = beta(1);
+
+    // minimum at (x, y) = (a, a^{2}), where f(x, y) = 0
+    return pow(a - x(0), 2) + b * pow(x(1) - pow(x(0), 2), 2);
+}
+
+VecX rosenbrock_jacobian(VecX x, VecX beta)
+{
+    double a;
+    double b;
+    slam::VecX J;
+
+    // setup
+    a = beta(0);
+    b = beta(1);
+    J.resize(2);
+
+    // evaluate jacobian
+    J(0) = 2.0 * x(0) * (2.0 * b * (pow(x(0), 2) - x(1)) - 1.0);
+    J(1) = 2.0 * b * (x(1) - pow(x(0), 2));
+
+    return J;
+}
+
 }  // end of slam namespace

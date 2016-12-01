@@ -5,63 +5,47 @@
 #include "slam/optimization/benchmark.hpp"
 #include "slam/optimization/optimizers/lma.hpp"
 
-double test_func(slam::VecX x, slam::VecX beta)
+
+std::vector<slam::MatX> generate_data(void)
 {
-    double a;
-    double b;
-    double y;
-
-    // setup
-    a = beta(0);
-    b = beta(1);
-
-    // evaluate
-    y = a * cos(b * x(0)) + b * sin(a * x(0));
-
-    return y;
-}
-
-slam::VecX test_func_jacobian(slam::VecX x, slam::VecX beta)
-{
-    double a;
-    double b;
-    slam::VecX J;
-
-    // setup
-    a = beta(0);
-    b = beta(1);
-    J.resize(2);
-
-    // evaluate jacobian
-    J(0) = -cos(b * x(0)) - b * cos(a * x(0)) * x(0);
-    J(1) = a * sin(b * x(0)) * x(0) - sin(a * x(0));
-
-    return J;
-}
-
-std::vector<slam::MatX> generate_data(int nb_samples, double step_size)
-{
-    slam::MatX x;
-    slam::VecX y;
+    slam::VecX input;
     slam::VecX beta;
+
+    std::vector<double> inputs;
+    std::vector<double> outputs;
+
     std::vector<slam::MatX> data;
 
     // setup
-    x.resize(nb_samples, 1);
-    y.resize(nb_samples);
+    input.resize(2);
     beta.resize(2);
 
-    x(0, 0) = 0.0;
-    beta(0) = 100.0;
-    beta(1) = 105.0;
+    beta(0) = 1.0;
+    beta(1) = 100.0;
 
     // generate data
-    for (int i = 0; i < nb_samples; i++) {
-        y(i) = test_func(x.block(i, 0, 1, 1), beta);
-
-        if ((i + 1) < nb_samples) {
-            x(i + 1, 0) = x(i, 0) + step_size;
+    for (double x = -3.5; x < 3.5; x += 0.1) {
+        for (double y = -3.5; y < 3.5; y += 0.1) {
+            input << x, y;
+            inputs.push_back(input(0));
+            inputs.push_back(input(1));
+            outputs.push_back(slam::rosenbrock(input, beta));
         }
+    }
+
+    // convert data to matrices and vectors
+    slam::MatX x;
+    slam::VecX y;
+
+    y.resize(outputs.size());
+    for (int i = 0; i < outputs.size(); i++) {
+        y(i) = outputs[i];
+    }
+
+    x.resize(inputs.size() / 2.0, 2);
+    for (int i = 0; i < (inputs.size() / 2.0); i++) {
+        x(i, 0) = inputs[2 * i];
+        x(i, 1) = inputs[2 * i + 1];
     }
 
     data.push_back(x);
@@ -77,13 +61,13 @@ void test_settings(slam::LMASettings &settings)
     slam::MatX x;
 
     settings.max_iter = 100;
-    settings.lambda = 0.001;
-    settings.function = LMA_BIND(test_func);
-    settings.jacobian = LMA_BIND(test_func_jacobian);
-    settings.nb_inputs = 1;
+    settings.lambda = 0.01;
+    settings.function = LMA_BIND(slam::rosenbrock);
+    settings.jacobian = LMA_BIND(slam::rosenbrock_jacobian);
+    settings.nb_inputs = 2;
     settings.nb_params = 2;
 
-    data = generate_data(20, 0.1);
+    data = generate_data();
     settings.x = data[0];
     settings.y = data[1];
     settings.beta = data[2];
@@ -173,9 +157,6 @@ TEST(LMA, calcGradients)
     // test and assert
     opt.calcGradients(opt.beta);
 
-    std::cout << "J:\n" << opt.J << std::endl << std::endl;
-    std::cout << "H:\n" << opt.H << std::endl;
-
     ASSERT_FALSE(J_before.isApprox(opt.J));
     ASSERT_FALSE(H_before.isApprox(opt.H));
 }
@@ -192,7 +173,7 @@ TEST(LMA, iterate)
     test_settings(settings);
     opt.configure(settings);
 
-    opt.beta << 99, 104;
+    opt.beta << 1.0, 90.0;
     beta_before = opt.beta;
 
     // test and assert
@@ -215,7 +196,8 @@ TEST(LMA, optimize)
 
     // configure
     test_settings(settings);
-    settings.beta << 99, 102;
+    settings.max_iter = 10;
+    settings.beta << 1.01, 99.99;
     opt.configure(settings);
 
     opt.optimize();

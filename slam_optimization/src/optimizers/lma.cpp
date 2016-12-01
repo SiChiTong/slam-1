@@ -76,8 +76,8 @@ int LMA::evalFunction(VecX beta, double &error)
 
     // evaluate function
     for (int i = 0; i < this->y.rows(); i++) {
-        this->y_est(i, 0) = this->function(
-            this->x.block(i, 0, 1, this->nb_inputs),
+        this->y_est(i) = this->function(
+            this->x.block(i, 0, 1, this->nb_inputs).transpose(),
             beta
         );
     }
@@ -99,7 +99,7 @@ int LMA::calcGradients(VecX beta)
     // calculate jacobian
     for (int i = 0; i < this->y.rows(); i++) {
         this->J.block(i, 0, 1, this->nb_params) = this->jacobian(
-            this->x.block(i, 0, 1, this->nb_inputs),
+            this->x.block(i, 0, 1, this->nb_inputs).transpose(),
             beta
         ).transpose();
     }
