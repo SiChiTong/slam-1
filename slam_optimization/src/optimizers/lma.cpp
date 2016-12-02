@@ -17,7 +17,7 @@ LMASettings::LMASettings(void)
     this->beta = MatX::Zero(1, 1);
 }
 
-LMA::LMA(void)
+LMAOpt::LMAOpt(void)
 {
     this->configured = false;
 
@@ -41,7 +41,7 @@ LMA::LMA(void)
     this->error = FLT_MAX;
 }
 
-int LMA::configure(LMASettings settings)
+int LMAOpt::configure(LMASettings settings)
 {
     this->configured = true;
 
@@ -67,7 +67,7 @@ int LMA::configure(LMASettings settings)
     return 0;
 }
 
-int LMA::evalFunction(VecX beta, double &error)
+int LMAOpt::evalFunction(VecX beta, double &error)
 {
     // pre-check
     if (this->configured == false) {
@@ -89,7 +89,7 @@ int LMA::evalFunction(VecX beta, double &error)
     return 0;
 }
 
-int LMA::calcGradients(VecX beta)
+int LMAOpt::calcGradients(VecX beta)
 {
     // pre-check
     if (this->configured == false) {
@@ -110,7 +110,7 @@ int LMA::calcGradients(VecX beta)
     return 0;
 }
 
-int LMA::iterate(void)
+int LMAOpt::iterate(void)
 {
     MatX I, H_est, I_adaptive;
     VecX delta, beta_est;
@@ -121,13 +121,12 @@ int LMA::iterate(void)
         return -1;
     }
 
-    // setup
-    I = MatX::Identity(this->nb_params, this->nb_params);
-
     // Levenberg (1994) - damp hessian
+    // I = MatX::Identity(this->nb_params, this->nb_params);
     // H_est = this->H + this->lambda * I;
 
     // Marquardt (1963) - adaptive component-wise damping
+    I = MatX::Identity(this->nb_params, this->nb_params);
     I.diagonal() = this->H.diagonal();
     H_est = this->H + this->lambda * I;
 
@@ -153,7 +152,7 @@ int LMA::iterate(void)
     return 0;
 }
 
-int LMA::optimize(void)
+int LMAOpt::optimize(void)
 {
     // pre-check
     if (this->configured == false) {

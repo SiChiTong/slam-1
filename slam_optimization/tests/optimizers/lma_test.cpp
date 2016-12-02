@@ -73,9 +73,9 @@ void test_settings(slam::LMASettings &settings)
     settings.beta = data[2];
 }
 
-TEST(LMA, constructor)
+TEST(LMAOpt, constructor)
 {
-    slam::LMA opt;
+    slam::LMAOpt opt;
 
     ASSERT_EQ(false, opt.configured);
     ASSERT_EQ(100, opt.max_iter);
@@ -98,9 +98,9 @@ TEST(LMA, constructor)
     ASSERT_EQ(FLT_MAX, opt.error);
 }
 
-TEST(LMA, configure)
+TEST(LMAOpt, configure)
 {
-    slam::LMA opt;
+    slam::LMAOpt opt;
     slam::LMASettings settings;
 
     test_settings(settings);
@@ -127,9 +127,9 @@ TEST(LMA, configure)
     ASSERT_EQ(FLT_MAX, opt.error);
 }
 
-TEST(LMA, evalFunction)
+TEST(LMAOpt, evalFunction)
 {
-    slam::LMA opt;
+    slam::LMAOpt opt;
     slam::LMASettings settings;
     double error;
 
@@ -142,9 +142,9 @@ TEST(LMA, evalFunction)
     ASSERT_FLOAT_EQ(0.0, error);
 }
 
-TEST(LMA, calcGradients)
+TEST(LMAOpt, calcGradients)
 {
-    slam::LMA opt;
+    slam::LMAOpt opt;
     slam::LMASettings settings;
     slam::MatX J_before, H_before;
 
@@ -161,9 +161,9 @@ TEST(LMA, calcGradients)
     ASSERT_FALSE(H_before.isApprox(opt.H));
 }
 
-TEST(LMA, iterate)
+TEST(LMAOpt, iterate)
 {
-    slam::LMA opt;
+    slam::LMAOpt opt;
     slam::LMASettings settings;
     slam::VecX beta_before;
     double error;
@@ -187,10 +187,10 @@ TEST(LMA, iterate)
     ASSERT_FALSE(beta_before.isApprox(opt.beta));
 }
 
-TEST(LMA, optimize)
+TEST(LMAOpt, optimize)
 {
     slam::VecX beta;
-    slam::LMA opt;
+    slam::LMAOpt opt;
     slam::LMASettings settings;
     std::vector <slam::VecX> data;
 

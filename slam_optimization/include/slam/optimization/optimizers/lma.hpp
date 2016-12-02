@@ -33,7 +33,7 @@ public:
     LMASettings(void);
 };
 
-class LMA
+class LMAOpt
 {
 public:
     bool configured;
@@ -57,7 +57,7 @@ public:
 
     double error;
 
-    LMA(void);
+    LMAOpt(void);
     int configure(LMASettings settings);
     int evalFunction(VecX beta, double &error);
     int calcGradients(VecX beta);
