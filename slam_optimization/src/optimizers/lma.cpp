@@ -113,7 +113,7 @@ int LMA::calcGradients(VecX beta)
 int LMA::iterate(void)
 {
     MatX I, H_est;
-    VecX dp, beta_est;
+    VecX delta, beta_est;
     double error_est;
 
     // pre-check
@@ -121,15 +121,13 @@ int LMA::iterate(void)
         return -1;
     }
 
-    // update hessian
+    // damping the hessian
     I = MatX::Identity(this->nb_params, this->nb_params);
-    H_est = this->H;
-    H_est += this->lambda * I;
+    H_est = this->H + this->lambda * I;
 
     // update params
-    dp = -H_est.inverse() * (this->J.transpose() * this->diff);
-    beta_est = this->beta;
-    beta_est += dp;
+    delta = -H_est.inverse() * (this->J.transpose() * this->diff);
+    beta_est = this->beta + delta;
 
     // evaluate new error
     this->evalFunction(beta_est, error_est);
