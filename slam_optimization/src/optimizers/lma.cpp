@@ -112,7 +112,7 @@ int LMA::calcGradients(VecX beta)
 
 int LMA::iterate(void)
 {
-    MatX I, H_est;
+    MatX I, H_est, I_adaptive;
     VecX delta, beta_est;
     double error_est;
 
@@ -121,8 +121,14 @@ int LMA::iterate(void)
         return -1;
     }
 
-    // damping the hessian
+    // setup
     I = MatX::Identity(this->nb_params, this->nb_params);
+
+    // Levenberg (1994) - damp hessian
+    // H_est = this->H + this->lambda * I;
+
+    // Marquardt (1963) - adaptive component-wise damping
+    I.diagonal() = this->H.diagonal();
     H_est = this->H + this->lambda * I;
 
     // update params
@@ -163,7 +169,6 @@ int LMA::optimize(void)
 
         // iterate
         for (int i = 0; i < this->max_iter; i++) {
-            printf("[%d]: %f\n", i, this->error);
             this->iterate();
         }
 

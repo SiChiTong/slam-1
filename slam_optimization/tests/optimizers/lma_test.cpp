@@ -196,7 +196,7 @@ TEST(LMA, optimize)
 
     // configure
     test_settings(settings);
-    settings.max_iter = 10;
+    settings.max_iter = 100;
     settings.beta << 1.01, 99.99;
     opt.configure(settings);
 
